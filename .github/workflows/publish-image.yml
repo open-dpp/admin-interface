@@ -18,7 +18,7 @@ jobs:
 
       - name: Build the hello-docker Docker image
         run: |
-          docker build . --tag ghcr.io/open-dpp/hello-docker-gcr-demo:latest
-          docker push ghcr.io/open-dpp/hello-docker-gcr-demo:latest
+          docker build . --tag ghcr.io/${{ github.repository }}/hello-docker-gcr-demo:latest
+          docker push ghcr.io/${{ github.repository }}/hello-docker-gcr-demo:latest
 
 
