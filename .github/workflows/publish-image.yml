@@ -4,21 +4,21 @@ on: [push]
 
 jobs:
   publish-hello-docker-image:
-  runs-on: ubuntu-latest
-  steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v1
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build the hello-docker Docker image
-      run: |
-        docker build . --tag ghcr.io/open-dpp/hello-docker-gcr-demo:latest
-        docker push ghcr.io/open-dpp/hello-docker-gcr-demo:latest
+      - name: Build the hello-docker Docker image
+        run: |
+          docker build . --tag ghcr.io/open-dpp/hello-docker-gcr-demo:latest
+          docker push ghcr.io/open-dpp/hello-docker-gcr-demo:latest
 
 
