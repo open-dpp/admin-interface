@@ -1,3 +1,3 @@
-const keycloakDisabled = true;
+const keycloakDisabled = false;
 
 export { keycloakDisabled };
