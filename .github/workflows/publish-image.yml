@@ -22,7 +22,7 @@ jobs:
 
       - name: Get short Git SHA
         id: vars
-        run: echo "sha=${{ github.sha::0:7 }}" >> $GITHUB_ENV
+        run: echo "sha=${{ github.sha }}" >> $GITHUB_ENV
 
       - name: Build the docker image
         run: |
