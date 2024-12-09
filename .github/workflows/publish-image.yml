@@ -4,6 +4,6 @@ on: [push]
 
 jobs:
   build-publish-docker-image:
-    uses: open-dpp/publish-docker-image/.github/workflows/publish-image.yml@1.0.0
+    uses: open-dpp/publish-docker-image/.github/workflows/publish-image.yml@2.0.0
 
 
