@@ -3,7 +3,7 @@ name: Build and publish docker image
 on: [push]
 
 jobs:
-  publish-hello-docker-image:
+  build-publish-docker-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read      # Required for reading the repository contents
@@ -20,9 +20,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build the hello-docker Docker image
+      - name: Get short Git SHA
+        id: vars
+        run: echo "sha=${{ github.sha::0:7 }}" >> $GITHUB_ENV
+
+      - name: Build the docker image
         run: |
-          docker build . --tag ghcr.io/${{ github.repository }}/hello-docker-gcr-demo:latest
-          docker push ghcr.io/${{ github.repository }}/hello-docker-gcr-demo:latest
+          docker build . -t ghcr.io/${{ github.repository }}:latest -t -t ghcr.io/${{ github.repository }}:${{ env.sha }}
 
-
+      - name: Push the docker image
+        run: |
+          docker push ghcr.io/${{ github.repository }}:latest
+          docker push ghcr.io/${{ github.repository }}:${{ env.sha }}
+          
+          
