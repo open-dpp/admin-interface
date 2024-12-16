@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import keycloakIns from "../lib/keycloak.ts";
-import {keycloakDisabled} from "../const.ts";
+import {ADMIN_URL, keycloakDisabled} from "../const.ts";
 
 // const MODE = import.meta.env.MODE;
 
@@ -31,7 +31,7 @@ router.beforeEach(async (to, from, next) => {
     }
     if (!keycloakIns.authenticated) {
         await keycloakIns.login({
-            redirectUri: 'http://localhost:20004',
+            redirectUri: ADMIN_URL,
         });
         next();
     } else {
