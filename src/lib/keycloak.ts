@@ -1,10 +1,9 @@
 import Keycloak, {KeycloakInitOptions} from "keycloak-js";
 import {setAxiosAuthHeader} from "./axios";
-
-const keycloakUrl = 'http://localhost:20000' // import.meta.env.VITE_KEYCLOAK_ROOT as string;
+import {API_URL, KEYCLOAK_URL} from "../const.ts";
 
 export const keycloakIns = new Keycloak({
-    url: keycloakUrl,
+    url: KEYCLOAK_URL,
     realm: "living-circle",
     clientId: 'frontend',
 });
@@ -58,8 +57,7 @@ export const logout = async () => {
 }
 
 export const generateRegistrationLink = (token: string) => {
-    // return import.meta.env.VITE_API_ROOT + '/register/' + token;
-    return 'http://localhost:20004' + '/register/' + token;
+    return API_URL + '/register/' + token;
 }
 
 export default keycloakIns;

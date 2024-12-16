@@ -1,6 +1,11 @@
 # Stage 1: Build the application
 FROM node:22-alpine AS build-stage
 
+ARG VITE_KEYCLOAK_ROOT="http://localhost:20000"
+ENV VITE_KEYCLOAK_ROOT=$VITE_KEYCLOAK_ROOT
+ARG VITE_API_ROOT="http://localhost:20005"
+ENV VITE_API_ROOT=$VITE_API_ROOT
+
 # Set working directory
 WORKDIR /app
 

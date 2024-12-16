@@ -1,10 +1,9 @@
 import axios from "axios";
 import {logout} from "./keycloak";
-
-const baseUrl = 'http://localhost:20005' // import.meta.env.VITE_API_ROOT as string;
+import {API_URL} from "../const.ts";
 
 const axiosIns = axios.create({
-    baseURL: baseUrl,
+    baseURL: API_URL,
 });
 
 axiosIns.interceptors.response.use(
