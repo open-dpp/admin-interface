@@ -24,22 +24,14 @@ jobs:
         id: vars
         run: echo "sha=${{ github.sha }}" >> $GITHUB_ENV
 
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          build-args: VITE_KEYCLOAK_ROOT=https://auth.cloud.open-dpp.de,VITE_API_ROOT=https://api.cloud.open-dpp.de
-          context: .
-          push: true
-          tags: ghcr.io/${{ github.repository }}:latest,ghcr.io/${{ github.repository }}:${{ env.sha }}
+      - name: Build the docker image
+        run: |
+          docker build --build-arg VITE_KEYCLOAK_ROOT=https://auth.cloud.open-dpp.de --build-arg VITE_API_ROOT=https://api.cloud.open-dpp.de . -t ghcr.io/${{ github.repository }}:latest -t ghcr.io/${{ github.repository }}:${{ env.sha }}
 
-#      - name: Build the docker image
-#        run: |
-#          docker build . -e -t ghcr.io/${{ github.repository }}:latest -t ghcr.io/${{ github.repository }}:${{ env.sha }}
-#
-#      - name: Push the docker image
-#        run: |
-#          docker push ghcr.io/${{ github.repository }}:latest
-#          docker push ghcr.io/${{ github.repository }}:${{ env.sha }}
+      - name: Push the docker image
+        run: |
+          docker push ghcr.io/${{ github.repository }}:latest
+          docker push ghcr.io/${{ github.repository }}:${{ env.sha }}
 
 
 
