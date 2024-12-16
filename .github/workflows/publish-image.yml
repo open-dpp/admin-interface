@@ -27,14 +27,10 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          build-args:
-            - VITE_KEYCLOAK_ROOT=https://auth.cloud.open-dpp.de
-            - VITE_API_ROOT=https://api.cloud.open-dpp.de
+          build-args: VITE_KEYCLOAK_ROOT=https://auth.cloud.open-dpp.de,VITE_API_ROOT=https://api.cloud.open-dpp.de
           context: .
           push: true
-          tags:
-            - ghcr.io/${{ github.repository }}:latest
-            - ghcr.io/${{ github.repository }}:${{ env.sha }}
+          tags: ghcr.io/${{ github.repository }}:latest,ghcr.io/${{ github.repository }}:${{ env.sha }}
 
 #      - name: Build the docker image
 #        run: |
