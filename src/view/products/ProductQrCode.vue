@@ -15,6 +15,7 @@ import {onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
 import {toCanvas} from 'qrcode';
 import axiosIns from "../../lib/axios.ts";
+import {VIEW_ROOT_URL} from "../../const.ts";
 
 const route = useRoute();
 
@@ -28,7 +29,7 @@ const downloadQrCode = () => {
 onMounted(async () => {
   const response = await axiosIns.get(`/products/${route.params.productId}`);
   const product = response.data as any;
-  url.value = `http://localhost:20009/${product.permalinks[0].uuid}`;
+  url.value = `${VIEW_ROOT_URL}/${product.permalinks[0].uuid}`;
   toCanvas(canvas.value, url.value, (error: any) => {
     console.log(error);
   });
