@@ -1,5 +1,6 @@
+# Very thanks to https://v2.vuejs.org/v2/cookbook/dockerize-vuejs-app.html?redirect=true#Real-World-Example
 # Stage 1: Build the application
-FROM node:22-alpine AS build-stage
+FROM node:23-alpine AS build-stage
 
 # Set working directory
 WORKDIR /app
