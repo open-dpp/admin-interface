@@ -22,9 +22,6 @@ const route = useRoute();
 const canvas = ref<HTMLCanvasElement>();
 const url = ref<string>();
 
-const downloadQrCode = () => {
-
-}
 
 onMounted(async () => {
   const response = await axiosIns.get(`/products/${route.params.productId}`);
