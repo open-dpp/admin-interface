@@ -4,7 +4,7 @@ import {API_URL, KEYCLOAK_URL} from "../const.ts";
 
 export const keycloakIns = new Keycloak({
     url: KEYCLOAK_URL,
-    realm: "living-circle",
+    realm: "open-dpp",
     clientId: 'frontend',
 });
 
