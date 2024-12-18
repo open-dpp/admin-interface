@@ -2,6 +2,16 @@
 # Stage 1: Build the application
 FROM node:23-alpine AS build-stage
 
+ARG VITE_KEYCLOAK_ROOT="http://localhost:20000"
+ENV VITE_KEYCLOAK_ROOT=$VITE_KEYCLOAK_ROOT
+ARG VITE_API_ROOT="http://localhost:20005"
+ENV VITE_API_ROOT=$VITE_API_ROOT
+ARG VITE_ADMIN_ROOT="http://localhost:20004"
+ENV VITE_ADMIN_ROOT=$VITE_ADMIN_ROOT
+ARG VITE_VIEW_ROOT_URL="http://localhost:20009"
+ENV VITE_VIEW_ROOT_URL=$VITE_VIEW_ROOT_URL
+
+
 # Set working directory
 WORKDIR /app
 
@@ -28,8 +38,8 @@ FROM nginx:stable-alpine AS production-stage
 # Copy the build output to Nginx's html directory
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-# Copy custom Nginx configuration if needed
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+## Copy custom Nginx configuration if needed
+#COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80
 EXPOSE 80
