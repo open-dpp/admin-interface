@@ -17,6 +17,7 @@ export const routes = [
     {path: '/stats', component: () => import('../view/Stats.vue')},
     {path: '/profile', component: () => import('../view/Profile.vue')},
     {path: '/logout', component: () => import('../view/Logout.vue')},
+    {path: '/organizations/select', component: () => import('../view/organizations/SelectOrganizationView.vue')},
 ]
 
 export const router = createRouter({

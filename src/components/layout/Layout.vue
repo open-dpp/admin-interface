@@ -120,12 +120,15 @@
               </ul>
             </li>
             <li class="mt-auto">
+              <SelectOrganization />
+            </li>
+            <li>
               <router-link
                   class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-GJDarkGreen"
                   to="/settings">
                 <Cog6ToothIcon aria-hidden="true"
                                class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-GJDarkGreen"/>
-                Settings
+                Einstellungen
               </router-link>
             </li>
           </ul>
@@ -209,7 +212,7 @@
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue'
+import {computed, ref} from 'vue'
 import logoMaybe from '../../assets/logomaybe.png';
 import {
   Dialog,
@@ -223,7 +226,7 @@ import {
 } from '@headlessui/vue'
 import {
   Bars3Icon,
-  BellIcon,
+  BellIcon, BuildingOfficeIcon,
   CalendarIcon,
   Cog6ToothIcon,
   CubeIcon,
@@ -234,21 +237,33 @@ import {
   XMarkIcon,
 } from '@heroicons/vue/24/outline'
 import {ChevronDownIcon, MagnifyingGlassIcon} from '@heroicons/vue/20/solid'
-import logo from '../../assets/logo.png'
+import logo from '../../assets/Logo-with-text.png'
 import {useRoute} from "vue-router";
 import Breadcrumbs from "../Breadcrumbs.vue";
+import {useIndexStore} from "../../stores";
+import SelectOrganization from "../organizations/SelectOrganization.vue";
 
 const route = useRoute();
+const indexStore = useIndexStore();
 
-const navigation = [
-  {name: 'Dashboard', to: '/', icon: HomeIcon},
-  {name: 'Produkte', to: '/products', icon: CubeIcon},
-  {name: 'Statistiken', to: '/stats', icon: FolderIcon},
-  {name: 'Zugriffe', to: '/calendar', icon: CalendarIcon},
-  {name: 'Dateien', to: '/files', icon: DocumentDuplicateIcon},
-  {name: 'Benachrichtigungen', to: '/notifications', icon: BellIcon},
-  {name: 'Users', to: '/users', icon: UsersIcon},
-];
+interface MenuItem {
+  name: string;
+  to: string;
+  icon: any;
+  show: () => boolean;
+}
+
+const unfilteredNavigation = computed<Array<MenuItem>>(() => [
+  {name: 'Dashboard', to: '/', icon: HomeIcon, show: () => true},
+  {name: 'Produkte', to: '/products', icon: CubeIcon, show: () => indexStore.selectedOrganization !== null},
+  {name: 'Statistiken', to: '/stats', icon: FolderIcon, show: () => indexStore.selectedOrganization !== null},
+  {name: 'Zugriffe', to: '/calendar', icon: CalendarIcon, show: () => indexStore.selectedOrganization !== null},
+  {name: 'Dateien', to: '/files', icon: DocumentDuplicateIcon, show: () => indexStore.selectedOrganization !== null},
+  {name: 'Benachrichtigungen', to: '/notifications', icon: BellIcon, show: () => indexStore.selectedOrganization !== null},
+  {name: 'Users', to: '/users', icon: UsersIcon, show: () => indexStore.selectedOrganization !== null},
+  {name: 'Organisation auswählen', to: '/organizations/select', icon: BuildingOfficeIcon, show: () => indexStore.selectedOrganization === null},
+]);
+const navigation = computed<Array<MenuItem>>(() => unfilteredNavigation.value.filter(item => item.show()));
 const teams = [
   {id: 1, name: 'Produkt A', to: '/', initial: 'PA', current: false},
   {id: 1, name: 'Produkt B', to: '/', initial: 'PB', current: true},

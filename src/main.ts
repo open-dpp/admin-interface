@@ -5,6 +5,7 @@ import {router} from './router'
 import {createPinia} from 'pinia';
 import keycloakIns, {initializeKeycloak} from "./lib/keycloak";
 import {keycloakDisabled} from "./const.ts";
+import {useIndexStore} from "./stores";
 
 const MODE = import.meta.env.MODE;
 
@@ -21,6 +22,10 @@ const startApp = async () => {
     }
 
     app.use(router);
+    const indexStore = useIndexStore();
+    if (indexStore.selectedOrganization === null) {
+        await router.push('/organizations/select');
+    }
     app.mount('#app');
 }
 
