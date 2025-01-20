@@ -1,8 +1,8 @@
-import {defineStore} from 'pinia'
-import {ref} from "vue";
+import { defineStore } from "pinia";
+import { ref } from "vue";
 
-export const useAuthStore = defineStore('auth', () => {
-    const selectedOrganization = ref<string>();
+export const useAuthStore = defineStore("auth", () => {
+  const selectedOrganization = ref<string>();
 
-    return {selectedOrganization}
+  return { selectedOrganization };
 });
