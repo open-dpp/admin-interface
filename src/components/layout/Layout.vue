@@ -356,7 +356,7 @@ import {
   XMarkIcon,
 } from "@heroicons/vue/24/outline";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/Logo-with-text.png";
 import { useRoute } from "vue-router";
 import Breadcrumbs from "../Breadcrumbs.vue";
 
