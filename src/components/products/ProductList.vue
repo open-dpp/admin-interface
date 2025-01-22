@@ -3,7 +3,7 @@
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-auto">
         <h1 class="text-base font-semibold text-gray-900">Produkte</h1>
-        <p class="mt-2 text-sm text-gray-700">Alle erstellten Produkte.</p>
+        <p class="mt-2 text-sm text-gray-700">Alle erstellten Produkte</p>
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
         <button

@@ -18,6 +18,10 @@ export const routes = [
     component: () => import("../view/products/Product.vue"),
   },
   {
+    path: "/models/:modelId/items",
+    component: () => import("../view/ItemView.vue"),
+  },
+  {
     path: "/notifications",
     component: () => import("../view/Notifications.vue"),
   },
@@ -33,14 +37,13 @@ export const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to, from, next) => {
-  console.debug(to, from);
+router.beforeEach(async (to, _, next) => {
   if (keycloakDisabled) {
     next();
   }
   if (!keycloakIns.authenticated) {
     await keycloakIns.login({
-      redirectUri: ADMIN_URL,
+      redirectUri: ADMIN_URL + to.path,
     });
     next();
   } else {
