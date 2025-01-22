@@ -1,8 +1,8 @@
-import {defineStore} from 'pinia'
-import {ref} from "vue";
+import { defineStore } from "pinia";
+import { ref } from "vue";
 
-export const useIndexStore = defineStore('index', () => {
-    const selectedOrganization = ref<string | null>(null);
+export const useIndexStore = defineStore("index", () => {
+  const selectedOrganization = ref<string | null>(null);
 
-    return {selectedOrganization}
+  return { selectedOrganization };
 });
