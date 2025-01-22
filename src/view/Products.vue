@@ -12,7 +12,11 @@
         @add="showCreateProduct = true"
         @edit="onSelect"
       />
-      <EmptyState v-else @add="showCreateProduct = true" />
+      <EmptyState
+        :button-label="buttonLabel"
+        v-else
+        @add="showCreateProduct = true"
+      />
     </div>
   </section>
 </template>
@@ -24,6 +28,7 @@ import { useProductsStore } from "../stores/products.ts";
 import EmptyState from "../components/products/EmptyState.vue";
 import UpdateProduct from "../components/products/UpdateProduct.vue";
 
+const buttonLabel = "Neues Produkt hinzufügen";
 const productStore = useProductsStore();
 
 const showCreateProduct = ref<boolean>(false);

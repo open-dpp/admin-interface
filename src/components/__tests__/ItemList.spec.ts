@@ -17,10 +17,15 @@ describe("ItemList.vue", () => {
     expect(rows).toHaveLength(3);
     const headerCells = within(rows[0]).getAllByRole("columnheader");
     expect(headerCells.map((h) => h.textContent)).toEqual(["", " ID "]);
-    expect(within(headerCells[0]).getByRole("checkbox")).not.toBeChecked();
+    expect(
+      (within(headerCells[0]).getByRole("checkbox") as HTMLInputElement)
+        .checked,
+    ).toBeFalsy();
     rows.slice(1).forEach((row, index) => {
       const cells = within(row).getAllByRole("cell");
-      expect(within(cells[0]).getByRole("checkbox")).not.toBeChecked();
+      expect(
+        (within(cells[0]).getByRole("checkbox") as HTMLInputElement).checked,
+      ).toBeFalsy();
       expect(cells[1].textContent).toEqual(items[index].id);
     });
   });

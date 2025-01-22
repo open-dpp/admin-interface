@@ -130,6 +130,12 @@
                     class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3 gap-4 flex flex-row"
                   >
                     <router-link
+                      :to="`/models/${product.id}/items`"
+                      class="text-indigo-600 hover:text-indigo-900"
+                    >
+                      Artikel
+                    </router-link>
+                    <router-link
                       :to="`/products/${product.id}`"
                       class="text-indigo-600 hover:text-indigo-900"
                     >
