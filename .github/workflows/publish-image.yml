@@ -31,6 +31,8 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Run tests
+        env:
+          VITE_KEYCLOAK_ROOT: "http://auth.open-dpp.localhost.20080"
         run: npm run test
 
   build-publish-docker-image:

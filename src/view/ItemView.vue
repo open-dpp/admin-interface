@@ -18,7 +18,7 @@ import EmptyState from "../components/products/EmptyState.vue";
 const route = useRoute();
 const buttonLabel = "Neuen Artikel hinzufügen";
 
-const items = ref<Item>([]);
+const items = ref<Item[]>([]);
 
 const fetchItems = async () => {
   const response = await axiosIns.get(`/models/${route.params.modelId}/items`);
