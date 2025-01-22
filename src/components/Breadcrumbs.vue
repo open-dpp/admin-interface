@@ -37,6 +37,30 @@
 
 <script lang="ts" setup>
 import { HomeIcon } from "@heroicons/vue/20/solid";
+import { useRoute } from "vue-router";
+import { ref, watch } from "vue";
 
-const pages = [{ name: "Produkte", to: "/products", current: false }];
+const pages = ref<{ name: string; to: string; current: boolean }[]>([]);
+
+const route = useRoute();
+
+watch(
+  () => route.path,
+  async (value: string) => {
+    if (value === "/products") {
+      pages.value = [{ name: "Produkte", to: value, current: true }];
+    } else if (value.endsWith("items")) {
+      pages.value = [
+        { name: "Produktmodell", to: "/products", current: false },
+        {
+          name: "Artikel",
+          to: value,
+          current: true,
+        },
+      ];
+    } else {
+      pages.value = [{ name: "Produkte", to: "/products", current: true }];
+    }
+  },
+);
 </script>
