@@ -5,6 +5,7 @@ import axios from "../lib/axios.ts";
 interface Organization {
   id: string;
   name: string;
+  imageUrl: string;
 }
 
 export const useOrganizationsStore = defineStore("organizations", () => {
