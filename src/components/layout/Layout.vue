@@ -90,7 +90,10 @@
                         Schnellzugriff
                       </div>
                       <ul class="-mx-2 mt-2 space-y-1" role="list">
-                        <li v-for="item in layoutStore.quickAccessItems" :key="item.name">
+                        <li
+                          v-for="item in layoutStore.quickAccessItems"
+                          :key="item.name"
+                        >
                           <router-link
                             :class="[
                               item.path === route.path
@@ -107,7 +110,9 @@
                                   : 'border-gray-200 text-gray-400 group-hover:border-GJDarkGreen group-hover:text-GJDarkGreen',
                                 'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border bg-white text-[0.625rem] font-medium',
                               ]"
-                              >{{ item.name.substring(0, 2).toLocaleUpperCase() }}</span
+                              >{{
+                                item.name.substring(0, 2).toLocaleUpperCase()
+                              }}</span
                             >
                             <span class="truncate">{{ item.name }}</span>
                           </router-link>
@@ -180,7 +185,10 @@
                 Schnellzugriff
               </div>
               <ul class="-mx-2 mt-2 space-y-1" role="list">
-                <li v-for="item in layoutStore.quickAccessItems" :key="item.name">
+                <li
+                  v-for="item in layoutStore.quickAccessItems"
+                  :key="item.name"
+                >
                   <router-link
                     :class="[
                       item.path === route.path
@@ -328,7 +336,10 @@
         <div class="h-[calc(100%-88px)] px-4 sm:px-6 lg:px-8">
           <router-view v-slot="{ Component }">
             <transition name="fade" mode="out-in" appear :duration="75">
-              <div class="w-full min-h-full flex items-center justify-items-center" v-if="layoutStore.isPageLoading">
+              <div
+                class="w-full min-h-full flex items-center justify-items-center"
+                v-if="layoutStore.isPageLoading"
+              >
                 <RingLoader class="mx-auto" />
               </div>
               <component v-else :is="Component" />
@@ -341,7 +352,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref} from "vue";
+import { computed, type FunctionalComponent, ref } from "vue";
 import logoMaybe from "../../assets/logomaybe.png";
 import {
   Dialog,
@@ -355,7 +366,8 @@ import {
 } from "@headlessui/vue";
 import {
   Bars3Icon,
-  BellIcon, BuildingOfficeIcon,
+  BellIcon,
+  BuildingOfficeIcon,
   CalendarIcon,
   Cog6ToothIcon,
   CubeIcon,
@@ -369,33 +381,70 @@ import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
 import logo from "../../assets/Logo-with-text.png";
 import { useRoute } from "vue-router";
 import Breadcrumbs from "../Breadcrumbs.vue";
-import {useIndexStore} from "../../stores";
+import { useIndexStore } from "../../stores";
 import SelectOrganization from "../organizations/SelectOrganization.vue";
 import RingLoader from "../RingLoader.vue";
-import {useLayoutStore} from "../../stores/layout.ts";
+import { useLayoutStore } from "../../stores/layout.ts";
 
 const route = useRoute();
 const indexStore = useIndexStore();
 const layoutStore = useLayoutStore();
 
-interface MenuItem {
+interface MenuItemInterface {
   name: string;
   to: string;
-  icon: any;
+  icon: FunctionalComponent;
   show: () => boolean;
 }
 
-const unfilteredNavigation = computed<Array<MenuItem>>(() => [
-  { name: "Dashboard", to: "/", icon: HomeIcon , show: () => true},
-  { name: "Produkte", to: "/products", icon: CubeIcon , show: () => indexStore.selectedOrganization !== null},
-  { name: "Statistiken", to: "/stats", icon: FolderIcon , show: () => indexStore.selectedOrganization !== null},
-  { name: "Zugriffe", to: "/calendar", icon: CalendarIcon , show: () => indexStore.selectedOrganization !== null},
-  { name: "Dateien", to: "/files", icon: DocumentDuplicateIcon , show: () => indexStore.selectedOrganization !== null},
-  { name: "Benachrichtigungen", to: "/notifications", icon: BellIcon , show: () => indexStore.selectedOrganization !== null},
-  { name: "Users", to: "/users", icon: UsersIcon , show: () => indexStore.selectedOrganization !== null},
-  {name: 'Organisation auswählen', to: '/organizations', icon: BuildingOfficeIcon, show: () => indexStore.selectedOrganization === null},
+const unfilteredNavigation = computed<Array<MenuItemInterface>>(() => [
+  { name: "Dashboard", to: "/", icon: HomeIcon, show: () => true },
+  {
+    name: "Produkte",
+    to: "/products",
+    icon: CubeIcon,
+    show: () => indexStore.selectedOrganization !== null,
+  },
+  {
+    name: "Statistiken",
+    to: "/stats",
+    icon: FolderIcon,
+    show: () => indexStore.selectedOrganization !== null,
+  },
+  {
+    name: "Zugriffe",
+    to: "/calendar",
+    icon: CalendarIcon,
+    show: () => indexStore.selectedOrganization !== null,
+  },
+  {
+    name: "Dateien",
+    to: "/files",
+    icon: DocumentDuplicateIcon,
+    show: () => indexStore.selectedOrganization !== null,
+  },
+  {
+    name: "Benachrichtigungen",
+    to: "/notifications",
+    icon: BellIcon,
+    show: () => indexStore.selectedOrganization !== null,
+  },
+  {
+    name: "Users",
+    to: "/users",
+    icon: UsersIcon,
+    show: () => indexStore.selectedOrganization !== null,
+  },
+  {
+    name: "Organisation auswählen",
+    to: "/organizations",
+    icon: BuildingOfficeIcon,
+    show: () => indexStore.selectedOrganization === null,
+  },
 ]);
-const navigation = computed<Array<MenuItem>>(() => unfilteredNavigation.value.filter(item => item.show()));
+const navigation = computed<Array<MenuItemInterface>>(() =>
+  unfilteredNavigation.value.filter((item) => item.show()),
+);
 const userNavigation = [
   { name: "Dein Profil", to: "/profile" },
   { name: "Abmelden", to: "/logout" },

@@ -11,7 +11,7 @@
   </button>
 </template>
 <script lang="ts" setup>
-import { BuildingOfficeIcon } from '@heroicons/vue/24/outline';
+import { BuildingOfficeIcon } from "@heroicons/vue/24/outline";
 
 const emits = defineEmits<{
   (e: "add"): void;

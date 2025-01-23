@@ -1,5 +1,8 @@
 <template>
-  <nav aria-label="Breadcrumb" class="flex border-b border-gray-200 bg-white min-h-12">
+  <nav
+    aria-label="Breadcrumb"
+    class="flex border-b border-gray-200 bg-white min-h-12"
+  >
     <ol
       class="ml-3 flex w-full max-w-screen-xl space-x-4 px-4 sm:px-6 lg:px-8"
       role="list"
@@ -37,8 +40,8 @@
 
 <script lang="ts" setup>
 import { HomeIcon } from "@heroicons/vue/20/solid";
-import {useLayoutStore} from "../stores/layout.ts";
-import {useRoute} from "vue-router";
+import { useLayoutStore } from "../stores/layout.ts";
+import { useRoute } from "vue-router";
 
 const layoutStore = useLayoutStore();
 
@@ -46,5 +49,5 @@ const route = useRoute();
 
 const isCurrent = (path: string) => {
   return route.path === path;
-}
+};
 </script>

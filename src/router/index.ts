@@ -1,7 +1,11 @@
-import {createRouter, createWebHistory, RouteLocationNormalizedGeneric} from "vue-router";
+import {
+  createRouter,
+  createWebHistory,
+  RouteLocationNormalizedGeneric,
+} from "vue-router";
 import keycloakIns from "../lib/keycloak.ts";
 import { ADMIN_URL, keycloakDisabled } from "../const.ts";
-import {useLayoutStore} from "../stores/layout.ts";
+import { useLayoutStore } from "../stores/layout.ts";
 
 // const MODE = import.meta.env.MODE;
 
@@ -12,7 +16,7 @@ export const routes = [
     beforeEnter: () => {
       const layoutStore = useLayoutStore();
       layoutStore.breadcrumbs = [];
-    }
+    },
   },
   { path: "/users", component: () => import("../view/UserListView.vue") },
   { path: "/settings", component: () => import("../view/Settings.vue") },
@@ -21,10 +25,8 @@ export const routes = [
     component: () => import("../view/Products.vue"),
     beforeEnter: () => {
       const layoutStore = useLayoutStore();
-      layoutStore.breadcrumbs = [
-        { name: 'Produkte', path: '/products' }
-      ];
-    }
+      layoutStore.breadcrumbs = [{ name: "Produkte", path: "/products" }];
+    },
   },
   {
     path: "/products/:productId/qr-code",
@@ -32,11 +34,14 @@ export const routes = [
     beforeEnter: (to: RouteLocationNormalizedGeneric) => {
       const layoutStore = useLayoutStore();
       layoutStore.breadcrumbs = [
-        { name: 'Produkte', path: '/products' },
-        { name: 'Produkt', path: '/product/' + to.params.productId },
-        { name: 'QR Code', path: '/product/' + to.params.productId + '/qr-code' }
+        { name: "Produkte", path: "/products" },
+        { name: "Produkt", path: "/product/" + to.params.productId },
+        {
+          name: "QR Code",
+          path: "/product/" + to.params.productId + "/qr-code",
+        },
       ];
-    }
+    },
   },
   {
     path: "/products/:productId",
@@ -44,10 +49,10 @@ export const routes = [
     beforeEnter: (to: RouteLocationNormalizedGeneric) => {
       const layoutStore = useLayoutStore();
       layoutStore.breadcrumbs = [
-        { name: 'Produkte', path: '/products' },
-        { name: 'Produkt', path: '/product/' + to.params.productId }
+        { name: "Produkte", path: "/products" },
+        { name: "Produkt", path: "/product/" + to.params.productId },
       ];
-    }
+    },
   },
   {
     path: "/notifications",
@@ -64,9 +69,9 @@ export const routes = [
     beforeEnter: () => {
       const layoutStore = useLayoutStore();
       layoutStore.breadcrumbs = [
-        { name: 'Organisationen', path: '/organizations' },
+        { name: "Organisationen", path: "/organizations" },
       ];
-    }
+    },
   },
   {
     path: "/organizations/create",
@@ -74,9 +79,9 @@ export const routes = [
     beforeEnter: () => {
       const layoutStore = useLayoutStore();
       layoutStore.breadcrumbs = [
-        { name: 'Organisationen', path: '/organizations' },
+        { name: "Organisationen", path: "/organizations" },
       ];
-    }
+    },
   },
 ];
 
@@ -86,8 +91,7 @@ export const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  to.params;
-  from.params;
+  console.debug(to, from);
   const layoutStore = useLayoutStore();
   layoutStore.isPageLoading = true;
   if (keycloakDisabled) {
