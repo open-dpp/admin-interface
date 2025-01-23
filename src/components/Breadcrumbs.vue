@@ -1,5 +1,5 @@
 <template>
-  <nav aria-label="Breadcrumb" class="flex border-b border-gray-200 bg-white">
+  <nav aria-label="Breadcrumb" class="flex border-b border-gray-200 bg-white min-h-12">
     <ol
       class="ml-3 flex w-full max-w-screen-xl space-x-4 px-4 sm:px-6 lg:px-8"
       role="list"
@@ -12,7 +12,7 @@
           </router-link>
         </div>
       </li>
-      <li v-for="page in pages" :key="page.name" class="flex">
+      <li v-for="page in layoutStore.breadcrumbs" :key="page.name" class="flex">
         <div class="flex items-center">
           <svg
             aria-hidden="true"
@@ -24,8 +24,8 @@
             <path d="M.293 0l22 22-22 22h1.414l22-22-22-22H.293z" />
           </svg>
           <router-link
-            :aria-current="page.current ? 'page' : undefined"
-            :to="page.to"
+            :aria-current="isCurrent(page.path) ? 'page' : undefined"
+            :to="page.path"
             class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700"
             >{{ page.name }}
           </router-link>
@@ -37,6 +37,14 @@
 
 <script lang="ts" setup>
 import { HomeIcon } from "@heroicons/vue/20/solid";
+import {useLayoutStore} from "../stores/layout.ts";
+import {useRoute} from "vue-router";
 
-const pages = [{ name: "Produkte", to: "/products", current: false }];
+const layoutStore = useLayoutStore();
+
+const route = useRoute();
+
+const isCurrent = (path: string) => {
+  return route.path === path;
+}
 </script>

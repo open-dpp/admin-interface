@@ -83,33 +83,33 @@
                         </li>
                       </ul>
                     </li>
-                    <li>
+                    <li v-if="layoutStore.quickAccessItems.length > 0">
                       <div
                         class="text-xs font-semibold leading-6 text-gray-400"
                       >
                         Schnellzugriff
                       </div>
                       <ul class="-mx-2 mt-2 space-y-1" role="list">
-                        <li v-for="team in teams" :key="team.name">
+                        <li v-for="item in layoutStore.quickAccessItems" :key="item.name">
                           <router-link
                             :class="[
-                              team.current
+                              item.path === route.path
                                 ? 'bg-gray-50 text-GJDarkGreen'
                                 : 'text-gray-700 hover:bg-gray-50 hover:text-GJDarkGreen',
                               'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
                             ]"
-                            :to="team.to"
+                            :to="item.path"
                           >
                             <span
                               :class="[
-                                team.current
+                                item.path === route.path
                                   ? 'border-GJDarkGreen text-GJDarkGreen'
                                   : 'border-gray-200 text-gray-400 group-hover:border-GJDarkGreen group-hover:text-GJDarkGreen',
                                 'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border bg-white text-[0.625rem] font-medium',
                               ]"
-                              >{{ team.initial }}</span
+                              >{{ item.name.substring(0, 2).toLocaleUpperCase() }}</span
                             >
-                            <span class="truncate">{{ team.name }}</span>
+                            <span class="truncate">{{ item.name }}</span>
                           </router-link>
                         </li>
                       </ul>
@@ -175,31 +175,31 @@
                 </li>
               </ul>
             </li>
-            <li>
+            <li v-if="layoutStore.quickAccessItems.length > 0">
               <div class="text-xs font-semibold leading-6 text-gray-400">
                 Schnellzugriff
               </div>
               <ul class="-mx-2 mt-2 space-y-1" role="list">
-                <li v-for="team in teams" :key="team.name">
+                <li v-for="item in layoutStore.quickAccessItems" :key="item.name">
                   <router-link
                     :class="[
-                      team.current
+                      item.path === route.path
                         ? 'bg-gray-50 text-GJDarkGreen'
                         : 'text-gray-700 hover:bg-gray-50 hover:text-GJDarkGreen',
                       'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
                     ]"
-                    :to="team.to"
+                    :to="item.path"
                   >
                     <span
                       :class="[
-                        team.current
+                        item.path === route.path
                           ? 'border-GJDarkGreen text-GJDarkGreen'
                           : 'border-gray-200 text-gray-400 group-hover:border-GJDarkGreen group-hover:text-GJDarkGreen',
                         'flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border bg-white text-[0.625rem] font-medium',
                       ]"
-                      >{{ team.initial }}</span
+                      >{{ item.name.substring(0, 2).toLocaleUpperCase() }}</span
                     >
-                    <span class="truncate">{{ team.name }}</span>
+                    <span class="truncate">{{ item.name }}</span>
                   </router-link>
                 </li>
               </ul>
@@ -323,10 +323,17 @@
         </div>
       </div>
 
-      <main>
+      <main class="h-[calc(100vh-64px)]">
         <Breadcrumbs class="mb-10" />
-        <div class="px-4 sm:px-6 lg:px-8">
-          <router-view />
+        <div class="h-[calc(100%-88px)] px-4 sm:px-6 lg:px-8">
+          <router-view v-slot="{ Component }">
+            <transition name="fade" mode="out-in" appear :duration="75">
+              <div class="w-full min-h-full flex items-center justify-items-center" v-if="layoutStore.isPageLoading">
+                <RingLoader class="mx-auto" />
+              </div>
+              <component v-else :is="Component" />
+            </transition>
+          </router-view>
         </div>
       </main>
     </div>
@@ -364,9 +371,12 @@ import { useRoute } from "vue-router";
 import Breadcrumbs from "../Breadcrumbs.vue";
 import {useIndexStore} from "../../stores";
 import SelectOrganization from "../organizations/SelectOrganization.vue";
+import RingLoader from "../RingLoader.vue";
+import {useLayoutStore} from "../../stores/layout.ts";
 
 const route = useRoute();
 const indexStore = useIndexStore();
+const layoutStore = useLayoutStore();
 
 interface MenuItem {
   name: string;
@@ -383,14 +393,9 @@ const unfilteredNavigation = computed<Array<MenuItem>>(() => [
   { name: "Dateien", to: "/files", icon: DocumentDuplicateIcon , show: () => indexStore.selectedOrganization !== null},
   { name: "Benachrichtigungen", to: "/notifications", icon: BellIcon , show: () => indexStore.selectedOrganization !== null},
   { name: "Users", to: "/users", icon: UsersIcon , show: () => indexStore.selectedOrganization !== null},
-  {name: 'Organisation auswählen', to: '/organizations/select', icon: BuildingOfficeIcon, show: () => indexStore.selectedOrganization === null},
+  {name: 'Organisation auswählen', to: '/organizations', icon: BuildingOfficeIcon, show: () => indexStore.selectedOrganization === null},
 ]);
 const navigation = computed<Array<MenuItem>>(() => unfilteredNavigation.value.filter(item => item.show()));
-const teams = [
-  { id: 1, name: "Produkt A", to: "/", initial: "PA", current: false },
-  { id: 1, name: "Produkt B", to: "/", initial: "PB", current: true },
-  { id: 3, name: "Produkt C", to: "/", initial: "PC", current: false },
-];
 const userNavigation = [
   { name: "Dein Profil", to: "/profile" },
   { name: "Abmelden", to: "/logout" },

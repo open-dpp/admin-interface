@@ -1,21 +1,53 @@
-import { createRouter, createWebHistory } from "vue-router";
+import {createRouter, createWebHistory, RouteLocationNormalizedGeneric} from "vue-router";
 import keycloakIns from "../lib/keycloak.ts";
 import { ADMIN_URL, keycloakDisabled } from "../const.ts";
+import {useLayoutStore} from "../stores/layout.ts";
 
 // const MODE = import.meta.env.MODE;
 
 export const routes = [
-  { path: "/", component: () => import("../view/Dashboard.vue") },
+  {
+    path: "/",
+    component: () => import("../view/Dashboard.vue"),
+    beforeEnter: () => {
+      const layoutStore = useLayoutStore();
+      layoutStore.breadcrumbs = [];
+    }
+  },
   { path: "/users", component: () => import("../view/UserListView.vue") },
   { path: "/settings", component: () => import("../view/Settings.vue") },
-  { path: "/products", component: () => import("../view/Products.vue") },
+  {
+    path: "/products",
+    component: () => import("../view/Products.vue"),
+    beforeEnter: () => {
+      const layoutStore = useLayoutStore();
+      layoutStore.breadcrumbs = [
+        { name: 'Produkte', path: '/products' }
+      ];
+    }
+  },
   {
     path: "/products/:productId/qr-code",
     component: () => import("../view/products/ProductQrCode.vue"),
+    beforeEnter: (to: RouteLocationNormalizedGeneric) => {
+      const layoutStore = useLayoutStore();
+      layoutStore.breadcrumbs = [
+        { name: 'Produkte', path: '/products' },
+        { name: 'Produkt', path: '/product/' + to.params.productId },
+        { name: 'QR Code', path: '/product/' + to.params.productId + '/qr-code' }
+      ];
+    }
   },
   {
     path: "/products/:productId",
     component: () => import("../view/products/Product.vue"),
+    beforeEnter: (to: RouteLocationNormalizedGeneric) => {
+      const layoutStore = useLayoutStore();
+      layoutStore.breadcrumbs = [
+        { name: 'Produkte', path: '/products' },
+        { name: 'Produkt', path: '/product/' + to.params.productId }
+      ];
+    }
   },
   {
     path: "/notifications",
@@ -26,7 +58,26 @@ export const routes = [
   { path: "/stats", component: () => import("../view/Stats.vue") },
   { path: "/profile", component: () => import("../view/Profile.vue") },
   { path: "/logout", component: () => import("../view/Logout.vue") },
-    {path: '/organizations/select', component: () => import('../view/organizations/SelectOrganizationView.vue')},
+  {
+    path: "/organizations",
+    component: () => import("../view/organizations/SelectOrganizationView.vue"),
+    beforeEnter: () => {
+      const layoutStore = useLayoutStore();
+      layoutStore.breadcrumbs = [
+        { name: 'Organisationen', path: '/organizations' },
+      ];
+    }
+  },
+  {
+    path: "/organizations/create",
+    component: () => import("../view/organizations/CreateOrganizationView.vue"),
+    beforeEnter: () => {
+      const layoutStore = useLayoutStore();
+      layoutStore.breadcrumbs = [
+        { name: 'Organisationen', path: '/organizations' },
+      ];
+    }
+  },
 ];
 
 export const router = createRouter({
@@ -35,7 +86,10 @@ export const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  console.debug(to, from);
+  to.params;
+  from.params;
+  const layoutStore = useLayoutStore();
+  layoutStore.isPageLoading = true;
   if (keycloakDisabled) {
     next();
   }
@@ -47,4 +101,10 @@ router.beforeEach(async (to, from, next) => {
   } else {
     next();
   }
+});
+
+router.afterEach(async () => {
+  const layoutStore = useLayoutStore();
+  // await new Promise((resolve) => setTimeout(resolve, 75));
+  layoutStore.isPageLoading = false;
 });
