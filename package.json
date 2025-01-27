@@ -12,6 +12,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@formkit/addons": "^1.6.9",
+    "@formkit/icons": "^1.6.9",
+    "@formkit/vue": "^1.6.9",
     "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.1.5",
     "@tailwindcss/aspect-ratio": "^0.4.2",

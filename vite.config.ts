@@ -10,5 +10,5 @@ export default defineConfig({
     exclude: [...configDefaults.exclude],
     setupFiles: "./setupTest.ts",
     environment: "jsdom",
-  },
+  }
 });
