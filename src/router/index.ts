@@ -57,6 +57,17 @@ export const routes = [
   {
     path: "/models/:modelId/items",
     component: () => import("../view/ItemView.vue"),
+    beforeEnter: (to: RouteLocationNormalizedGeneric) => {
+      const layoutStore = useLayoutStore();
+      layoutStore.breadcrumbs = [
+        { name: "Produkte", path: "/products/" },
+        { name: "Produkt", path: "/products/" + to.params.modelId },
+        {
+          name: "Artikel",
+          path: "/models/" + to.params.modelId + "/items",
+        },
+      ];
+    },
   },
   {
     path: "/notifications",
