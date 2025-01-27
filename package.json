@@ -9,7 +9,8 @@
     "check-ts": "vue-tsc --noEmit",
     "lint": "eslint --fix src",
     "test": "vitest --run src/",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cy": "env KEYCLOAK_DISABLED=\"true\" npx cypress open"
   },
   "dependencies": {
     "@formkit/addons": "^1.6.9",
@@ -17,6 +18,7 @@
     "@formkit/vue": "^1.6.9",
     "@headlessui/vue": "^1.7.23",
     "@heroicons/vue": "^2.1.5",
+    "@open-dpp/api-client": "^1.0.5",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/forms": "^0.5.9",
     "@types/qrcode": "^1.5.5",
@@ -34,6 +36,7 @@
     "@testing-library/vue": "^8.1.0",
     "@vitejs/plugin-vue": "^5.1.2",
     "autoprefixer": "^10.4.20",
+    "cypress": "^14.0.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
