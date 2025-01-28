@@ -106,7 +106,6 @@ export const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  console.debug(to, from);
   const layoutStore = useLayoutStore();
   layoutStore.isPageLoading = true;
   if (keycloakDisabled) {

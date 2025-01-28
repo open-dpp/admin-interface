@@ -10,7 +10,7 @@
     "lint": "eslint --fix src",
     "test": "vitest --run src/",
     "preview": "vite preview",
-    "cy": "env KEYCLOAK_DISABLED=\"true\" npx cypress open"
+    "cy": "KEYCLOAK_DISABLED=\"true\" cypress open"
   },
   "dependencies": {
     "@formkit/addons": "^1.6.9",

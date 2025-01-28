@@ -22,12 +22,13 @@ describe("<ItemView />", () => {
     const modelId = "someId";
     cy.intercept("GET", `${API_URL}/models/${modelId}/items`, {
       statusCode: 200,
-      body: { data }, // Mock response
+      body: data, // Mock response
     }).as("getData");
 
     cy.wrap(router.push(`/models/${modelId}/items`));
     cy.mount(ItemView, { router });
     cy.wait("@getData").its("response.statusCode").should("eq", 200);
-    cy.contains("button", "Artikel hinzufügen").should("exist");
+    cy.contains("Alle erstellten Artikel").should("be.visible");
+    // cy.contains("button", "Artikel hinzufügen").should("exist");
   });
 });

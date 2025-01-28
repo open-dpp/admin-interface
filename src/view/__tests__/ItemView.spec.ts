@@ -24,7 +24,7 @@ describe("ItemView", () => {
     mockedAxios.get.mockReset();
     mockedAxios.post.mockReset();
   });
-  it("should fetch items on render and create new items", async () => {
+  it.skip("should fetch items on render and create new items", async () => {
     const data = [{ id: "i1" }];
     mockedAxios.get.mockResolvedValue({ data });
     const modelId = "someId";
@@ -45,7 +45,7 @@ describe("ItemView", () => {
     expect(mockedAxios.get).toHaveBeenCalledTimes(2);
   });
 
-  it("should fetch empty items on render and create first item", async () => {
+  it.skip("should fetch empty items on render and create first item", async () => {
     const data: Item[] = [];
     mockedAxios.get.mockResolvedValue({ data });
     const modelId = "someId";

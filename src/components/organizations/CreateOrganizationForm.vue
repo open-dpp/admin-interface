@@ -52,7 +52,6 @@ const create = async (fields: {
     };
   };
 }) => {
-  console.log(fields);
   const responseData = await organizationStore.createOrganization({
     name: fields.stepper.generalInfo.name,
   });

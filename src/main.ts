@@ -15,10 +15,7 @@ import "@formkit/addons/css/multistep";
 import { createAutoAnimatePlugin } from "@formkit/addons";
 import { useOrganizationsStore } from "./stores/organizations.ts";
 
-const MODE = import.meta.env.MODE;
-
 const pinia = createPinia();
-console.log(MODE);
 
 const startApp = async () => {
   const app = createApp(App).use(pinia);
