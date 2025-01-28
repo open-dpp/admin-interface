@@ -152,7 +152,7 @@
 
 <script lang="ts" setup>
 import { computed, ref } from "vue";
-import Item from "../../types/Item.ts";
+import Item from "../../types/Item";
 
 const props = defineProps<{
   items: Item[];

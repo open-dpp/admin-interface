@@ -1,6 +1,6 @@
 import Keycloak, { KeycloakInitOptions } from "keycloak-js";
 import { setAxiosAuthHeader } from "./axios";
-import { API_URL, KEYCLOAK_URL } from "../const.ts";
+import { API_URL, KEYCLOAK_URL } from "../const";
 
 export const keycloakIns = new Keycloak({
   url: KEYCLOAK_URL,

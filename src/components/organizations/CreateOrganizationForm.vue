@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { reset } from "@formkit/core";
-import { useOrganizationsStore } from "../../stores/organizations.ts";
+import { useOrganizationsStore } from "../../stores/organizations";
 import { useIndexStore } from "../../stores";
 
 const indexStore = useIndexStore();

@@ -111,8 +111,8 @@
 import { PaperClipIcon } from "@heroicons/vue/20/solid";
 import { useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
-import Product from "../../types/Product.ts";
-import axiosIns from "../../lib/axios.ts";
+import Product from "../../types/Product";
+import axiosIns from "../../lib/axios";
 
 const route = useRoute();
 

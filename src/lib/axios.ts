@@ -1,6 +1,6 @@
 import axios from "axios";
 import { logout } from "./keycloak";
-import { API_URL } from "../const.ts";
+import { API_URL } from "../const";
 
 const axiosIns = axios.create({
   baseURL: API_URL,

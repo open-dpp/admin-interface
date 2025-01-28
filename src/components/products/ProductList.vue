@@ -160,7 +160,7 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue";
-import { useProductsStore } from "../../stores/products.ts";
+import { useProductsStore } from "../../stores/products";
 
 const productStore = useProductsStore();
 

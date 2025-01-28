@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import axios from "../lib/axios.ts";
+import axios from "../lib/axios";
 
 interface Organization {
   id: string;

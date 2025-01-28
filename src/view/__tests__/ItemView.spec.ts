@@ -3,8 +3,8 @@ import { fireEvent, render, screen } from "@testing-library/vue";
 import ItemView from "../ItemView.vue";
 import { createRouter, createWebHistory } from "vue-router";
 import { routes } from "../../router";
-import axiosIns from "../../lib/axios.ts";
-import Item from "../../types/Item.ts";
+import axiosIns from "../../lib/axios";
+import Item from "../../types/Item";
 const router = createRouter({
   history: createWebHistory(),
   routes: routes,

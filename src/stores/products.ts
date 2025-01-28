@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import Product from "../types/Product.ts";
-import axios from "../lib/axios.ts";
+import Product from "../types/Product";
+import axios from "../lib/axios";
 
 export const useProductsStore = defineStore("products", () => {
   const products = ref<Product[]>([]);

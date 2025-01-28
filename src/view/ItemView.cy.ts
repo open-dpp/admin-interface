@@ -1,7 +1,7 @@
 import ItemView from "./ItemView.vue";
 import { createRouter, createMemoryHistory } from "vue-router";
 
-import { API_URL } from "../const.ts";
+import { API_URL } from "../const";
 
 const testRoutes = [
   {

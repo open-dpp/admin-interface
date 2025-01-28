@@ -48,8 +48,8 @@
 <script lang="ts" setup>
 import FormSidebar from "./FormSidebar.vue";
 import { ref } from "vue";
-import axiosIns from "../../lib/axios.ts";
-import Product from "../../types/Product.ts";
+import axiosIns from "../../lib/axios";
+import Product from "../../types/Product";
 
 const showSidebar = defineModel<boolean>();
 

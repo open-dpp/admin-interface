@@ -3,9 +3,9 @@ import {
   createWebHistory,
   RouteLocationNormalizedGeneric,
 } from "vue-router";
-import keycloakIns from "../lib/keycloak.ts";
-import { ADMIN_URL, keycloakDisabled } from "../const.ts";
-import { useLayoutStore } from "../stores/layout.ts";
+import keycloakIns from "../lib/keycloak";
+import { ADMIN_URL, keycloakDisabled } from "../const";
+import { useLayoutStore } from "../stores/layout";
 
 // const MODE = import.meta.env.MODE;
 

@@ -10,8 +10,8 @@
 <script lang="ts" setup>
 import { useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
-import axiosIns from "../lib/axios.ts";
-import Item from "../types/Item.ts";
+import axiosIns from "../lib/axios";
+import Item from "../types/Item";
 import ItemList from "../components/products/ItemList.vue";
 import EmptyState from "../components/products/EmptyState.vue";
 

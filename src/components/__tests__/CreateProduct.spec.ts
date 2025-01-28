@@ -1,9 +1,9 @@
 import { describe, expect, Mocked, test, vi } from "vitest";
-import axiosIns from "../../lib/axios.ts";
+import axiosIns from "../../lib/axios";
 import { fireEvent, render, screen } from "@testing-library/vue";
 import CreateProduct from "../products/CreateProduct.vue";
 
-vi.mock("../../lib/axios.ts", () => ({
+vi.mock("../../lib/axios", () => ({
   default: {
     post: vi.fn(),
   },

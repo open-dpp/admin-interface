@@ -17,8 +17,8 @@
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { toCanvas } from "qrcode";
-import axiosIns from "../../lib/axios.ts";
-import { VIEW_ROOT_URL } from "../../const.ts";
+import axiosIns from "../../lib/axios";
+import { VIEW_ROOT_URL } from "../../const";
 
 const route = useRoute();
 

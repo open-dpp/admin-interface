@@ -24,7 +24,7 @@
 import ProductList from "../components/products/ProductList.vue";
 import CreateProduct from "../components/products/CreateProduct.vue";
 import { onMounted, ref } from "vue";
-import { useProductsStore } from "../stores/products.ts";
+import { useProductsStore } from "../stores/products";
 import EmptyState from "../components/products/EmptyState.vue";
 import UpdateProduct from "../components/products/UpdateProduct.vue";
 
