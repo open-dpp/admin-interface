@@ -31,6 +31,7 @@
     "vue-router": "^4.4.5"
   },
   "devDependencies": {
+    "@cypress/vue": "^6.0.2",
     "@eslint/js": "^9.18.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/vue": "^8.1.0",

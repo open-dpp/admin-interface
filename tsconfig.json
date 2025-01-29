@@ -25,6 +25,7 @@
     "baseUrl": ".",
     "types": [
       "cypress",
+      "@cypress/vue",
       "vite/client"
     ]
   },

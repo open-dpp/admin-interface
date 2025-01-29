@@ -22,17 +22,37 @@ import { mount } from "cypress/vue";
 // your custom command.
 // Alternatively, can be defined in cypress/support/component.d.ts
 // with a <reference path="./component" /> at the top of your spec.
+import { createPinia, Pinia, setActivePinia } from "pinia";
 
-Cypress.Commands.add("mount", (component, options = {}) => {
-  // Setup options object
+let pinia: Pinia;
+
+// Run this code before each *test*.
+beforeEach(() => {
+  // New Pinia
+  pinia = createPinia();
+
+  // Set current Pinia instance
+  setActivePinia(pinia);
+});
+
+Cypress.Commands.add("mountWithPinia", (component, options = {}) => {
   options.global = options.global || {};
   options.global.plugins = options.global.plugins || [];
-  // Add router plugin
-  options.global.plugins.push({
-    install(app) {
-      app.use(options.router);
+
+  if (options.router) {
+    options.global.plugins.push({
+      install(app) {
+        app.use(options.router);
+      },
+    });
+  }
+
+  return mount(component, {
+    ...options,
+    global: {
+      ...options?.global,
+      plugins: [...options.global.plugins, pinia],
     },
   });
-
-  return mount(component, options);
 });
+Cypress.Commands.add("mount", mount);
