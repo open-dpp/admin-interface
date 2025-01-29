@@ -40,7 +40,7 @@
 
 <script lang="ts" setup>
 import { HomeIcon } from "@heroicons/vue/20/solid";
-import { useLayoutStore } from "../stores/layout.ts";
+import { useLayoutStore } from "../stores/layout";
 import { useRoute } from "vue-router";
 
 const layoutStore = useLayoutStore();

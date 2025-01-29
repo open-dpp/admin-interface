@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { LAST_SELECTED_ORGANIZATION_ID_KEY } from "../const.ts";
+import { LAST_SELECTED_ORGANIZATION_ID_KEY } from "../const";
 
 export const useIndexStore = defineStore("index", () => {
   const selectedOrganization = ref<string | null>(

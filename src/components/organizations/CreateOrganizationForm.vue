@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { reset } from "@formkit/core";
-import { useOrganizationsStore } from "../../stores/organizations.ts";
+import { useOrganizationsStore } from "../../stores/organizations";
 import { useIndexStore } from "../../stores";
 
 const indexStore = useIndexStore();
@@ -52,7 +52,6 @@ const create = async (fields: {
     };
   };
 }) => {
-  console.log(fields);
   const responseData = await organizationStore.createOrganization({
     name: fields.stepper.generalInfo.name,
   });

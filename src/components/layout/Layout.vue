@@ -384,7 +384,7 @@ import Breadcrumbs from "../Breadcrumbs.vue";
 import { useIndexStore } from "../../stores";
 import SelectOrganization from "../organizations/SelectOrganization.vue";
 import RingLoader from "../RingLoader.vue";
-import { useLayoutStore } from "../../stores/layout.ts";
+import { useLayoutStore } from "../../stores/layout";
 
 const route = useRoute();
 const indexStore = useIndexStore();

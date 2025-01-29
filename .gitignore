@@ -5,3 +5,6 @@
 node_modules
 dist
 
+# dotenv files
+.env
+

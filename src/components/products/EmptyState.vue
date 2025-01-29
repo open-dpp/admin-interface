@@ -18,12 +18,16 @@
         stroke-width="2"
       />
     </svg>
-    <span class="mt-2 block text-sm font-semibold text-gray-900"
-      >Neues Produkt hinzufügen</span
-    >
+    <span class="mt-2 block text-sm font-semibold text-gray-900">{{
+      props.buttonLabel
+    }}</span>
   </button>
 </template>
 <script lang="ts" setup>
+const props = defineProps<{
+  buttonLabel: string;
+}>();
+
 const emits = defineEmits<{
   (e: "add"): void;
 }>();

@@ -108,7 +108,7 @@ import {
   PlusCircleIcon,
   ListBulletIcon,
 } from "@heroicons/vue/20/solid";
-import { useOrganizationsStore } from "../../stores/organizations.ts";
+import { useOrganizationsStore } from "../../stores/organizations";
 import { useIndexStore } from "../../stores";
 import { useRouter } from "vue-router";
 import { computed } from "vue";

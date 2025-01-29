@@ -1,4 +1,4 @@
-const keycloakDisabled = false;
+const keycloakDisabled = import.meta.env.VITE_KEYCLOAK_DISABLED === "true";
 
 export { keycloakDisabled };
 export const KEYCLOAK_URL = import.meta.env.VITE_KEYCLOAK_ROOT as string;

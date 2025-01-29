@@ -3,9 +3,9 @@ import {
   createWebHistory,
   RouteLocationNormalizedGeneric,
 } from "vue-router";
-import keycloakIns from "../lib/keycloak.ts";
-import { ADMIN_URL, keycloakDisabled } from "../const.ts";
-import { useLayoutStore } from "../stores/layout.ts";
+import keycloakIns from "../lib/keycloak";
+import { ADMIN_URL, keycloakDisabled } from "../const";
+import { useLayoutStore } from "../stores/layout";
 
 // const MODE = import.meta.env.MODE;
 
@@ -55,6 +55,21 @@ export const routes = [
     },
   },
   {
+    path: "/models/:modelId/items",
+    component: () => import("../view/ItemView.vue"),
+    beforeEnter: (to: RouteLocationNormalizedGeneric) => {
+      const layoutStore = useLayoutStore();
+      layoutStore.breadcrumbs = [
+        { name: "Produkte", path: "/products/" },
+        { name: "Produkt", path: "/products/" + to.params.modelId },
+        {
+          name: "Artikel",
+          path: "/models/" + to.params.modelId + "/items",
+        },
+      ];
+    },
+  },
+  {
     path: "/notifications",
     component: () => import("../view/Notifications.vue"),
   },
@@ -91,7 +106,6 @@ export const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  console.debug(to, from);
   const layoutStore = useLayoutStore();
   layoutStore.isPageLoading = true;
   if (keycloakDisabled) {
@@ -99,7 +113,7 @@ router.beforeEach(async (to, from, next) => {
   }
   if (!keycloakIns.authenticated) {
     await keycloakIns.login({
-      redirectUri: ADMIN_URL,
+      redirectUri: ADMIN_URL + to.path,
     });
     next();
   } else {
