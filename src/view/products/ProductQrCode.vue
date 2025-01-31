@@ -29,7 +29,7 @@ onMounted(async () => {
   const response = await axiosIns.get(`/products/${route.params.productId}`);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const product = response.data as any;
-  url.value = `${VIEW_ROOT_URL}/${product.permalinks[0].uuid}`;
+  url.value = `${VIEW_ROOT_URL}/${product.uniqueProductIdentifiers[0].uuid}`;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   toCanvas(canvas.value, url.value, (error: any) => {
     console.log(error);
