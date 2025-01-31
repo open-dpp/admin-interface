@@ -35,7 +35,7 @@ export const routes = [
       const layoutStore = useLayoutStore();
       layoutStore.breadcrumbs = [
         { name: "Produkte", path: "/products" },
-        { name: "Produkt", path: "/product/" + to.params.productId },
+        { name: "Produkt", path: "/products/" + to.params.productId },
         {
           name: "QR Code",
           path: "/product/" + to.params.productId + "/qr-code",
