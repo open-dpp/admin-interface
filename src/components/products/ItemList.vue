@@ -61,38 +61,10 @@
                   >
                     ID
                   </th>
-                  <!--                  <th-->
-                  <!--                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"-->
-                  <!--                    scope="col"-->
-                  <!--                  >-->
-                  <!--                    Name-->
-                  <!--                  </th>-->
-                  <!--                  <th-->
-                  <!--                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"-->
-                  <!--                    scope="col"-->
-                  <!--                  >-->
-                  <!--                    Beschreibung-->
-                  <!--                  </th>-->
-                  <!--                  <th-->
-                  <!--                    class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"-->
-                  <!--                    scope="col"-->
-                  <!--                  >-->
-                  <!--                    Erstellt am-->
-                  <!--                  </th>-->
-                  <!--                  <th class="relative py-3.5 pl-3 pr-4 sm:pr-3" scope="col">-->
-                  <!--                    <span class="sr-only">Edit</span>-->
-                  <!--                  </th>-->
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white">
                 <tr v-for="item in props.items" :key="item.id">
-                  <!--                  :key="product.id"-->
-                  <!--                  @click="emits('edit', product.id)"-->
-                  <!--                  :class="[-->
-                  <!--                    selectedProducts.includes(product.id) && 'bg-gray-50',-->
-                  <!--                    'cursor-pointer',-->
-                  <!--                  ]"-->
-                  <!--                >-->
                   <td class="relative px-7 sm:w-12 sm:px-6">
                     <div
                       v-if="selectedItems.includes(item.id)"
@@ -115,31 +87,15 @@
                   >
                     {{ item.id }}
                   </td>
-                  <!--                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">-->
-                  <!--                    {{ product.name }}-->
-                  <!--                  </td>-->
-                  <!--                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">-->
-                  <!--                    {{ product.description }}-->
-                  <!--                  </td>-->
-                  <!--                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">-->
-                  <!--                    {{ product.createdAt }}-->
-                  <!--                  </td>-->
-                  <!--                  <td-->
-                  <!--                    class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3 gap-4 flex flex-row"-->
-                  <!--                  >-->
-                  <!--                    <router-link-->
-                  <!--                      :to="`/products/${product.id}`"-->
-                  <!--                      class="text-indigo-600 hover:text-indigo-900"-->
-                  <!--                    >-->
-                  <!--                      Details<span class="sr-only">, {{ product.id }}</span>-->
-                  <!--                    </router-link>-->
-                  <!--                    <router-link-->
-                  <!--                      :to="`/products/${product.id}/qr-code`"-->
-                  <!--                      class="text-indigo-600 hover:text-indigo-900"-->
-                  <!--                    >-->
-                  <!--                      QR-Code<span class="sr-only">, {{ product.id }}</span>-->
-                  <!--                    </router-link>-->
-                  <!--                  </td>-->
+                  <td>
+                    <router-link
+                      :to="`items/${item.id}/qr-code`"
+                      class="text-indigo-600 hover:text-indigo-900"
+                      append
+                    >
+                      QR-Code<span class="sr-only">, {{ item.id }}</span>
+                    </router-link>
+                  </td>
                 </tr>
               </tbody>
             </table>

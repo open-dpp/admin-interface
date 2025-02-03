@@ -1,6 +1,13 @@
 import { describe, expect, test } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/vue";
 import ItemList from "../products/ItemList.vue";
+import { createMemoryHistory, createRouter } from "vue-router";
+import { routes } from "../../router";
+
+const router = createRouter({
+  history: createMemoryHistory(),
+  routes: routes,
+});
 
 describe("ItemList.vue", () => {
   test("should render items", async () => {
@@ -8,6 +15,9 @@ describe("ItemList.vue", () => {
     render(ItemList, {
       props: {
         items,
+      },
+      global: {
+        plugins: [router],
       },
     });
     expect(screen.getByText("Artikel")).toBeTruthy();
@@ -34,6 +44,9 @@ describe("ItemList.vue", () => {
     const { emitted } = render(ItemList, {
       props: {
         items,
+      },
+      global: {
+        plugins: [router],
       },
     });
     const createButton = screen.getByRole("button", {

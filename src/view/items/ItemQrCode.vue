@@ -13,9 +13,11 @@ const route = useRoute();
 const url = ref<string>();
 
 onMounted(async () => {
-  const response = await axiosIns.get(`/products/${route.params.productId}`);
+  const response = await axiosIns.get(
+    `/models/${route.params.modelId}/items/${route.params.itemId}`,
+  );
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const product = response.data as any;
-  url.value = `${VIEW_ROOT_URL}/${product.uniqueProductIdentifiers[0].uuid}`;
+  const item = response.data as any;
+  url.value = `${VIEW_ROOT_URL}/${item.uniqueProductIdentifiers[0].uuid}`;
 });
 </script>

@@ -56,15 +56,34 @@ export const routes = [
   },
   {
     path: "/models/:modelId/items",
-    component: () => import("../view/ItemView.vue"),
+    component: () => import("../view/items/ItemView.vue"),
     beforeEnter: (to: RouteLocationNormalizedGeneric) => {
       const layoutStore = useLayoutStore();
       layoutStore.breadcrumbs = [
         { name: "Produkte", path: "/products/" },
         { name: "Produkt", path: "/products/" + to.params.modelId },
         {
-          name: "Artikel",
+          name: "Artikel Liste",
           path: "/models/" + to.params.modelId + "/items",
+        },
+      ];
+    },
+  },
+  {
+    path: "/models/:modelId/items/:itemId/qr-code",
+    component: () => import("../view/items/ItemQrCode.vue"),
+    beforeEnter: (to: RouteLocationNormalizedGeneric) => {
+      const layoutStore = useLayoutStore();
+      layoutStore.breadcrumbs = [
+        { name: "Produkte", path: "/products/" },
+        { name: "Produkt", path: "/products/" + to.params.modelId },
+        {
+          name: "Artikel Liste",
+          path: "/models/" + to.params.modelId + "/items",
+        },
+        {
+          name: "Artikel",
+          path: `/models/${to.params.modelId}/items/${to.params.itemId}`,
         },
       ];
     },

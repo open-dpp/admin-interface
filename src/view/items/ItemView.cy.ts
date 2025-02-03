@@ -1,9 +1,9 @@
 import ItemView from "./ItemView.vue";
 import { createMemoryHistory, createRouter } from "vue-router";
 
-import { API_URL } from "../const";
-import Item from "../types/Item";
-import { routes } from "../router";
+import { API_URL } from "../../const";
+import Item from "../../types/Item";
+import { routes } from "../../router";
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -29,6 +29,7 @@ describe("<ItemView />", () => {
     cy.mountWithPinia(ItemView, { router });
     cy.wait("@getData").its("response.statusCode").should("eq", 200);
     cy.contains("Alle erstellten Artikel").should("be.visible");
+    cy.contains("QR-Code").should("be.visible");
     cy.contains("button", "Artikel hinzufügen").click();
 
     cy.wait("@createData").its("response.statusCode").should("eq", 201);

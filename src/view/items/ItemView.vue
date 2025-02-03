@@ -10,10 +10,10 @@
 <script lang="ts" setup>
 import { useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
-import axiosIns from "../lib/axios";
-import Item from "../types/Item";
-import ItemList from "../components/products/ItemList.vue";
-import EmptyState from "../components/products/EmptyState.vue";
+import axiosIns from "../../lib/axios";
+import Item from "../../types/Item";
+import ItemList from "../../components/products/ItemList.vue";
+import EmptyState from "../../components/products/EmptyState.vue";
 
 const route = useRoute();
 const buttonLabel = "Neuen Artikel hinzufügen";
