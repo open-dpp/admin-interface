@@ -1,7 +1,7 @@
 import { describe, expect, Mocked, test, vi } from "vitest";
 import axiosIns from "../../lib/axios";
 import { fireEvent, render, screen } from "@testing-library/vue";
-import CreateProduct from "../products/CreateProduct.vue";
+import CreateModel from "../models/CreateModel.vue";
 
 vi.mock("../../lib/axios", () => ({
   default: {
@@ -11,10 +11,10 @@ vi.mock("../../lib/axios", () => ({
 
 const mockedAxios = axiosIns as Mocked<typeof axiosIns>;
 
-describe("CreateProduct.vue", () => {
+describe("CreateModel.vue", () => {
   test("creates a product with given name and description", async () => {
     mockedAxios.post.mockResolvedValue({ status: 201 });
-    render(CreateProduct, {
+    render(CreateModel, {
       props: { modelValue: true },
     });
     expect(await screen.findByText("Neues Produkt")).toBeTruthy();
@@ -24,7 +24,7 @@ describe("CreateProduct.vue", () => {
     await fireEvent.update(nameInput, "My new product");
     await fireEvent.update(descriptionInput, "My product description");
     await fireEvent.click(screen.getByText("Speichern"));
-    expect(mockedAxios.post).toHaveBeenCalledWith("products", {
+    expect(mockedAxios.post).toHaveBeenCalledWith("models", {
       name: "My new product",
       description: "My product description",
     });

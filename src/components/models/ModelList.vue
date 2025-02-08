@@ -9,9 +9,8 @@
         <button
           class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           type="button"
-          @click="emits('add')"
         >
-          Produkt hinzufügen
+          <router-link to="/products/create">Produkt hinzufügen</router-link>
         </button>
       </div>
     </div>
@@ -43,7 +42,7 @@
                     <input
                       :checked="
                         indeterminate ||
-                        selectedProducts.length === products.length
+                        selectedProducts.length === models.length
                       "
                       :indeterminate="indeterminate"
                       class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
@@ -51,7 +50,7 @@
                       @change="
                         selectedProducts = ($event.target as HTMLInputElement)
                           .checked
-                          ? products.map((p) => p.id)
+                          ? models.map((p) => p.id)
                           : []
                       "
                     />
@@ -87,13 +86,13 @@
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white">
                 <tr
-                  v-for="product in products"
+                  v-for="product in models"
                   :key="product.id"
-                  @click="emits('edit', product.id)"
                   :class="[
                     selectedProducts.includes(product.id) && 'bg-gray-50',
                     'cursor-pointer',
                   ]"
+                  @click="emits('edit', product.id)"
                 >
                   <td class="relative px-7 sm:w-12 sm:px-6">
                     <div
@@ -121,10 +120,10 @@
                     {{ product.name }}
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {{ product.description }}
+                    {{ "product.description" }}
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {{ product.createdAt }}
+                    {{ "product.createdAt" }}
                   </td>
                   <td
                     class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3 gap-4 flex flex-row"
@@ -160,9 +159,9 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue";
-import { useProductsStore } from "../../stores/products";
+import { useModelsStore } from "../../stores/models";
 
-const productStore = useProductsStore();
+const modelsStore = useModelsStore();
 
 const emits = defineEmits<{
   (e: "add"): void;
@@ -171,16 +170,16 @@ const emits = defineEmits<{
 
 const selectedProducts = ref<string[]>([]);
 
-const products = computed(() => {
-  return productStore.products;
+const models = computed(() => {
+  return modelsStore.models;
 });
 const indeterminate = computed(
   () =>
     selectedProducts.value.length > 0 &&
-    selectedProducts.value.length < products.value.length,
+    selectedProducts.value.length < models.value.length,
 );
 
 onMounted(async () => {
-  await productStore.fetchProducts();
+  await modelsStore.getModels();
 });
 </script>

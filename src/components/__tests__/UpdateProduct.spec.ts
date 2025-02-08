@@ -1,7 +1,7 @@
 import { describe, expect, Mocked, test, vi } from "vitest";
 import axiosIns from "../../lib/axios";
 import { fireEvent, render, screen, waitFor } from "@testing-library/vue";
-import UpdateProduct from "../products/UpdateProduct.vue";
+import UpdateModel from "../models/UpdateModel.vue";
 
 vi.mock("../../lib/axios", () => ({
   default: {
@@ -12,7 +12,7 @@ vi.mock("../../lib/axios", () => ({
 
 const mockedAxios = axiosIns as Mocked<typeof axiosIns>;
 
-describe("UpdateProduct.vue", () => {
+describe("UpdateModel.vue", () => {
   test("updates a product", async () => {
     const productId = "productId";
     mockedAxios.get.mockResolvedValue({
@@ -24,7 +24,7 @@ describe("UpdateProduct.vue", () => {
       },
     });
     mockedAxios.patch.mockResolvedValue({ status: 200 });
-    render(UpdateProduct, {
+    render(UpdateModel, {
       props: { modelValue: true, productId },
     });
     await waitFor(() =>
