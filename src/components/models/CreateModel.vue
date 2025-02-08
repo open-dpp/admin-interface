@@ -48,8 +48,8 @@
 <script lang="ts" setup>
 import FormSidebar from "./FormSidebar.vue";
 import { ref } from "vue";
-import axiosIns from "../../lib/axios";
 import Product from "../../types/Product";
+import apiClient from "../../lib/api-client";
 
 const showSidebar = defineModel<boolean>();
 
@@ -63,7 +63,7 @@ const emits = defineEmits<{
 
 const addProduct = async () => {
   loading.value = true;
-  const response = await axiosIns.post("products", product.value);
+  const response = await apiClient.postModel(product.value);
   loading.value = false;
   if (response.status === 201) {
     emits("success");
