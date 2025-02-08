@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import apiClient from "../lib/api-client.ts";
+import apiClient from "../lib/api-client";
 import { ModelDto } from "@open-dpp/api-client/dist/model.dto";
 import { ModelCreateDto } from "@open-dpp/api-client/dist/model.create.dto";
 

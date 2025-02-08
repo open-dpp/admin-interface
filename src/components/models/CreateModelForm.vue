@@ -37,7 +37,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { reset } from "@formkit/core";
-import { useModelsStore } from "../../stores/models.ts";
+import { useModelsStore } from "../../stores/models";
 import { useRouter } from "vue-router";
 
 const modelsStore = useModelsStore();
