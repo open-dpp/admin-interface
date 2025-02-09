@@ -1,14 +1,14 @@
 <template>
   <section>
-    <CreateProduct @success="onProductsChanged" v-model="showCreateProduct" />
-    <UpdateProduct
-      @success="onProductsChanged"
-      :product-id="selectedProductId"
+    <CreateModel v-model="showCreateProduct" @success="onProductsChanged" />
+    <UpdateModel
       v-model="showUpdateProduct"
+      :product-id="selectedProductId"
+      @success="onProductsChanged"
     />
     <div class="flex flex-col gap-3 p-3">
-      <ProductList
-        v-if="productStore.products.length > 0"
+      <ModelList
+        v-if="modelsStore.models.length > 0"
         @add="showCreateProduct = true"
         @edit="onSelect"
       />
@@ -21,15 +21,15 @@
   </section>
 </template>
 <script lang="ts" setup>
-import ProductList from "../components/products/ProductList.vue";
-import CreateProduct from "../components/products/CreateProduct.vue";
+import ModelList from "../../components/models/ModelList.vue";
+import CreateModel from "../../components/models/CreateModel.vue";
 import { onMounted, ref } from "vue";
-import { useProductsStore } from "../stores/products";
-import EmptyState from "../components/products/EmptyState.vue";
-import UpdateProduct from "../components/products/UpdateProduct.vue";
+import { useModelsStore } from "../../stores/models";
+import EmptyState from "../../components/models/EmptyState.vue";
+import UpdateModel from "../../components/models/UpdateModel.vue";
 
+const modelsStore = useModelsStore();
 const buttonLabel = "Neues Produkt hinzufügen";
-const productStore = useProductsStore();
 
 const showCreateProduct = ref<boolean>(false);
 const showUpdateProduct = ref<boolean>(false);
@@ -43,10 +43,10 @@ const onSelect = async (productId: string) => {
 const onProductsChanged = async () => {
   showCreateProduct.value = false;
   showUpdateProduct.value = false;
-  await productStore.fetchProducts();
+  await modelsStore.getModels();
 };
 
 onMounted(async () => {
-  await productStore.fetchProducts();
+  await modelsStore.getModels();
 });
 </script>

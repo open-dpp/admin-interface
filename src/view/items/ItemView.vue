@@ -2,7 +2,7 @@
   <section>
     <div class="flex flex-col gap-3 p-3">
       <ItemList v-if="items.length > 0" :items="items" @add="onAdd" />
-      <EmptyState :button-label="buttonLabel" v-else @add="onAdd" />
+      <EmptyState v-else :button-label="buttonLabel" @add="onAdd" />
     </div>
   </section>
 </template>
@@ -13,7 +13,7 @@ import { onMounted, ref } from "vue";
 import axiosIns from "../../lib/axios";
 import Item from "../../types/Item";
 import ItemList from "../../components/products/ItemList.vue";
-import EmptyState from "../../components/products/EmptyState.vue";
+import EmptyState from "../../components/models/EmptyState.vue";
 
 const route = useRoute();
 const buttonLabel = "Neuen Artikel hinzufügen";

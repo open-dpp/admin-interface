@@ -335,14 +335,14 @@
         <Breadcrumbs class="mb-10" />
         <div class="h-[calc(100%-88px)] px-4 sm:px-6 lg:px-8">
           <router-view v-slot="{ Component }">
-            <transition name="fade" mode="out-in" appear :duration="75">
+            <transition :duration="75" appear mode="out-in" name="fade">
               <div
-                class="w-full min-h-full flex items-center justify-items-center"
                 v-if="layoutStore.isPageLoading"
+                class="w-full min-h-full flex items-center justify-items-center"
               >
                 <RingLoader class="mx-auto" />
               </div>
-              <component v-else :is="Component" />
+              <component :is="Component" v-else />
             </transition>
           </router-view>
         </div>
@@ -400,8 +400,8 @@ interface MenuItemInterface {
 const unfilteredNavigation = computed<Array<MenuItemInterface>>(() => [
   { name: "Dashboard", to: "/", icon: HomeIcon, show: () => true },
   {
-    name: "Produkte",
-    to: "/products",
+    name: "Modelle",
+    to: "/models",
     icon: CubeIcon,
     show: () => indexStore.selectedOrganization !== null,
   },

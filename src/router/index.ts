@@ -21,36 +21,50 @@ export const routes = [
   { path: "/users", component: () => import("../view/UserListView.vue") },
   { path: "/settings", component: () => import("../view/Settings.vue") },
   {
-    path: "/products",
-    component: () => import("../view/Products.vue"),
+    path: "/models",
+    component: () => import("../view/models/Models.vue"),
     beforeEnter: () => {
       const layoutStore = useLayoutStore();
-      layoutStore.breadcrumbs = [{ name: "Produkte", path: "/products" }];
+      layoutStore.breadcrumbs = [{ name: "Modelle", path: "/models" }];
     },
   },
   {
-    path: "/products/:productId/qr-code",
-    component: () => import("../view/products/ProductQrCode.vue"),
+    path: "/models/:modelId/qr-code",
+    component: () => import("../view/models/ModelQrCode.vue"),
     beforeEnter: (to: RouteLocationNormalizedGeneric) => {
       const layoutStore = useLayoutStore();
       layoutStore.breadcrumbs = [
-        { name: "Produkte", path: "/products" },
-        { name: "Produkt", path: "/products/" + to.params.productId },
+        { name: "Modelle", path: "/models" },
+        { name: "Modell", path: "/models/" + to.params.modelId },
         {
           name: "QR Code",
-          path: "/product/" + to.params.productId + "/qr-code",
+          path: "/models/" + to.params.modelId + "/qr-code",
         },
       ];
     },
   },
   {
-    path: "/products/:productId",
-    component: () => import("../view/products/Product.vue"),
+    path: "/models/create",
+    component: () => import("../view/models/CreateModelView.vue"),
+    beforeEnter: () => {
+      const layoutStore = useLayoutStore();
+      layoutStore.breadcrumbs = [
+        { name: "Modelle", path: "/models" },
+        { name: "Erstellen", path: "#" },
+      ];
+    },
+  },
+  {
+    path: "/models/:modelId",
+    component: () => import("../view/models/Model.vue"),
     beforeEnter: (to: RouteLocationNormalizedGeneric) => {
       const layoutStore = useLayoutStore();
       layoutStore.breadcrumbs = [
-        { name: "Produkte", path: "/products" },
-        { name: "Produkt", path: "/product/" + to.params.productId },
+        { name: "Modelle", path: "/models" },
+        {
+          name: to.params.modelId + "" || "Modell",
+          path: "/models/" + to.params.modelId,
+        },
       ];
     },
   },
