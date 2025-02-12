@@ -33,23 +33,25 @@ const startApp = async () => {
       plugins: [createMultiStepPlugin(), createAutoAnimatePlugin()],
     }),
   );
+  const indexStore = useIndexStore();
   if (!keycloakDisabled) {
     app.provide("$keycloak", keycloakIns);
     await initializeKeycloak(keycloakIns);
+    if (keycloakIns.authenticated) {
+      const organizationsStore = useOrganizationsStore();
+      await organizationsStore.fetchOrganizations();
+      const lastSelectedOrganization = indexStore.selectedOrganization;
+      if (
+        !organizationsStore.organizations.find(
+          (organization) => organization.id === lastSelectedOrganization,
+        )
+      ) {
+        indexStore.selectOrganization(null);
+      }
+    }
   }
 
   app.use(router);
-  const indexStore = useIndexStore();
-  const organizationsStore = useOrganizationsStore();
-  await organizationsStore.fetchOrganizations();
-  const lastSelectedOrganization = indexStore.selectedOrganization;
-  if (
-    !organizationsStore.organizations.find(
-      (organization) => organization.id === lastSelectedOrganization,
-    )
-  ) {
-    indexStore.selectOrganization(null);
-  }
   if (indexStore.selectedOrganization === null) {
     await router.push("/organizations");
   }

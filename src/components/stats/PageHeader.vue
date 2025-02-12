@@ -19,8 +19,8 @@
             <div class="flex">
               <router-link
                 class="text-sm font-medium text-gray-500 hover:text-gray-700"
-                to="/products"
-                >Produkte
+                to="/models"
+                >Modelle
               </router-link>
             </div>
           </li>

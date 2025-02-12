@@ -20,7 +20,7 @@
         type="step"
       >
         <form-kit
-          help="Geben Sie Ihrem Produkt einen Namen"
+          help="Geben Sie Ihrem Modell einen Namen"
           label="Name"
           name="name"
           type="text"

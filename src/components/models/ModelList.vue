@@ -2,15 +2,15 @@
   <div class="">
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-auto">
-        <h1 class="text-base font-semibold text-gray-900">Produkte</h1>
-        <p class="mt-2 text-sm text-gray-700">Alle erstellten Produkte</p>
+        <h1 class="text-base font-semibold text-gray-900">Modelle</h1>
+        <p class="mt-2 text-sm text-gray-700">Alle erstellten Modelle</p>
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
         <button
           class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           type="button"
         >
-          <router-link to="/products/create">Produkt hinzufügen</router-link>
+          <router-link to="/models/create">Modell hinzufügen</router-link>
         </button>
       </div>
     </div>
@@ -19,7 +19,7 @@
         <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
           <div class="relative">
             <div
-              v-if="selectedProducts.length > 0"
+              v-if="selectedModels.length > 0"
               class="absolute left-14 top-0 flex h-12 items-center space-x-3 bg-white sm:left-12"
             >
               <button
@@ -41,14 +41,13 @@
                   <th class="relative px-7 sm:w-12 sm:px-6" scope="col">
                     <input
                       :checked="
-                        indeterminate ||
-                        selectedProducts.length === models.length
+                        indeterminate || selectedModels.length === models.length
                       "
                       :indeterminate="indeterminate"
                       class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
                       type="checkbox"
                       @change="
-                        selectedProducts = ($event.target as HTMLInputElement)
+                        selectedModels = ($event.target as HTMLInputElement)
                           .checked
                           ? models.map((p) => p.id)
                           : []
@@ -86,22 +85,22 @@
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white">
                 <tr
-                  v-for="product in models"
-                  :key="product.id"
+                  v-for="model in models"
+                  :key="model.id"
                   :class="[
-                    selectedProducts.includes(product.id) && 'bg-gray-50',
+                    selectedModels.includes(model.id) && 'bg-gray-50',
                     'cursor-pointer',
                   ]"
-                  @click="emits('edit', product.id)"
+                  @click="emits('edit', model.id)"
                 >
                   <td class="relative px-7 sm:w-12 sm:px-6">
                     <div
-                      v-if="selectedProducts.includes(product.id)"
+                      v-if="selectedModels.includes(model.id)"
                       class="absolute inset-y-0 left-0 w-0.5 bg-indigo-600"
                     ></div>
                     <input
-                      v-model="selectedProducts"
-                      :value="product.id"
+                      v-model="selectedModels"
+                      :value="model.id"
                       class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
                       type="checkbox"
                     />
@@ -109,42 +108,39 @@
                   <td
                     :class="[
                       'whitespace-nowrap py-4 pr-3 text-sm font-medium',
-                      selectedProducts.includes(product.id)
+                      selectedModels.includes(model.id)
                         ? 'text-indigo-600'
                         : 'text-gray-900',
                     ]"
                   >
-                    {{ product.id }}
+                    {{ model.id }}
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {{ product.name }}
+                    {{ model.name }}
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {{ "product.description" }}
-                  </td>
-                  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    {{ "product.createdAt" }}
+                    {{ model.description }}
                   </td>
                   <td
                     class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3 gap-4 flex flex-row"
                   >
                     <router-link
-                      :to="`/models/${product.id}/items`"
+                      :to="`/models/${model.id}/items`"
                       class="text-indigo-600 hover:text-indigo-900"
                     >
                       Artikel
                     </router-link>
                     <router-link
-                      :to="`/products/${product.id}`"
+                      :to="`/models/${model.id}`"
                       class="text-indigo-600 hover:text-indigo-900"
                     >
-                      Details<span class="sr-only">, {{ product.id }}</span>
+                      Details<span class="sr-only">, {{ model.id }}</span>
                     </router-link>
                     <router-link
-                      :to="`/products/${product.id}/qr-code`"
+                      :to="`/models/${model.id}/qr-code`"
                       class="text-indigo-600 hover:text-indigo-900"
                     >
-                      QR-Code<span class="sr-only">, {{ product.id }}</span>
+                      QR-Code<span class="sr-only">, {{ model.id }}</span>
                     </router-link>
                   </td>
                 </tr>
@@ -165,18 +161,19 @@ const modelsStore = useModelsStore();
 
 const emits = defineEmits<{
   (e: "add"): void;
-  (e: "edit", productId: string): void;
+  (e: "edit", modelId: string): void;
 }>();
 
-const selectedProducts = ref<string[]>([]);
+const selectedModels = ref<string[]>([]);
 
 const models = computed(() => {
   return modelsStore.models;
 });
+
 const indeterminate = computed(
   () =>
-    selectedProducts.value.length > 0 &&
-    selectedProducts.value.length < models.value.length,
+    selectedModels.value.length > 0 &&
+    selectedModels.value.length < models.value.length,
 );
 
 onMounted(async () => {
