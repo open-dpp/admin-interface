@@ -2,9 +2,9 @@
   <div class="">
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-auto">
-        <h1 class="text-base font-semibold text-gray-900">Produkt</h1>
+        <h1 class="text-base font-semibold text-gray-900">Modell</h1>
         <p class="mt-2 text-sm text-gray-700">
-          Erstellen Sie eine neues Produkt.
+          Erstellen Sie eine neues Modell.
         </p>
       </div>
     </div>

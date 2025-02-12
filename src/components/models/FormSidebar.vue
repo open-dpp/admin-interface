@@ -43,7 +43,7 @@
                       </div>
                       <div class="mt-1">
                         <p class="text-sm text-indigo-300">
-                          Füge dein erstes Produkt hinzu.
+                          Füge dein erstes Modell hinzu.
                         </p>
                       </div>
                     </div>

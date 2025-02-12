@@ -2,30 +2,24 @@
   <div class="overflow-hidden bg-white shadow sm:rounded-lg">
     <div class="px-4 py-6 sm:px-6">
       <h3 class="text-base/7 font-semibold text-gray-900">
-        Produkt Informationen
+        Modell Informationen
       </h3>
       <p class="mt-1 max-w-2xl text-sm/6 text-gray-500">
-        Produktdetails und Anhänge.
+        Modelldetails und Anhänge.
       </p>
     </div>
-    <div v-if="product" class="border-t border-gray-100">
+    <div v-if="model" class="border-t border-gray-100">
       <dl class="divide-y divide-gray-100">
         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-900">ID</dt>
           <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-            {{ product.id }}
+            {{ model.id }}
           </dd>
         </div>
         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-900">Name</dt>
           <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-            {{ product.name }}
-          </dd>
-        </div>
-        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-900">Erstellt am</dt>
-          <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-            {{ product.createdAt }}
+            {{ model.name }}
           </dd>
         </div>
         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -111,15 +105,16 @@
 import { PaperClipIcon } from "@heroicons/vue/20/solid";
 import { useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
-import Product from "../../types/Product";
+
 import axiosIns from "../../lib/axios";
+import { ModelDto } from "@open-dpp/api-client/dist/model.dto";
 
 const route = useRoute();
 
-const product = ref<Product>();
+const model = ref<ModelDto>();
 
 onMounted(async () => {
-  const response = await axiosIns.get(`/products/${route.params.productId}`);
-  product.value = response.data;
+  const response = await axiosIns.get(`/models/${route.params.modelId}`);
+  model.value = response.data;
 });
 </script>

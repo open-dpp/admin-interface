@@ -1,8 +1,8 @@
 <template>
   <FormSidebar
-    v-if="product"
+    v-if="model"
     v-model="showSidebar"
-    :dialogTitle="'Produkt aktualisieren'"
+    :dialogTitle="'Modell aktualisieren'"
     @form-submitted="editProduct"
   >
     <div class="flex flex-1 flex-col justify-between">
@@ -17,7 +17,7 @@
             <div class="mt-2">
               <input
                 id="project-name"
-                v-model="product.name"
+                v-model="model.name"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
                 name="project-name"
                 type="text"
@@ -33,7 +33,7 @@
             <div class="mt-2">
               <textarea
                 id="description"
-                v-model="product.description"
+                v-model="model.description"
                 class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm/6"
                 name="description"
                 rows="4"
@@ -50,17 +50,17 @@
 import FormSidebar from "./FormSidebar.vue";
 import { watch, ref, onMounted } from "vue";
 import axiosIns from "../../lib/axios";
-import Product from "../../types/Product";
+import { ModelDto } from "@open-dpp/api-client/dist/model.dto";
 
 const props = defineProps<{
-  productId?: string;
+  modelId?: string;
 }>();
 const showSidebar = defineModel<boolean>();
 const loading = ref<boolean>(false);
-const product = ref<Product>();
+const model = ref<ModelDto>();
 
 watch(
-  () => props.productId,
+  () => props.modelId,
   async (newId: string | undefined) => {
     if (newId !== undefined) {
       await fetchProduct(newId);
@@ -73,25 +73,25 @@ const emits = defineEmits<{
 }>();
 
 onMounted(async () => {
-  if (props.productId !== undefined) {
-    await fetchProduct(props.productId);
+  if (props.modelId !== undefined) {
+    await fetchProduct(props.modelId);
   }
 });
 
 const fetchProduct = async (productId: string) => {
   loading.value = true;
-  const response = await axiosIns.get(`products/${productId}`);
+  const response = await axiosIns.get(`models/${productId}`);
   loading.value = false;
   if (response.status === 200) {
-    product.value = response.data;
+    model.value = response.data;
   }
 };
 
 const editProduct = async () => {
   loading.value = true;
-  const response = await axiosIns.patch(`products/${props.productId}`, {
-    name: product?.value?.name,
-    description: product?.value?.description,
+  const response = await axiosIns.patch(`models/${props.modelId}`, {
+    name: model?.value?.name,
+    description: model?.value?.description,
   });
   loading.value = false;
   if (response.status === 200) {

@@ -24,8 +24,6 @@ const props = defineProps<{
   url: string;
 }>();
 onMounted(async () => {
-  toCanvas(canvas.value, props.url, (error: Error | null | undefined) => {
-    console.log(error);
-  });
+  toCanvas(canvas.value, props.url, () => {});
 });
 </script>

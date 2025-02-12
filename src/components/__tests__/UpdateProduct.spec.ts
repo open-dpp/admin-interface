@@ -13,26 +13,26 @@ vi.mock("../../lib/axios", () => ({
 const mockedAxios = axiosIns as Mocked<typeof axiosIns>;
 
 describe("UpdateModel.vue", () => {
-  test("updates a product", async () => {
-    const productId = "productId";
+  test("updates a model", async () => {
+    const modelId = "productId";
     mockedAxios.get.mockResolvedValue({
       status: 200,
       data: {
-        id: productId,
+        id: modelId,
         name: "My product",
         description: "Product description",
       },
     });
     mockedAxios.patch.mockResolvedValue({ status: 200 });
     render(UpdateModel, {
-      props: { modelValue: true, productId },
+      props: { modelValue: true, modelId },
     });
     await waitFor(() =>
-      expect(mockedAxios.get).toHaveBeenCalledWith(`products/${productId}`),
+      expect(mockedAxios.get).toHaveBeenCalledWith(`models/${modelId}`),
     );
-    expect(await screen.findByText("Produkt aktualisieren")).toBeTruthy();
+    expect(await screen.findByText("Modell aktualisieren")).toBeTruthy();
     await fireEvent.click(screen.getByText("Speichern"));
-    expect(mockedAxios.patch).toHaveBeenCalledWith(`products/${productId}`, {
+    expect(mockedAxios.patch).toHaveBeenCalledWith(`models/${modelId}`, {
       name: "My product",
       description: "Product description",
     });
@@ -42,7 +42,7 @@ describe("UpdateModel.vue", () => {
       "New product description",
     );
     await fireEvent.click(screen.getByText("Speichern"));
-    expect(mockedAxios.patch).toHaveBeenCalledWith(`products/${productId}`, {
+    expect(mockedAxios.patch).toHaveBeenCalledWith(`models/${modelId}`, {
       name: "My new product",
       description: "New product description",
     });

@@ -74,8 +74,8 @@ export const routes = [
     beforeEnter: (to: RouteLocationNormalizedGeneric) => {
       const layoutStore = useLayoutStore();
       layoutStore.breadcrumbs = [
-        { name: "Produkte", path: "/products/" },
-        { name: "Produkt", path: "/products/" + to.params.modelId },
+        { name: "Modelle", path: "/models/" },
+        { name: "Modell", path: "/models/" + to.params.modelId },
         {
           name: "Artikel Liste",
           path: "/models/" + to.params.modelId + "/items",
@@ -89,8 +89,8 @@ export const routes = [
     beforeEnter: (to: RouteLocationNormalizedGeneric) => {
       const layoutStore = useLayoutStore();
       layoutStore.breadcrumbs = [
-        { name: "Produkte", path: "/products/" },
-        { name: "Produkt", path: "/products/" + to.params.modelId },
+        { name: "Modelle", path: "/models/" },
+        { name: "Modell", path: "/models/" + to.params.modelId },
         {
           name: "Artikel Liste",
           path: "/models/" + to.params.modelId + "/items",
