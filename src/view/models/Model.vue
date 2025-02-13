@@ -22,99 +22,47 @@
             {{ model.name }}
           </dd>
         </div>
-        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-900">Erstellt von</dt>
-          <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-            margotfoster@example.com
-          </dd>
-        </div>
-        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-900">Anzahl Aufrufe</dt>
-          <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-            120.000
-          </dd>
-        </div>
-        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-900">Beschreibung</dt>
-          <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-            Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim
-            incididunt cillum culpa consequat. Excepteur qui ipsum aliquip
-            consequat sint. Sit id mollit nulla mollit nostrud in ea officia
-            proident. Irure nostrud pariatur mollit ad adipisicing reprehenderit
-            deserunt qui eu.
-          </dd>
-        </div>
-        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm/6 font-medium text-gray-900">Anhänge</dt>
-          <dd class="mt-2 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-            <ul
-              class="divide-y divide-gray-100 rounded-md border border-gray-200"
-              role="list"
-            >
-              <li
-                class="flex items-center justify-between py-4 pl-4 pr-5 text-sm/6"
-              >
-                <div class="flex w-0 flex-1 items-center">
-                  <PaperClipIcon
-                    aria-hidden="true"
-                    class="h-5 w-5 flex-shrink-0 text-gray-400"
-                  />
-                  <div class="ml-4 flex min-w-0 flex-1 gap-2">
-                    <span class="truncate font-medium">datenblatt.pdf</span>
-                    <span class="flex-shrink-0 text-gray-400">2.4mb</span>
-                  </div>
-                </div>
-                <div class="ml-4 flex-shrink-0">
-                  <a
-                    class="font-medium text-indigo-600 hover:text-indigo-500"
-                    href="#"
-                    >Download</a
-                  >
-                </div>
-              </li>
-              <li
-                class="flex items-center justify-between py-4 pl-4 pr-5 text-sm/6"
-              >
-                <div class="flex w-0 flex-1 items-center">
-                  <PaperClipIcon
-                    aria-hidden="true"
-                    class="h-5 w-5 flex-shrink-0 text-gray-400"
-                  />
-                  <div class="ml-4 flex min-w-0 flex-1 gap-2">
-                    <span class="truncate font-medium">handbuch.pdf</span>
-                    <span class="flex-shrink-0 text-gray-400">4.5mb</span>
-                  </div>
-                </div>
-                <div class="ml-4 flex-shrink-0">
-                  <a
-                    class="font-medium text-indigo-600 hover:text-indigo-500"
-                    href="#"
-                    >Download</a
-                  >
-                </div>
-              </li>
-            </ul>
-          </dd>
-        </div>
       </dl>
     </div>
+    <ModelForm
+      v-if="model && productDataModel"
+      :model="model"
+      :product-data-model="productDataModel"
+      @submit="onSubmit"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { PaperClipIcon } from "@heroicons/vue/20/solid";
 import { useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
-
-import axiosIns from "../../lib/axios";
-import { ModelDto } from "@open-dpp/api-client/dist/model.dto";
+import {
+  DataValuePatchDto,
+  ModelDto,
+} from "@open-dpp/api-client/dist/model.dto";
+import apiClient from "../../lib/api-client";
+import { ProductDataModelDto } from "@open-dpp/api-client/dist/product.data.model.dto";
+import ModelForm from "../../components/models/ModelForm.vue";
 
 const route = useRoute();
 
 const model = ref<ModelDto>();
+const productDataModel = ref<ProductDataModelDto>();
+
+const onSubmit = async (dataValues: DataValuePatchDto[]) => {
+  if (model.value) {
+    await apiClient.updateModelData(model.value.id, dataValues);
+  }
+};
 
 onMounted(async () => {
-  const response = await axiosIns.get(`/models/${route.params.modelId}`);
+  const response = await apiClient.getModelById(String(route.params.modelId));
   model.value = response.data;
+  if (model.value.productDataModelId) {
+    const response = await apiClient.getProductDataModelById(
+      model.value.productDataModelId,
+    );
+    productDataModel.value = response.data;
+  }
 });
 </script>
