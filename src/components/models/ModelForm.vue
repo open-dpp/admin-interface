@@ -1,18 +1,26 @@
 <template>
   <FormKit type="form" v-model="formData" @submit="onSubmit">
-    <FormKitSchema v-if="formSchema" :schema="formSchema" />
+    <FormKitSchema
+      v-if="formSchema"
+      :schema="formSchema"
+      :library="{ Section, TextField }"
+    />
   </FormKit>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+
 import {
   DataValuePatchDto,
   ModelDto,
 } from "@open-dpp/api-client/dist/model.dto";
 import { ProductDataModelDto } from "@open-dpp/api-client/dist/product.data.model.dto";
 import { FormKitSchemaNode } from "@formkit/core";
+import Section from "./form-components/Section.vue";
+import TextField from "./form-components/TextField.vue";
 
+// Assign the custom component a library
 const props = defineProps<{
   model: ModelDto;
   productDataModel: ProductDataModelDto;
@@ -42,17 +50,29 @@ onMounted(() => {
   formSchema.value = props.productDataModel.sections
     .map((s) => [
       {
-        $el: "h1",
-        children: ["Section", s.id],
+        $cmp: "Section",
+        props: {
+          label: s.id,
+        },
+        children: [
+          ...s.dataFields
+            .map((f) => {
+              const dataValueId = props.model.dataValues.find(
+                (d) => d.dataFieldId === f.id,
+              )?.id;
+              return {
+                $cmp: "TextField",
+                props: {
+                  id: dataValueId,
+                  name: dataValueId,
+                  label: f.name,
+                  validation: "required",
+                },
+              };
+            })
+            .flat(),
+        ],
       },
-      ...s.dataFields
-        .map((f) => ({
-          $formkit: "text",
-          name: props.model.dataValues.find((d) => d.dataFieldId === f.id)?.id,
-          label: f.name,
-          validation: "required",
-        }))
-        .flat(),
     ])
     .flat();
 });
