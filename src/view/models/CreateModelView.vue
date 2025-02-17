@@ -9,11 +9,42 @@
       </div>
     </div>
     <div class="mt-8 flow-root">
-      <CreateModelForm />
+      <CreateModelForm
+        v-if="productDataModels"
+        @submit="onSubmit"
+        :product-data-models="productDataModels"
+      />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import CreateModelForm from "../../components/models/CreateModelForm.vue";
+import { onMounted, ref } from "vue";
+import apiClient from "../../lib/api-client";
+import { ProductDataModelGetAllDto } from "@open-dpp/api-client";
+import { useRouter } from "vue-router";
+
+const productDataModels = ref<ProductDataModelGetAllDto[]>();
+const router = useRouter();
+
+const onSubmit = async (
+  selectedProductDataModelId: string,
+  modelName: string,
+) => {
+  const response = await apiClient.postModel({
+    name: modelName,
+  });
+
+  await apiClient.assignProductDataModelToModel(
+    selectedProductDataModelId,
+    response.data.id,
+  );
+  await router.push("/models");
+};
+
+onMounted(async () => {
+  const response = await apiClient.getProductDataModels();
+  productDataModels.value = response.data;
+});
 </script>

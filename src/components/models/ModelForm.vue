@@ -11,11 +11,8 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 
-import {
-  DataValuePatchDto,
-  ModelDto,
-} from "@open-dpp/api-client/dist/model.dto";
-import { ProductDataModelDto } from "@open-dpp/api-client/dist/product.data.model.dto";
+import { DataValuePatchDto, ModelDto } from "@open-dpp/api-client";
+import { ProductDataModelDto } from "@open-dpp/api-client";
 import { FormKitSchemaNode } from "@formkit/core";
 import Section from "./form-components/Section.vue";
 import TextField from "./form-components/TextField.vue";
@@ -47,7 +44,7 @@ onMounted(() => {
   formData.value = Object.fromEntries(
     props.model.dataValues.map((d) => [d.id, d.value]),
   );
-  formSchema.value = props.productDataModel.sections
+  const sections = props.productDataModel.sections
     .map((s) => [
       {
         $cmp: "Section",
@@ -75,5 +72,12 @@ onMounted(() => {
       },
     ])
     .flat();
+  formSchema.value = [
+    {
+      $el: "div",
+      attrs: { class: "flex flex-col gap-4" },
+      children: sections,
+    },
+  ];
 });
 </script>

@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { render, screen } from "@testing-library/vue";
 import ModelForm from "../models/ModelForm.vue";
-import { ModelDto } from "@open-dpp/api-client/dist/model.dto";
+import { ModelDto } from "@open-dpp/api-client";
 import { plugin as FormKit } from "@formkit/vue";
 import { defaultConfig } from "@formkit/vue";
 import { rootClasses } from "../../../formkit.theme";

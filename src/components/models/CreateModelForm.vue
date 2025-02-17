@@ -25,6 +25,16 @@
           name="name"
           type="text"
           validation="required"
+          data-cy="name"
+        />
+        <form-kit
+          help="Wählen Sie das Datenmodell aus"
+          label="Datenmodell"
+          name="productDataModelId"
+          data-cy="productDataModelId"
+          type="select"
+          validation="required"
+          :options="selectableDataModels"
         />
         <template #stepNext>
           <FormKit label="Erstellen" type="submit" />
@@ -35,30 +45,30 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import { reset } from "@formkit/core";
-import { useModelsStore } from "../../stores/models";
-import { useRouter } from "vue-router";
+import { ProductDataModelGetAllDto } from "@open-dpp/api-client";
 
-const modelsStore = useModelsStore();
-const router = useRouter();
+const props = defineProps<{ productDataModels: ProductDataModelGetAllDto[] }>();
+const selectableDataModels = props.productDataModels.map((p) => ({
+  label: p.name,
+  value: p.id,
+}));
 
-const submitted = ref(false);
+const emits = defineEmits<{
+  (e: "submit", selectedProductDataModelId: string, modelName: string): void;
+}>();
 
 const create = async (fields: {
   stepper: {
     generalInfo: {
       name: string;
+      productDataModelId: string;
     };
   };
 }) => {
-  await modelsStore.createModel({
-    name: fields.stepper.generalInfo.name,
-  });
-  new Promise((resolve) => setTimeout(resolve, 250));
-  submitted.value = true;
-  reset("createProductForm");
-  await modelsStore.getModels();
-  router.push("/models");
+  emits(
+    "submit",
+    fields.stepper.generalInfo.productDataModelId,
+    fields.stepper.generalInfo.name,
+  );
 };
 </script>

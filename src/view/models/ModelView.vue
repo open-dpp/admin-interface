@@ -38,13 +38,15 @@
 <script lang="ts" setup>
 import { useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
-import {
-  DataValuePatchDto,
-  ModelDto,
-} from "@open-dpp/api-client/dist/model.dto";
+
 import apiClient from "../../lib/api-client";
-import { ProductDataModelDto } from "@open-dpp/api-client/dist/product.data.model.dto";
+
 import ModelForm from "../../components/models/ModelForm.vue";
+import {
+  ProductDataModelDto,
+  ModelDto,
+  DataValuePatchDto,
+} from "@open-dpp/api-client";
 
 const route = useRoute();
 
