@@ -2,36 +2,30 @@
   <div class="overflow-hidden bg-white shadow sm:rounded-lg">
     <div class="px-4 py-6 sm:px-6">
       <h3 class="text-base/7 font-semibold text-gray-900">
-        Modell Informationen
+        Organisation Informationen
       </h3>
       <p class="mt-1 max-w-2xl text-sm/6 text-gray-500">
-        Modelldetails und Anhänge.
+        Details und User der Organisation.
       </p>
     </div>
-    <div v-if="model" class="border-t border-gray-100">
+    <div v-if="organization" class="border-t border-gray-100">
       <dl class="divide-y divide-gray-100">
         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-900">ID</dt>
           <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-            {{ model.id }}
+            {{ organization.id }}
           </dd>
         </div>
         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-900">Name</dt>
           <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-            {{ model.name }}
+            {{ organization.name }}
           </dd>
         </div>
         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-900">Erstellt von</dt>
           <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
             margotfoster@example.com
-          </dd>
-        </div>
-        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-900">Anzahl Aufrufe</dt>
-          <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-            120.000
           </dd>
         </div>
         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -45,7 +39,7 @@
           </dd>
         </div>
         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm/6 font-medium text-gray-900">Anhänge</dt>
+          <dt class="text-sm/6 font-medium text-gray-900">User</dt>
           <dd class="mt-2 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
             <ul
               class="divide-y divide-gray-100 rounded-md border border-gray-200"
@@ -55,45 +49,42 @@
                 class="flex items-center justify-between py-4 pl-4 pr-5 text-sm/6"
               >
                 <div class="flex w-0 flex-1 items-center">
-                  <PaperClipIcon
+                  <UserCircleIcon
                     aria-hidden="true"
                     class="h-5 w-5 flex-shrink-0 text-gray-400"
                   />
                   <div class="ml-4 flex min-w-0 flex-1 gap-2">
-                    <span class="truncate font-medium">datenblatt.pdf</span>
-                    <span class="flex-shrink-0 text-gray-400">2.4mb</span>
+                    <span class="truncate font-medium">test@test.test</span>
+                    <span
+                      class="inline-flex shrink-0 items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20"
+                      >Admin</span
+                    >
                   </div>
                 </div>
                 <div class="ml-4 flex-shrink-0">
                   <a
-                    class="font-medium text-indigo-600 hover:text-indigo-500"
+                    class="font-medium text-red-600 hover:text-red-500"
                     href="#"
-                    >Download</a
-                  >
-                </div>
-              </li>
-              <li
-                class="flex items-center justify-between py-4 pl-4 pr-5 text-sm/6"
-              >
-                <div class="flex w-0 flex-1 items-center">
-                  <PaperClipIcon
-                    aria-hidden="true"
-                    class="h-5 w-5 flex-shrink-0 text-gray-400"
-                  />
-                  <div class="ml-4 flex min-w-0 flex-1 gap-2">
-                    <span class="truncate font-medium">handbuch.pdf</span>
-                    <span class="flex-shrink-0 text-gray-400">4.5mb</span>
-                  </div>
-                </div>
-                <div class="ml-4 flex-shrink-0">
-                  <a
-                    class="font-medium text-indigo-600 hover:text-indigo-500"
-                    href="#"
-                    >Download</a
+                    >Entfernen</a
                   >
                 </div>
               </li>
             </ul>
+            <div class="mt-3 flex flex-row gap-3">
+              <input
+                v-model="userEmailToAdd"
+                class="block rounded-md border-gray-300 min-w-80"
+                placeholder="E-Mail"
+                type="text"
+              />
+              <button
+                class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                type="button"
+                @click="inviteUserToOrg"
+              >
+                User hinzufügen
+              </button>
+            </div>
           </dd>
         </div>
       </dl>
@@ -102,18 +93,33 @@
 </template>
 
 <script lang="ts" setup>
-import { PaperClipIcon } from "@heroicons/vue/20/solid";
 import { useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
-import axiosIns from "../../lib/axios";
-import { ModelDto } from "@open-dpp/api-client";
+import { OrganizationDto } from "@open-dpp/api-client";
+import apiClient from "../../lib/api-client";
+import { UserCircleIcon } from "@heroicons/vue/20/solid";
 
 const route = useRoute();
 
-const model = ref<ModelDto>();
+const props = defineProps<{
+  organizationId: string;
+}>();
+
+const userEmailToAdd = ref<string>("");
+const organization = ref<OrganizationDto>();
+
+const inviteUserToOrg = async () => {
+  if (userEmailToAdd.value) {
+    const response = await apiClient.organizations.inviteUser(
+      userEmailToAdd.value,
+      props.organizationId,
+    );
+    console.log(response);
+  }
+};
 
 onMounted(async () => {
-  const response = await axiosIns.get(`/models/${route.params.modelId}`);
-  model.value = response.data;
+  const response = await apiClient.organizations.getById(props.organizationId);
+  organization.value = response.data;
 });
 </script>

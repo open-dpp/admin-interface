@@ -48,9 +48,9 @@
 
 <script lang="ts" setup>
 import FormSidebar from "./FormSidebar.vue";
-import { watch, ref, onMounted } from "vue";
+import { onMounted, ref, watch } from "vue";
 import axiosIns from "../../lib/axios";
-import { ModelDto } from "@open-dpp/api-client/dist/model.dto";
+import { ModelDto } from "@open-dpp/api-client";
 
 const props = defineProps<{
   modelId?: string;

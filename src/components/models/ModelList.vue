@@ -47,10 +47,8 @@
                       class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
                       type="checkbox"
                       @change="
-                        selectedModels = ($event.target as HTMLInputElement)
-                          .checked
-                          ? models.map((p) => p.id)
-                          : []
+                        (event) =>
+                          onChange((event.target as HTMLInputElement).checked)
                       "
                     />
                   </th>
@@ -175,6 +173,10 @@ const indeterminate = computed(
     selectedModels.value.length > 0 &&
     selectedModels.value.length < models.value.length,
 );
+
+const onChange = (isChecked: boolean) => {
+  selectedModels.value = isChecked ? models.value.map((p) => p.id) : [];
+};
 
 onMounted(async () => {
   await modelsStore.getModels();

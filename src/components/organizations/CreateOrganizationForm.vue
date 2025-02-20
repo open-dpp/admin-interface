@@ -1,44 +1,47 @@
 <template>
   <form-kit
     id="createOrganizationForm"
-    type="form"
-    @submit="create"
     :actions="false"
     outer-class="w-full"
+    type="form"
+    @submit="create"
   >
     <form-kit
-      name="stepper"
-      type="multi-step"
-      tab-style="tab"
       :allow-incomplete="false"
       :wrapper-class="{ 'w-full': true }"
+      name="stepper"
+      tab-style="tab"
+      type="multi-step"
     >
       <form-kit
-        type="step"
-        name="generalInfo"
-        label="Allgemein"
         :wrapper-class="{ 'w-full': true }"
+        label="Allgemein"
+        name="generalInfo"
+        type="step"
       >
         <form-kit
-          type="text"
+          help="Geben Sie Ihrer Organisation einen Namen"
           label="Name"
           name="name"
-          help="Geben Sie Ihrer Organisation einen Namen"
+          type="text"
           validation="required"
         />
         <template #stepNext>
-          <FormKit type="submit" label="Erstellen" />
+          <FormKit label="Erstellen" type="submit" />
         </template>
       </form-kit>
     </form-kit>
   </form-kit>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref } from "vue";
 import { reset } from "@formkit/core";
 import { useOrganizationsStore } from "../../stores/organizations";
 import { useIndexStore } from "../../stores";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const indexStore = useIndexStore();
 const organizationStore = useOrganizationsStore();
@@ -60,5 +63,6 @@ const create = async (fields: {
   reset("createOrganizationForm");
   await organizationStore.fetchOrganizations();
   indexStore.selectOrganization(responseData.id);
+  await router.push("/");
 };
 </script>

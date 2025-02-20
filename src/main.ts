@@ -6,13 +6,15 @@ import { createPinia } from "pinia";
 import keycloakIns, { initializeKeycloak } from "./lib/keycloak";
 import { keycloakDisabled } from "./const";
 import { useIndexStore } from "./stores";
-import { plugin, defaultConfig } from "@formkit/vue";
+import { defaultConfig, plugin } from "@formkit/vue";
 import { genesisIcons } from "@formkit/icons";
 import { rootClasses } from "../formkit.theme";
 import { de } from "@formkit/i18n";
-import { createMultiStepPlugin } from "@formkit/addons";
+import {
+  createAutoAnimatePlugin,
+  createMultiStepPlugin,
+} from "@formkit/addons";
 import "@formkit/addons/css/multistep";
-import { createAutoAnimatePlugin } from "@formkit/addons";
 import { useOrganizationsStore } from "./stores/organizations";
 
 const pinia = createPinia();
