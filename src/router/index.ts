@@ -56,7 +56,7 @@ export const routes = [
   },
   {
     path: "/models/:modelId",
-    component: () => import("../view/models/Model.vue"),
+    component: () => import("../view/models/ModelView.vue"),
     beforeEnter: (to: RouteLocationNormalizedGeneric) => {
       const layoutStore = useLayoutStore();
       layoutStore.breadcrumbs = [
