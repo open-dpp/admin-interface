@@ -23,6 +23,15 @@ import { mount } from "cypress/vue";
 // Alternatively, can be defined in cypress/support/component.d.ts
 // with a <reference path="./component" /> at the top of your spec.
 import { createPinia, Pinia, setActivePinia } from "pinia";
+import { plugin as FormKit } from "@formkit/vue";
+import { defaultConfig } from "@formkit/vue";
+import { rootClasses } from "../../formkit.theme";
+import { genesisIcons } from "@formkit/icons";
+import { de } from "@formkit/i18n";
+import {
+  createAutoAnimatePlugin,
+  createMultiStepPlugin,
+} from "@formkit/addons";
 
 let pinia: Pinia;
 
@@ -51,7 +60,24 @@ Cypress.Commands.add("mountWithPinia", (component, options = {}) => {
     ...options,
     global: {
       ...options?.global,
-      plugins: [...options.global.plugins, pinia],
+      plugins: [
+        ...options.global.plugins,
+        pinia,
+        [
+          FormKit,
+          defaultConfig({
+            config: {
+              rootClasses,
+            },
+            icons: {
+              ...genesisIcons,
+            },
+            locales: { de },
+            locale: "de",
+            plugins: [createMultiStepPlugin(), createAutoAnimatePlugin()],
+          }),
+        ],
+      ],
     },
   });
 });
