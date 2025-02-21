@@ -4,6 +4,7 @@
     v-bind:key="section.id"
   >
     <RepeatableSectionForm
+      :model-id="model.id"
       v-if="section.type == SectionType.REPEATABLE"
       :data-values="
         props.model.dataValues.filter((s) => s.dataSectionId === section.id)

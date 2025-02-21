@@ -6,6 +6,7 @@ import {
 } from "@open-dpp/api-client";
 import { groupBy, maxBy, merge, minBy, pick } from "lodash";
 import { v4 as uuid4 } from "uuid";
+import apiClient from "../../../lib/api-client";
 
 export type RequestDataValues = {
   POST?: DataValueCreateDto[];
@@ -27,7 +28,11 @@ export class RepeatableSectionBuilder {
   private dataValues: DataValueDto[];
   private dataValuesToCreate: string[] = [];
   private section: SectionDto;
-  constructor(dataValues: DataValueDto[], section: SectionDto) {
+  constructor(
+    private modelId: string,
+    dataValues: DataValueDto[],
+    section: SectionDto,
+  ) {
     this.dataValues = dataValues;
     this.section = section;
     this.minRow = minBy(dataValues, "row")?.row ?? 0;
@@ -57,28 +62,53 @@ export class RepeatableSectionBuilder {
     return rows;
   }
 
-  addRow() {
+  async addRow() {
     const newRow: Row[] = [];
     this.maxRow += 1;
-    this.section.dataFields.forEach((f) => {
-      const dataValueId = uuid4();
-      this.dataValuesToCreate.push(dataValueId);
-      this.dataValues.push({
-        id: dataValueId,
-        value: undefined,
-        dataSectionId: this.section.id,
-        dataFieldId: f.id,
-        row: this.maxRow,
-      });
-      newRow.push({
-        type: f.type,
-        id: dataValueId,
-        name: dataValueId,
-        label: f.name,
+    // this.section.dataFields.forEach((f) => {
+    //   const dataValueId = uuid4();
+    //   this.dataValuesToCreate.push(dataValueId);
+    //
+    //   this.dataValues.push({
+    //     id: dataValueId,
+    //     value: undefined,
+    //     dataSectionId: this.section.id,
+    //     dataFieldId: f.id,
+    //     row: this.maxRow,
+    //   });
+    //   newRow.push({
+    //     type: f.type,
+    //     id: dataValueId,
+    //     name: dataValueId,
+    //     label: f.name,
+    //     validation: "required",
+    //   });
+    // });
+    const dataValuesToCreate = this.section.dataFields.map((f) => ({
+      value: undefined,
+      dataSectionId: this.section.id,
+      dataFieldId: f.id,
+      row: this.maxRow,
+    }));
+    const response = await apiClient.models.addModelData(
+      this.modelId,
+      dataValuesToCreate,
+    );
+    const createdDataValues = response.data.dataValues.filter(
+      (d) => d.dataSectionId === this.section.id && d.row === this.maxRow,
+    );
+
+    this.dataValues.push(...createdDataValues);
+
+    this.rows.push(
+      ...createdDataValues.map((d) => ({
+        type: "TextField",
+        id: d.id,
+        name: d.id,
+        label: d.id,
         validation: "required",
-      });
-    });
-    this.rows.push(...newRow);
+      })),
+    );
     return this;
   }
 
@@ -115,6 +145,7 @@ export class RepeatableSectionBuilder {
   buildFormRows() {
     return this.rows.map((r) => ({
       $cmp: r.type,
+
       props: {
         id: r.id,
         name: r.name,

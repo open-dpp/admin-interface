@@ -39,6 +39,7 @@ import { RepeatableSectionBuilder, RequestDataValues } from "./section";
 const props = defineProps<{
   dataValues: DataValueDto[];
   section: SectionDto;
+  modelId: string;
 }>();
 
 const emits = defineEmits<{
@@ -53,6 +54,7 @@ watch(
   () => props,
   (newProps) => {
     sectionBuilder = new RepeatableSectionBuilder(
+      newProps.modelId,
       newProps.dataValues,
       newProps.section,
     );
@@ -63,13 +65,13 @@ watch(
 
 watch(formSchema, (newSchema) => {
   if (newSchema) {
-    console.log(sectionBuilder.buildFormData());
     formData.value = sectionBuilder.buildFormData();
   }
 });
 
-const onAddRow = () => {
-  sectionBuilder.updateDataValues(formData.value).addRow();
+const onAddRow = async () => {
+  await sectionBuilder.updateDataValues(formData.value).addRow();
+  console.log(sectionBuilder.buildFormRows());
   formSchema.value = sectionBuilder.buildFormRows();
   formData.value = sectionBuilder.buildFormData();
 };
@@ -83,6 +85,7 @@ const onSubmit = async () => {
 
 onMounted(() => {
   sectionBuilder = new RepeatableSectionBuilder(
+    props.modelId,
     props.dataValues,
     props.section,
   );
