@@ -9,70 +9,37 @@
           Modelldetails und Anhänge.
         </p>
       </div>
-      <div v-if="model" class="border-t border-gray-100">
+      <div v-if="modelFormStore.model" class="border-t border-gray-100">
         <dl class="divide-y divide-gray-100">
           <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-sm font-medium text-gray-900">ID</dt>
             <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-              {{ model.id }}
+              {{ modelFormStore.model.id }}
             </dd>
           </div>
           <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-sm font-medium text-gray-900">Name</dt>
             <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-              {{ model.name }}
+              {{ modelFormStore.model.name }}
             </dd>
           </div>
         </dl>
       </div>
     </div>
-    <ModelForm
-      v-if="model && productDataModel"
-      :model="model"
-      :product-data-model="productDataModel"
-      @submit="onSubmit"
-    />
+    <ModelForm v-if="modelFormStore.model && modelFormStore.productDataModel" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useRoute } from "vue-router";
-import { onMounted, ref } from "vue";
-
-import apiClient from "../../lib/api-client";
-
+import { onMounted } from "vue";
 import ModelForm from "../../components/models/ModelForm.vue";
-import { ModelDto, ProductDataModelDto } from "@open-dpp/api-client";
-import { RequestDataValues } from "../../components/models/form-components/section";
+import { useModelFormStore } from "../../stores/model.form";
 
 const route = useRoute();
-
-const model = ref<ModelDto>();
-const productDataModel = ref<ProductDataModelDto>();
-
-const onSubmit = async (dataValues: RequestDataValues) => {
-  if (model.value) {
-    if (dataValues.PATCH) {
-      await apiClient.models.updateModelData(model.value.id, dataValues.PATCH);
-    }
-    if (dataValues.POST) {
-      await apiClient.models.addModelData(model.value.id, dataValues.POST);
-    }
-    const response = await apiClient.models.getModelById(model.value.id);
-    model.value = response.data;
-  }
-};
+const modelFormStore = useModelFormStore();
 
 onMounted(async () => {
-  const response = await apiClient.models.getModelById(
-    String(route.params.modelId),
-  );
-  model.value = response.data;
-  if (model.value.productDataModelId) {
-    const response = await apiClient.productDataModels.getProductDataModelById(
-      model.value.productDataModelId,
-    );
-    productDataModel.value = response.data;
-  }
+  await modelFormStore.fetchModel(String(route.params.modelId));
 });
 </script>

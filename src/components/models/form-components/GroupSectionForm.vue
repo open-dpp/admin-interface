@@ -2,7 +2,7 @@
   <div class="overflow-hidden bg-white shadow sm:rounded-lg">
     <div class="px-4 py-6 sm:px-6">
       <h3 class="text-base/7 font-semibold text-gray-900">
-        {{ `Abschnitt ${props.section.id}` }}
+        {{ `Abschnitt ${props.section.name}` }}
       </h3>
     </div>
     <FormKit type="form" v-model="formData" @submit="onSubmit">
@@ -16,56 +16,39 @@
 </template>
 
 <script setup lang="ts">
-import {
-  DataValueDto,
-  DataValuePatchDto,
-  SectionDto,
-} from "@open-dpp/api-client";
-import { onMounted, ref } from "vue";
-import { FormKitSchemaNode } from "@formkit/core";
+import { DataValuePatchDto, SectionDto } from "@open-dpp/api-client";
+import { ref, watch } from "vue";
 import TextField from "./TextField.vue";
-import { RequestDataValues } from "./section";
+import { useModelFormStore } from "../../../stores/model.form";
 
 const props = defineProps<{
-  dataValues: DataValueDto[];
   section: SectionDto;
 }>();
 
+const modelFormStore = useModelFormStore();
+
 const emits = defineEmits<{
-  (e: "submit", dataValues: RequestDataValues): void;
+  (e: "submit", dataValues: DataValuePatchDto[]): void;
 }>();
 
-const formSchema = ref<FormKitSchemaNode[]>();
 const formData = ref<Record<string, unknown>>({});
+const formSchema = ref();
+watch(
+  () => modelFormStore.model?.dataValues, // The store property to watch
+  () => {
+    formSchema.value = modelFormStore.getFormSchema(props.section.id);
+    formData.value = modelFormStore.getFormData(props.section.id);
+  },
+  { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
+);
 
 const onSubmit = async () => {
-  emits("submit", {
-    PATCH: Object.entries(formData.value).map(([key, value]) => ({
+  emits(
+    "submit",
+    Object.entries(formData.value).map(([key, value]) => ({
       id: key,
       value,
     })),
-  });
-};
-
-onMounted(() => {
-  formData.value = Object.fromEntries(
-    props.dataValues.map((d) => [d.id, d.value]),
   );
-  formSchema.value = props.section.dataFields
-    .map((f) => {
-      const dataValueId = props.dataValues.find(
-        (d) => d.dataFieldId === f.id,
-      )?.id;
-      return {
-        $cmp: f.type,
-        props: {
-          id: dataValueId,
-          name: dataValueId,
-          label: f.name,
-          validation: "required",
-        },
-      };
-    })
-    .flat();
-});
+};
 </script>

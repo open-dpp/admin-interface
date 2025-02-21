@@ -48,7 +48,6 @@ const fetchItems = async () => {
 };
 
 const onAdd = async () => {
-  console.log("Add");
   await axiosIns.post(`/models/${route.params.modelId}/items`);
   await fetchItems();
 };

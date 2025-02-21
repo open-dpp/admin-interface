@@ -30,66 +30,41 @@
 </template>
 
 <script setup lang="ts">
-import { DataValueDto, SectionDto } from "@open-dpp/api-client";
-import { onMounted, ref, watch } from "vue";
-import { FormKitSchemaNode } from "@formkit/core";
+import { DataValuePatchDto, SectionDto } from "@open-dpp/api-client";
+import { ref, watch } from "vue";
 import TextField from "./TextField.vue";
-import { RepeatableSectionBuilder, RequestDataValues } from "./section";
+import { useModelFormStore } from "../../../stores/model.form";
 
-const props = defineProps<{
-  dataValues: DataValueDto[];
-  section: SectionDto;
-  modelId: string;
-}>();
+const modelFormStore = useModelFormStore();
+
+const props = defineProps<{ section: SectionDto }>();
 
 const emits = defineEmits<{
-  (e: "submit", dataValues: RequestDataValues): void;
+  (e: "submit", dataValues: DataValuePatchDto[]): void;
 }>();
 
-const formSchema = ref<FormKitSchemaNode[]>();
 const formData = ref<Record<string, unknown>>({});
-let sectionBuilder: RepeatableSectionBuilder;
-
+const formSchema = ref();
 watch(
-  () => props,
-  (newProps) => {
-    sectionBuilder = new RepeatableSectionBuilder(
-      newProps.modelId,
-      newProps.dataValues,
-      newProps.section,
-    );
-    formSchema.value = sectionBuilder.buildFormRows();
+  () => modelFormStore.model?.dataValues, // The store property to watch
+  () => {
+    formSchema.value = modelFormStore.getFormSchema(props.section.id);
+    formData.value = modelFormStore.getFormData(props.section.id);
   },
-  { deep: true },
+  { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
 );
 
-watch(formSchema, (newSchema) => {
-  if (newSchema) {
-    formData.value = sectionBuilder.buildFormData();
-  }
-});
-
 const onAddRow = async () => {
-  await sectionBuilder.updateDataValues(formData.value).addRow();
-  console.log(sectionBuilder.buildFormRows());
-  formSchema.value = sectionBuilder.buildFormRows();
-  formData.value = sectionBuilder.buildFormData();
+  await modelFormStore.addRowToSection(props.section.id);
 };
 
 const onSubmit = async () => {
   emits(
     "submit",
-    sectionBuilder.updateDataValues(formData.value).buildRequestValues(),
+    Object.entries(formData.value).map(([key, value]) => ({
+      id: key,
+      value,
+    })),
   );
 };
-
-onMounted(() => {
-  sectionBuilder = new RepeatableSectionBuilder(
-    props.modelId,
-    props.dataValues,
-    props.section,
-  );
-  formSchema.value = sectionBuilder.buildFormRows();
-  formData.value = sectionBuilder.buildFormData();
-});
 </script>
