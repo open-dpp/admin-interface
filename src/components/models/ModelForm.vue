@@ -1,21 +1,36 @@
 <template>
-  <FormKit type="form" v-model="formData" @submit="onSubmit">
-    <FormKitSchema
-      v-if="formSchema"
-      :schema="formSchema"
-      :library="{ Section, TextField }"
+  <div
+    v-for="section of props.productDataModel.sections"
+    v-bind:key="section.id"
+  >
+    <RepeatableSectionForm
+      v-if="section.type == SectionType.REPEATABLE"
+      :data-values="
+        props.model.dataValues.filter((s) => s.dataSectionId === section.id)
+      "
+      :section="section"
+      @submit="onSubmit"
     />
-  </FormKit>
+    <GroupSectionForm
+      v-else
+      :data-values="
+        props.model.dataValues.filter((s) => s.dataSectionId === section.id)
+      "
+      :section="section"
+      @submit="onSubmit"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-
-import { DataValuePatchDto, ModelDto } from "@open-dpp/api-client";
-import { ProductDataModelDto } from "@open-dpp/api-client";
-import { FormKitSchemaNode } from "@formkit/core";
-import Section from "./form-components/Section.vue";
-import TextField from "./form-components/TextField.vue";
+import {
+  ModelDto,
+  ProductDataModelDto,
+  SectionType,
+} from "@open-dpp/api-client";
+import GroupSectionForm from "./form-components/GroupSectionForm.vue";
+import RepeatableSectionForm from "./form-components/RepeatableSectionForm.vue";
+import { RequestDataValues } from "./form-components/section";
 
 // Assign the custom component a library
 const props = defineProps<{
@@ -24,60 +39,10 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-  (e: "submit", dataValues: DataValuePatchDto[]): void;
+  (e: "submit", dataValues: RequestDataValues): void;
 }>();
 
-const formSchema = ref<FormKitSchemaNode[]>();
-const formData = ref<Record<string, unknown>>({});
-
-const onSubmit = async () => {
-  emits(
-    "submit",
-    Object.entries(formData.value).map(([key, value]) => ({
-      id: key,
-      value,
-    })),
-  );
+const onSubmit = (dataValues: RequestDataValues) => {
+  emits("submit", dataValues);
 };
-
-onMounted(() => {
-  formData.value = Object.fromEntries(
-    props.model.dataValues.map((d) => [d.id, d.value]),
-  );
-  const sections = props.productDataModel.sections
-    .map((s) => [
-      {
-        $cmp: "Section",
-        props: {
-          label: s.id,
-        },
-        children: [
-          ...s.dataFields
-            .map((f) => {
-              const dataValueId = props.model.dataValues.find(
-                (d) => d.dataFieldId === f.id,
-              )?.id;
-              return {
-                $cmp: "TextField",
-                props: {
-                  id: dataValueId,
-                  name: dataValueId,
-                  label: f.name,
-                  validation: "required",
-                },
-              };
-            })
-            .flat(),
-        ],
-      },
-    ])
-    .flat();
-  formSchema.value = [
-    {
-      $el: "div",
-      attrs: { class: "flex flex-col gap-4" },
-      children: sections,
-    },
-  ];
-});
 </script>
