@@ -1,19 +1,19 @@
 <template>
   <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
     <FormKit
-      v-bind="computedAttrs"
       :data-cy="props.id"
       inner-class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300"
+      v-bind="computedAttrs"
     />
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { computed, useAttrs } from "vue";
 
 const props = defineProps<{ id: string }>();
 
-const attrs = useAttrs();
+const attrs: any = useAttrs();
 
 const computedAttrs = computed(() => ({
   ...attrs,
