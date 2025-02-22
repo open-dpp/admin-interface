@@ -2,7 +2,6 @@
   <form-kit
     id="createProductForm"
     :actions="false"
-    outer-class="w-full"
     type="form"
     @submit="create"
   >
@@ -20,21 +19,21 @@
         type="step"
       >
         <form-kit
+          data-cy="name"
           help="Geben Sie Ihrem Modell einen Namen"
           label="Name"
           name="name"
           type="text"
           validation="required"
-          data-cy="name"
         />
         <form-kit
+          :options="selectableDataModels"
+          data-cy="productDataModelId"
           help="Wählen Sie das Datenmodell aus"
           label="Datenmodell"
           name="productDataModelId"
-          data-cy="productDataModelId"
           type="select"
           validation="required"
-          :options="selectableDataModels"
         />
         <template #stepNext>
           <FormKit label="Erstellen" type="submit" />

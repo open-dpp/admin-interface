@@ -1,21 +1,29 @@
 <template>
   <div class="overflow-hidden bg-white shadow sm:rounded-lg">
     <div class="px-4 py-6 sm:px-6">
-      <h3 class="text-base/7 font-semibold text-gray-900">
-        {{ `Abschnitt ${props.section.name}` }}
-      </h3>
+      <div>
+        <h3 class="text-base/7 font-semibold text-gray-900">
+          {{ `Abschnitt ${props.section.name}` }}
+        </h3>
+      </div>
+      <FormKit
+        v-model="formData"
+        :actions="false"
+        type="form"
+        @submit="onSubmit"
+      >
+        <FormKitSchema
+          v-if="formSchema"
+          :library="{ TextField }"
+          :schema="formSchema"
+        />
+        <FormKit label="Speichern" type="submit" />
+      </FormKit>
     </div>
-    <FormKit type="form" v-model="formData" @submit="onSubmit">
-      <FormKitSchema
-        v-if="formSchema"
-        :schema="formSchema"
-        :library="{ TextField }"
-      />
-    </FormKit>
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { DataValuePatchDto, SectionDto } from "@open-dpp/api-client";
 import { ref, watch } from "vue";
 import TextField from "./TextField.vue";

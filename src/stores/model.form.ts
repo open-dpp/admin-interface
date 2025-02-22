@@ -74,19 +74,64 @@ export const useModelFormStore = defineStore("model.form", () => {
             validation: "required",
           };
         });
-        rows.push(...row);
+
+        rows.push({
+          type: "row",
+          id: "",
+          name: "",
+          label: "",
+          validation: "",
+          children: [...row],
+        });
+        if (i !== maxRow) {
+          rows.push({
+            type: "hr",
+            id: "",
+            name: "",
+            label: "",
+            validation: "",
+          });
+        }
       }
     }
 
-    return rows.map((r) => ({
-      $cmp: r.type,
-      props: {
-        id: r.id,
-        name: r.name,
-        label: r.label,
-        validation: "required",
-      },
-    }));
+    return rows.map((r) => {
+      if (r.type === "row") {
+        return {
+          $el: "div",
+          attrs: {
+            class: "flex flex-row gap-1",
+          },
+          props: {
+            id: r.id,
+            name: r.name,
+            label: r.label,
+            validation: r.validation,
+          },
+          children: r.children
+            ? r.children.map((child) => ({
+                $cmp: child.type,
+                props: {
+                  id: child.id,
+                  name: child.name,
+                  label: child.label,
+                  validation: child.validation,
+                },
+              }))
+            : [],
+        };
+      } else {
+        return {
+          $cmp: r.type,
+          props: {
+            id: r.id,
+            name: r.name,
+            label: r.label,
+            validation: r.validation,
+          },
+        };
+      }
+    });
   };
 
   const addRowToSection = async (sectionId: string) => {
