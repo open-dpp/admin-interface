@@ -11,8 +11,8 @@
     <div class="mt-8 flow-root">
       <CreateModelForm
         v-if="productDataModels"
-        @submit="onSubmit"
         :product-data-models="productDataModels"
+        @submit="onSubmit"
       />
     </div>
   </div>

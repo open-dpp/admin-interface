@@ -9,8 +9,7 @@
     "check-ts": "vue-tsc --noEmit",
     "lint": "eslint --fix src",
     "test": "vitest --run src/",
-    "preview": "vite preview",
-    "cypress:open": "cypress open"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@formkit/addons": "^1.6.9",

@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import apiClient from "../lib/api-client";
-import { ModelDto } from "@open-dpp/api-client";
+import { ModelCreateDto, ModelDto } from "@open-dpp/api-client";
 
 export const useModelsStore = defineStore("models", () => {
   const models = ref<ModelDto[]>([]);
@@ -16,5 +16,10 @@ export const useModelsStore = defineStore("models", () => {
     return response.data;
   };
 
-  return { models, getModels, getModelById };
+  const createModel = async (data: ModelCreateDto) => {
+    const response = await apiClient.models.postModel(data);
+    return response.data;
+  };
+
+  return { models, getModels, getModelById, createModel };
 });

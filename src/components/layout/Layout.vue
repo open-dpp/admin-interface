@@ -430,8 +430,8 @@ const unfilteredNavigation = computed<Array<MenuItemInterface>>(() => [
     show: () => indexStore.selectedOrganization !== null,
   },
   {
-    name: "Users",
-    to: "/users",
+    name: "Mitglieder",
+    to: "/organizations/" + indexStore.selectedOrganization + "/members",
     icon: UsersIcon,
     show: () => indexStore.selectedOrganization !== null,
   },

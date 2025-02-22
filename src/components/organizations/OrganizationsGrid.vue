@@ -13,27 +13,43 @@
           type="button"
         >
           <router-link to="/organizations/create"
-            >Organisation erstellen</router-link
-          >
+            >Organisation erstellen
+          </router-link>
         </button>
       </div>
     </div>
     <div class="mt-8 flow-root">
       <ul
         v-if="organizationsStore.organizations.length > 0"
-        role="list"
         class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+        role="list"
       >
         <li
           v-for="organization in organizationsStore.organizations"
           :key="organization.id"
-          class="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow"
           :class="{
             'border-indigo-500 border-2':
               organization.id === indexStore.selectedOrganization,
           }"
+          class="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow"
         >
           <div class="flex w-full items-center justify-between space-x-6 p-6">
+            <div>
+              <FormKit
+                :disabled="organization.id === indexStore.selectedOrganization"
+                :label="
+                  organization.id === indexStore.selectedOrganization
+                    ? 'Ausgewählt'
+                    : 'Auswählen'
+                "
+                :value="organization.id === indexStore.selectedOrganization"
+                name="terms"
+                type="checkbox"
+                validation="accepted"
+                validation-visibility="dirty"
+                @input="setOrganization(organization.id)"
+              />
+            </div>
             <div class="flex-1 truncate">
               <div class="flex items-center space-x-3">
                 <h3 class="truncate text-sm font-medium text-gray-900">
@@ -48,12 +64,17 @@
                 {{ organization.id }}
               </p>
             </div>
-            <img
-              v-if="organization.imageUrl"
-              class="size-10 shrink-0 bg-gray-300"
-              :src="organization.imageUrl"
-              alt=""
-            />
+            <div>
+              <button
+                class="flex flex-row flex-1 items-center justify-center gap-x-3 rounded-br-lg border border-transparent py-4 text-sm font-semibold text-gray-900"
+                @click="router.push(`/organizations/${organization.id}`)"
+              >
+                <Cog8ToothIcon
+                  aria-hidden="true"
+                  class="size-5 text-gray-400 hover:text-blue-500"
+                />
+              </button>
+            </div>
           </div>
           <div>
             <div class="-mt-px flex divide-x divide-gray-200">
@@ -62,22 +83,11 @@
                 class="flex w-0 flex-1"
               >
                 <button
+                  class="-mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold text-gray-900"
                   @click="setOrganization(organization.id)"
-                  class="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold text-gray-900"
                 >
-                  <CheckIcon class="size-5 text-gray-400" aria-hidden="true" />
+                  <CheckIcon aria-hidden="true" class="size-5 text-gray-400" />
                   Auswählen
-                </button>
-              </div>
-              <div class="-ml-px flex w-0 flex-1">
-                <button
-                  class="relative inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-br-lg border border-transparent py-4 text-sm font-semibold text-gray-900"
-                >
-                  <Cog8ToothIcon
-                    class="size-5 text-gray-400"
-                    aria-hidden="true"
-                  />
-                  Einstellungen
                 </button>
               </div>
             </div>
@@ -90,7 +100,7 @@
     </div>
   </div>
 </template>
-<script setup lang="ts">
+<script lang="ts" setup>
 import { CheckIcon, Cog8ToothIcon } from "@heroicons/vue/20/solid";
 import { useIndexStore } from "../../stores";
 import { useRouter } from "vue-router";

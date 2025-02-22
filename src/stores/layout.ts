@@ -1,7 +1,10 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
-export enum ModalType {}
+export enum ModalType {
+  INVITE_USER_MODAL = "inviteUserModal",
+}
+
 export enum SidebarType {}
 
 export interface BreadcrumItem {
@@ -73,5 +76,6 @@ export const useLayoutStore = defineStore("layout", () => {
     isPageLoading,
     quickAccessItems,
     addQuickAccessItem,
+    modalOpen,
   };
 });

@@ -1,23 +1,20 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import axios from "../lib/axios";
-
-interface Organization {
-  id: string;
-  name: string;
-  imageUrl: string;
-}
+import { OrganizationDto } from "@open-dpp/api-client";
+import apiClient from "../lib/api-client";
 
 export const useOrganizationsStore = defineStore("organizations", () => {
-  const organizations = ref<Organization[]>([]);
+  const organizations = ref<OrganizationDto[]>([]);
 
   const fetchOrganizations = async () => {
-    const response = await axios.get("organizations");
+    const response = await apiClient.organizations.getAll();
     organizations.value = response.data;
   };
 
   const createOrganization = async (data: { name: string }) => {
-    const response = await axios.post("organizations", data);
+    const response = await apiClient.organizations.post({
+      name: data.name,
+    });
     organizations.value.push(response.data);
     return response.data;
   };
