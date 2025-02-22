@@ -7,7 +7,7 @@ import {
   SectionType,
 } from "@open-dpp/api-client";
 import apiClient from "../lib/api-client";
-import { groupBy, maxBy, minBy } from "lodash";
+import { groupBy, maxBy, merge, minBy } from "lodash";
 
 export const useModelFormStore = defineStore("model.form", () => {
   const model = ref<ModelDto>();
@@ -17,10 +17,14 @@ export const useModelFormStore = defineStore("model.form", () => {
     return model.value?.dataValues.filter((d) => d.dataSectionId === sectionId);
   };
 
-  const getFormData = (sectionId: string) => {
-    return Object.fromEntries(
+  const getFormData = (
+    sectionId: string,
+    existingFormData: Record<string, unknown>,
+  ) => {
+    const dataValues = Object.fromEntries(
       getDataOfSection(sectionId)?.map((d) => [d.id, d.value]) ?? [],
     );
+    return merge({ ...existingFormData }, { ...dataValues });
   };
 
   const getFormSchema = (sectionId: string) => {

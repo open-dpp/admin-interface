@@ -37,7 +37,10 @@ watch(
   () => modelFormStore.model?.dataValues, // The store property to watch
   () => {
     formSchema.value = modelFormStore.getFormSchema(props.section.id);
-    formData.value = modelFormStore.getFormData(props.section.id);
+    formData.value = modelFormStore.getFormData(
+      props.section.id,
+      formData.value,
+    );
   },
   { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
 );
