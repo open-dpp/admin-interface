@@ -89,7 +89,7 @@
                   </td>
                   <td>
                     <router-link
-                      :to="`/organizations/${indexStore.selectedOrganization}/items/${item.id}/qr-code`"
+                      :to="`/organizations/${indexStore.selectedOrganization}/models/${route.params.modelId}/items/${item.id}/qr-code`"
                       append
                       class="text-indigo-600 hover:text-indigo-900"
                     >
@@ -110,8 +110,11 @@
 import { computed, ref } from "vue";
 import Item from "../../types/Item";
 import { useIndexStore } from "../../stores";
+import { useRoute } from "vue-router";
 
 const indexStore = useIndexStore();
+
+const route = useRoute();
 
 const props = defineProps<{
   items: Item[];
