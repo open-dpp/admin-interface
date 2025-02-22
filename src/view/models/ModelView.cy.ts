@@ -3,6 +3,7 @@ import { createMemoryHistory, createRouter } from "vue-router";
 
 import { API_URL } from "../../const";
 import { routes } from "../../router";
+import { ProductDataModelDto, SectionType } from "@open-dpp/api-client";
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -12,13 +13,15 @@ const router = createRouter({
 describe("<Model />", () => {
   it("renders items and creates a new one", () => {
     // see: https://on.cypress.io/mounting-vue
-    const productDataModel = {
+    const productDataModel: ProductDataModelDto = {
       id: "pdm1",
       name: "Laptop neu",
       version: "1.0",
       sections: [
         {
           id: "s1",
+          type: SectionType.GROUP,
+          name: "Technische Spezifikation",
           dataFields: [
             {
               id: "f1",
@@ -44,8 +47,8 @@ describe("<Model />", () => {
       id: "someId",
       name: "My model",
       dataValues: [
-        { id: "d1", value: "val1", dataFieldId: "f1" },
-        { id: "d2", value: "val2", dataFieldId: "f2" },
+        { id: "d1", value: "val1", dataFieldId: "f1", dataSectionId: "s1" },
+        { id: "d2", value: "val2", dataFieldId: "f2", dataSectionId: "s1" },
       ],
       productDataModelId: productDataModel.id,
     };
