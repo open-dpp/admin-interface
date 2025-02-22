@@ -1,12 +1,16 @@
 <template>
   <section>
     <div class="flex flex-col gap-3 px-3">
-      <FastActions />
-      <BentoGridHome />
+      <FastActions
+        v-if="indexStore.selectedOrganization"
+        :organization-id="indexStore.selectedOrganization"
+      />
     </div>
   </section>
 </template>
 <script lang="ts" setup>
-import BentoGridHome from "../components/BentoGridHome.vue";
 import FastActions from "../components/FastActions.vue";
+import { useIndexStore } from "../stores";
+
+const indexStore = useIndexStore();
 </script>

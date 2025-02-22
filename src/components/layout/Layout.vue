@@ -385,6 +385,7 @@ import { useIndexStore } from "../../stores";
 import SelectOrganization from "../organizations/SelectOrganization.vue";
 import RingLoader from "../RingLoader.vue";
 import { useLayoutStore } from "../../stores/layout";
+import { DASHBOARD } from "../../router/routes/base";
 
 const route = useRoute();
 const indexStore = useIndexStore();
@@ -398,10 +399,10 @@ interface MenuItemInterface {
 }
 
 const unfilteredNavigation = computed<Array<MenuItemInterface>>(() => [
-  { name: "Dashboard", to: "/", icon: HomeIcon, show: () => true },
+  { name: "Dashboard", to: DASHBOARD.path, icon: HomeIcon, show: () => true },
   {
     name: "Modelle",
-    to: "/models",
+    to: "/organizations/" + indexStore.selectedOrganization + "/models",
     icon: CubeIcon,
     show: () => indexStore.selectedOrganization !== null,
   },

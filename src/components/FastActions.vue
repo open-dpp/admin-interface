@@ -28,15 +28,14 @@
       </div>
       <div class="mt-8">
         <h3 class="text-base font-semibold leading-6 text-gray-900">
-          <a :href="action.href" class="focus:outline-none">
+          <router-link :to="action.to" class="focus:outline-none">
             <!-- Extend touch target to entire panel -->
             <span aria-hidden="true" class="absolute inset-0" />
             {{ action.title }}
-          </a>
+          </router-link>
         </h3>
         <p class="mt-2 text-sm text-gray-500">
-          Doloribus dolores nostrum quia qui natus officia quod et dolorem. Sit
-          repellendus qui ut at blanditiis et quo et molestiae.
+          {{ action.description }}
         </p>
       </div>
       <span
@@ -54,57 +53,31 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  AcademicCapIcon,
-  BanknotesIcon,
-  CheckBadgeIcon,
-  ClockIcon,
-  ReceiptRefundIcon,
-  UsersIcon,
-} from "@heroicons/vue/24/outline";
+import { CubeIcon, UsersIcon } from "@heroicons/vue/24/outline";
+import { computed } from "vue";
 
-const actions = [
+const props = defineProps<{
+  organizationId: string;
+}>();
+
+const actions = computed(() => [
   {
-    title: "Request time off",
-    href: "#",
-    icon: ClockIcon,
-    iconForeground: "text-teal-700",
-    iconBackground: "bg-teal-50",
-  },
-  {
-    title: "Benefits",
-    href: "#",
-    icon: CheckBadgeIcon,
-    iconForeground: "text-purple-700",
-    iconBackground: "bg-purple-50",
-  },
-  {
-    title: "Schedule a one-on-one",
-    href: "#",
+    title: "Mitglieder hinzufügen",
+    description:
+      "Mitglieder der Organisation ansehen, um dort ein neues Mitglieder hinzuzufügen.",
+    to: "/organizations/" + props.organizationId + "/members",
     icon: UsersIcon,
     iconForeground: "text-sky-700",
     iconBackground: "bg-sky-50",
   },
   {
-    title: "Payroll",
-    href: "#",
-    icon: BanknotesIcon,
+    title: "Modell hinzufügen",
+    description:
+      "Modelle der Organisation ansehen, um dort ein neues Modell hinzuzufügen.",
+    to: "/organizations/" + props.organizationId + "/models",
+    icon: CubeIcon,
     iconForeground: "text-yellow-700",
     iconBackground: "bg-yellow-50",
   },
-  {
-    title: "Submit an expense",
-    href: "#",
-    icon: ReceiptRefundIcon,
-    iconForeground: "text-rose-700",
-    iconBackground: "bg-rose-50",
-  },
-  {
-    title: "Training",
-    href: "#",
-    icon: AcademicCapIcon,
-    iconForeground: "text-indigo-700",
-    iconBackground: "bg-indigo-50",
-  },
-];
+]);
 </script>

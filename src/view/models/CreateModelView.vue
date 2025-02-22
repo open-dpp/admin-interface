@@ -25,6 +25,10 @@ import apiClient from "../../lib/api-client";
 import { ProductDataModelGetAllDto } from "@open-dpp/api-client";
 import { useRouter } from "vue-router";
 
+const props = defineProps<{
+  organizationId: string;
+}>();
+
 const productDataModels = ref<ProductDataModelGetAllDto[]>();
 const router = useRouter();
 
@@ -40,7 +44,7 @@ const onSubmit = async (
     selectedProductDataModelId,
     response.data.id,
   );
-  await router.push("/models");
+  await router.push("/organizations/" + props.organizationId + "/models");
 };
 
 onMounted(async () => {

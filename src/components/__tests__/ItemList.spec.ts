@@ -3,7 +3,9 @@ import { fireEvent, render, screen, within } from "@testing-library/vue";
 import ItemList from "../products/ItemList.vue";
 import { createMemoryHistory, createRouter } from "vue-router";
 import { routes } from "../../router";
+import { createPinia } from "pinia";
 
+const pinia = createPinia();
 const router = createRouter({
   history: createMemoryHistory(),
   routes: routes,
@@ -17,7 +19,7 @@ describe("ItemList.vue", () => {
         items,
       },
       global: {
-        plugins: [router],
+        plugins: [pinia, router],
       },
     });
     expect(screen.getByText("Artikel")).toBeTruthy();
@@ -46,7 +48,7 @@ describe("ItemList.vue", () => {
         items,
       },
       global: {
-        plugins: [router],
+        plugins: [pinia, router],
       },
     });
     const createButton = screen.getByRole("button", {

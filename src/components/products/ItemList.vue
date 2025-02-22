@@ -89,9 +89,9 @@
                   </td>
                   <td>
                     <router-link
-                      :to="`items/${item.id}/qr-code`"
-                      class="text-indigo-600 hover:text-indigo-900"
+                      :to="`/organizations/${indexStore.selectedOrganization}/items/${item.id}/qr-code`"
                       append
+                      class="text-indigo-600 hover:text-indigo-900"
                     >
                       QR-Code<span class="sr-only">, {{ item.id }}</span>
                     </router-link>
@@ -109,6 +109,9 @@
 <script lang="ts" setup>
 import { computed, ref } from "vue";
 import Item from "../../types/Item";
+import { useIndexStore } from "../../stores";
+
+const indexStore = useIndexStore();
 
 const props = defineProps<{
   items: Item[];

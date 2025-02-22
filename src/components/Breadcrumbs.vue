@@ -27,8 +27,8 @@
             <path d="M.293 0l22 22-22 22h1.414l22-22-22-22H.293z" />
           </svg>
           <router-link
-            :aria-current="isCurrent(page.path) ? 'page' : undefined"
-            :to="page.path"
+            :aria-current="isCurrent(page.route) ? 'page' : undefined"
+            :to="{ name: page.route.name, params: page.params }"
             class="ml-4 text-sm font-medium text-gray-500 hover:text-gray-700"
             >{{ page.name }}
           </router-link>
@@ -41,13 +41,13 @@
 <script lang="ts" setup>
 import { HomeIcon } from "@heroicons/vue/20/solid";
 import { useLayoutStore } from "../stores/layout";
-import { useRoute } from "vue-router";
+import { RouteRecordRaw, useRoute } from "vue-router";
 
 const layoutStore = useLayoutStore();
 
 const route = useRoute();
 
-const isCurrent = (path: string) => {
-  return route.path === path;
+const isCurrent = (record: RouteRecordRaw) => {
+  return route.name === record.name;
 };
 </script>

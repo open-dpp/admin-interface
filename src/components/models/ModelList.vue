@@ -7,10 +7,14 @@
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
         <button
+          v-if="indexStore.selectedOrganization"
           class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           type="button"
         >
-          <router-link to="/models/create">Modell hinzufügen</router-link>
+          <router-link
+            :to="`/organizations/${indexStore.selectedOrganization}/models/create`"
+            >Modell hinzufügen
+          </router-link>
         </button>
       </div>
     </div>
@@ -123,19 +127,19 @@
                     class="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-3 gap-4 flex flex-row"
                   >
                     <router-link
-                      :to="`/models/${model.id}/items`"
+                      :to="`/organizations/${indexStore.selectedOrganization}/models/${model.id}/items`"
                       class="text-indigo-600 hover:text-indigo-900"
                     >
                       Artikel
                     </router-link>
                     <router-link
-                      :to="`/models/${model.id}`"
+                      :to="`/organizations/${indexStore.selectedOrganization}/models/${model.id}`"
                       class="text-indigo-600 hover:text-indigo-900"
                     >
                       Details<span class="sr-only">, {{ model.id }}</span>
                     </router-link>
                     <router-link
-                      :to="`/models/${model.id}/qr-code`"
+                      :to="`/organizations/${indexStore.selectedOrganization}/models/${model.id}/qr-code`"
                       class="text-indigo-600 hover:text-indigo-900"
                     >
                       QR-Code<span class="sr-only">, {{ model.id }}</span>
@@ -154,7 +158,9 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue";
 import { useModelsStore } from "../../stores/models";
+import { useIndexStore } from "../../stores";
 
+const indexStore = useIndexStore();
 const modelsStore = useModelsStore();
 
 const emits = defineEmits<{

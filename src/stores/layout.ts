@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
+import { RouteParamsGeneric, RouteRecordRaw } from "vue-router";
 
 export enum ModalType {
   INVITE_USER_MODAL = "inviteUserModal",
@@ -7,9 +8,10 @@ export enum ModalType {
 
 export enum SidebarType {}
 
-export interface BreadcrumItem {
+export interface BreadcrumbItem {
   name: string;
-  path: string;
+  route: RouteRecordRaw;
+  params?: RouteParamsGeneric;
 }
 
 export interface QuickAccessItem {
@@ -18,7 +20,7 @@ export interface QuickAccessItem {
 }
 
 export const useLayoutStore = defineStore("layout", () => {
-  const breadcrumbs = ref<BreadcrumItem[]>([]);
+  const breadcrumbs = ref<BreadcrumbItem[]>([]);
   const modalOpen = ref<ModalType | null>(null);
   const sidebarOpen = ref<SidebarType | null>(null);
   const isPageLoading = ref(false);
