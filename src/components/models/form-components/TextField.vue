@@ -13,7 +13,7 @@ import { computed, useAttrs } from "vue";
 
 const props = defineProps<{ id: string }>();
 
-const attrs: any = useAttrs();
+const attrs = useAttrs() as Record<string, unknown>;
 
 const computedAttrs = computed(() => ({
   ...attrs,
