@@ -28,7 +28,6 @@ if (window.localStorage.getItem("refresh_token")) {
 
 export const initializeKeycloak = async (keycloak: Keycloak) => {
   await keycloak.init(initOptions);
-
   if (keycloak.authenticated && keycloak.token && keycloak.tokenParsed) {
     setAxiosAuthHeader(keycloak.token);
     apiClient.setApiKey(keycloak.token);

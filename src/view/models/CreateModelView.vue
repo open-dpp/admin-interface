@@ -11,8 +11,8 @@
     <div class="mt-8 flow-root">
       <CreateModelForm
         v-if="productDataModels"
-        @submit="onSubmit"
         :product-data-models="productDataModels"
+        @submit="onSubmit"
       />
     </div>
   </div>
@@ -32,11 +32,11 @@ const onSubmit = async (
   selectedProductDataModelId: string,
   modelName: string,
 ) => {
-  const response = await apiClient.postModel({
+  const response = await apiClient.models.postModel({
     name: modelName,
   });
 
-  await apiClient.assignProductDataModelToModel(
+  await apiClient.models.assignProductDataModelToModel(
     selectedProductDataModelId,
     response.data.id,
   );
@@ -44,7 +44,7 @@ const onSubmit = async (
 };
 
 onMounted(async () => {
-  const response = await apiClient.getProductDataModels();
+  const response = await apiClient.productDataModels.getProductDataModels();
   productDataModels.value = response.data;
 });
 </script>

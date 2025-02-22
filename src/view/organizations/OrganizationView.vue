@@ -25,7 +25,13 @@
         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
           <dt class="text-sm font-medium text-gray-900">Erstellt von</dt>
           <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-            margotfoster@example.com
+            {{ organization.createdByUserId }}
+          </dd>
+        </div>
+        <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-900">Administriert von</dt>
+          <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
+            {{ organization.ownedByUserId }}
           </dd>
         </div>
         <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -46,6 +52,8 @@
               role="list"
             >
               <li
+                v-for="member of organization.members"
+                :key="member.id"
                 class="flex items-center justify-between py-4 pl-4 pr-5 text-sm/6"
               >
                 <div class="flex w-0 flex-1 items-center">
@@ -54,10 +62,16 @@
                     class="h-5 w-5 flex-shrink-0 text-gray-400"
                   />
                   <div class="ml-4 flex min-w-0 flex-1 gap-2">
-                    <span class="truncate font-medium">test@test.test</span>
+                    <span class="truncate font-medium">{{ member.email }}</span>
                     <span
+                      v-if="organization.ownedByUserId === member.id"
                       class="inline-flex shrink-0 items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20"
                       >Admin</span
+                    >
+                    <span
+                      v-if="organization.createdByUserId === member.id"
+                      class="inline-flex shrink-0 items-center rounded-full bg-green-50 px-1.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20"
+                      >Ersteller</span
                     >
                   </div>
                 </div>
@@ -93,13 +107,10 @@
 </template>
 
 <script lang="ts" setup>
-import { useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
 import { OrganizationDto } from "@open-dpp/api-client";
 import apiClient from "../../lib/api-client";
 import { UserCircleIcon } from "@heroicons/vue/20/solid";
-
-const route = useRoute();
 
 const props = defineProps<{
   organizationId: string;
@@ -114,12 +125,19 @@ const inviteUserToOrg = async () => {
       userEmailToAdd.value,
       props.organizationId,
     );
-    console.log(response);
+    if (response.status === 201) {
+      await fetchOrganization();
+      userEmailToAdd.value = "";
+    }
   }
 };
 
-onMounted(async () => {
+const fetchOrganization = async () => {
   const response = await apiClient.organizations.getById(props.organizationId);
   organization.value = response.data;
+};
+
+onMounted(async () => {
+  await fetchOrganization();
 });
 </script>

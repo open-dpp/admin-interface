@@ -43,9 +43,9 @@ import apiClient from "../../lib/api-client";
 
 import ModelForm from "../../components/models/ModelForm.vue";
 import {
-  ProductDataModelDto,
-  ModelDto,
   DataValuePatchDto,
+  ModelDto,
+  ProductDataModelDto,
 } from "@open-dpp/api-client";
 
 const route = useRoute();
@@ -55,15 +55,17 @@ const productDataModel = ref<ProductDataModelDto>();
 
 const onSubmit = async (dataValues: DataValuePatchDto[]) => {
   if (model.value) {
-    await apiClient.updateModelData(model.value.id, dataValues);
+    await apiClient.models.updateModelData(model.value.id, dataValues);
   }
 };
 
 onMounted(async () => {
-  const response = await apiClient.getModelById(String(route.params.modelId));
+  const response = await apiClient.models.getModelById(
+    String(route.params.modelId),
+  );
   model.value = response.data;
   if (model.value.productDataModelId) {
-    const response = await apiClient.getProductDataModelById(
+    const response = await apiClient.productDataModels.getProductDataModelById(
       model.value.productDataModelId,
     );
     productDataModel.value = response.data;

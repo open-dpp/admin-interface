@@ -1,9 +1,12 @@
 import { describe, expect, test } from "vitest";
 import { render, screen } from "@testing-library/vue";
 import ModelForm from "../models/ModelForm.vue";
-import { ModelDto } from "@open-dpp/api-client";
-import { plugin as FormKit } from "@formkit/vue";
-import { defaultConfig } from "@formkit/vue";
+import {
+  ModelDto,
+  ProductDataModelDto,
+  SectionType,
+} from "@open-dpp/api-client";
+import { defaultConfig, plugin as FormKit } from "@formkit/vue";
 import { rootClasses } from "../../../formkit.theme";
 import { genesisIcons } from "@formkit/icons";
 import { de } from "@formkit/i18n";
@@ -11,15 +14,18 @@ import {
   createAutoAnimatePlugin,
   createMultiStepPlugin,
 } from "@formkit/addons";
+
 describe("ModelForm.vue", () => {
   test("should render form with data", async () => {
-    const productDataModel = {
+    const productDataModel: ProductDataModelDto = {
       id: "pdm1",
       name: "Laptop neu",
       version: "1.0",
       sections: [
         {
           id: "s1",
+          name: "s1",
+          type: SectionType.GROUP,
           dataFields: [
             {
               id: "f1",

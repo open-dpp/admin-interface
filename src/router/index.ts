@@ -18,11 +18,6 @@ export const routes = [
       layoutStore.breadcrumbs = [];
     },
   },
-  {
-    path: "/users",
-    component: () =>
-      import("../view/organizations/OrganizationMembersView.vue"),
-  },
   { path: "/settings", component: () => import("../view/Settings.vue") },
   {
     path: "/models",
@@ -144,8 +139,28 @@ export const routes = [
       layoutStore.breadcrumbs = [
         { name: "Organisationen", path: "/organizations" },
         {
-          name: "Organisation",
+          name: to.params.organizationId + "" || "Organisation",
           path: "/organizations/" + to.params.organizationId,
+        },
+      ];
+    },
+  },
+  {
+    path: "/organizations/:organizationId/members",
+    props: true,
+    component: () =>
+      import("../view/organizations/OrganizationMembersView.vue"),
+    beforeEnter: (to: RouteLocationNormalizedGeneric) => {
+      const layoutStore = useLayoutStore();
+      layoutStore.breadcrumbs = [
+        { name: "Organisationen", path: "/organizations" },
+        {
+          name: to.params.organizationId + "" || "Organisation",
+          path: "/organizations/" + to.params.organizationId,
+        },
+        {
+          name: "Mitglieder",
+          path: "/organizations/" + to.params.organizationId + "/members",
         },
       ];
     },
