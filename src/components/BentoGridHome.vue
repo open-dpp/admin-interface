@@ -15,7 +15,7 @@
             class="absolute inset-px rounded-lg bg-white max-lg:rounded-t-[2rem] lg:rounded-tl-[2rem]"
           />
           <div
-            class="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)] lg:rounded-tl-[calc(2rem+1px)]"
+            class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)] lg:rounded-tl-[calc(2rem+1px)]"
           >
             <img
               alt=""
@@ -39,7 +39,7 @@
             </div>
           </div>
           <div
-            class="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 max-lg:rounded-t-[2rem] lg:rounded-tl-[2rem]"
+            class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5 max-lg:rounded-t-[2rem] lg:rounded-tl-[2rem]"
           />
         </div>
         <div class="relative lg:col-span-3">
@@ -47,7 +47,7 @@
             class="absolute inset-px rounded-lg bg-white lg:rounded-tr-[2rem]"
           />
           <div
-            class="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] lg:rounded-tr-[calc(2rem+1px)]"
+            class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-tr-[calc(2rem+1px)]"
           >
             <img
               alt=""
@@ -68,7 +68,7 @@
             </div>
           </div>
           <div
-            class="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 lg:rounded-tr-[2rem]"
+            class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5 lg:rounded-tr-[2rem]"
           />
         </div>
         <div class="relative lg:col-span-2">
@@ -76,7 +76,7 @@
             class="absolute inset-px rounded-lg bg-white lg:rounded-bl-[2rem]"
           />
           <div
-            class="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]"
+            class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]"
           >
             <img
               alt=""
@@ -96,13 +96,13 @@
             </div>
           </div>
           <div
-            class="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 lg:rounded-bl-[2rem]"
+            class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5 lg:rounded-bl-[2rem]"
           />
         </div>
         <div class="relative lg:col-span-2">
           <div class="absolute inset-px rounded-lg bg-white" />
           <div
-            class="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)]"
+            class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]"
           >
             <img
               alt=""
@@ -125,7 +125,7 @@
             </div>
           </div>
           <div
-            class="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5"
+            class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5"
           />
         </div>
         <div class="relative lg:col-span-2">
@@ -133,7 +133,7 @@
             class="absolute inset-px rounded-lg bg-white max-lg:rounded-b-[2rem] lg:rounded-br-[2rem]"
           />
           <div
-            class="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-b-[calc(2rem+1px)] lg:rounded-br-[calc(2rem+1px)]"
+            class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-b-[calc(2rem+1px)] lg:rounded-br-[calc(2rem+1px)]"
           >
             <img
               alt=""
@@ -154,7 +154,7 @@
             </div>
           </div>
           <div
-            class="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 max-lg:rounded-b-[2rem] lg:rounded-br-[2rem]"
+            class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5 max-lg:rounded-b-[2rem] lg:rounded-br-[2rem]"
           />
         </div>
       </div>

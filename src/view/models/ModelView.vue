@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col gap-3 pb-5 max-w-[1200px]">
-    <div class="overflow-hidden bg-white shadow sm:rounded-lg">
+    <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
       <div class="px-4 py-6 sm:px-6">
         <h3 class="text-base/7 font-semibold text-gray-900">
           Modell Informationen

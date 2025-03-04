@@ -9,7 +9,7 @@
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
         <button
-          class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           type="button"
         >
           <router-link to="/organizations/create"
@@ -31,7 +31,7 @@
             'border-indigo-500 border-2':
               organization.id === indexStore.selectedOrganization,
           }"
-          class="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow"
+          class="col-span-1 divide-y divide-gray-200 rounded-lg bg-white shadow-sm"
         >
           <div class="flex w-full items-center justify-between space-x-6 p-6">
             <div>
