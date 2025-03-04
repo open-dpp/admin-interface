@@ -2,7 +2,7 @@
   <div class="px-4 py-6 sm:px-6 w-full">
     <FormKit
       :data-cy="props.id"
-      inner-class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300"
+      inner-class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300"
       v-bind="computedAttrs"
     />
   </div>

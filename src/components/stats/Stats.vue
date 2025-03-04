@@ -6,7 +6,7 @@
       <div
         v-for="item in stats"
         :key="item.id"
-        class="relative overflow-hidden rounded-lg bg-white px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6"
+        class="relative overflow-hidden rounded-lg bg-white px-4 pb-12 pt-5 shadow-sm sm:px-6 sm:pt-6"
       >
         <dt>
           <div class="absolute rounded-md bg-indigo-500 p-3">
@@ -33,12 +33,12 @@
             <ArrowUpIcon
               v-if="item.changeType === 'increase'"
               aria-hidden="true"
-              class="h-5 w-5 flex-shrink-0 self-center text-green-500"
+              class="h-5 w-5 shrink-0 self-center text-green-500"
             />
             <ArrowDownIcon
               v-else
               aria-hidden="true"
-              class="h-5 w-5 flex-shrink-0 self-center text-red-500"
+              class="h-5 w-5 shrink-0 self-center text-red-500"
             />
             <span class="sr-only">
               {{ item.changeType === "increase" ? "Increased" : "Decreased" }}

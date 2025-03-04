@@ -31,7 +31,7 @@
             >
               <div class="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
                 <button
-                  class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  class="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                   type="button"
                   @click="emit('close')"
                 >
@@ -59,7 +59,7 @@
                       Der Benutzer wurde erfolgreich eingeladen.
                     </div>
                     <button
-                      class="mt-3 rounded-md bg-green-600 text-white px-3 py-2 text-sm font-semibold shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                      class="mt-3 rounded-md bg-green-600 text-white px-3 py-2 text-sm font-semibold shadow-xs hover:bg-green-700 focus:outline-hidden focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                       type="button"
                       @click="emit('close')"
                     >

@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-hidden bg-white shadow sm:rounded-lg">
+  <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
     <div class="px-4 py-6 sm:px-6">
       <div>
         <h3 class="text-base/7 font-semibold text-gray-900">

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-gray-200 shadow sm:grid sm:grid-cols-2 sm:gap-px sm:divide-y-0"
+    class="divide-y divide-gray-200 overflow-hidden rounded-lg bg-gray-200 shadow-sm sm:grid sm:grid-cols-2 sm:gap-px sm:divide-y-0"
   >
     <div
       v-for="(action, actionIdx) in actions"
@@ -28,7 +28,7 @@
       </div>
       <div class="mt-8">
         <h3 class="text-base font-semibold leading-6 text-gray-900">
-          <router-link :to="action.to" class="focus:outline-none">
+          <router-link :to="action.to" class="focus:outline-hidden">
             <!-- Extend touch target to entire panel -->
             <span aria-hidden="true" class="absolute inset-0" />
             {{ action.title }}

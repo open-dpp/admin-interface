@@ -4,13 +4,13 @@
     class="flex border-b border-gray-200 bg-white min-h-12"
   >
     <ol
-      class="ml-3 flex w-full max-w-screen-xl space-x-4 px-4 sm:px-6 lg:px-8"
+      class="ml-3 flex w-full max-w-(--breakpoint-xl) space-x-4 px-4 sm:px-6 lg:px-8"
       role="list"
     >
       <li class="flex">
         <div class="flex items-center">
           <router-link class="text-gray-400 hover:text-gray-500" to="/">
-            <HomeIcon aria-hidden="true" class="h-5 w-5 flex-shrink-0" />
+            <HomeIcon aria-hidden="true" class="h-5 w-5 shrink-0" />
             <span class="sr-only">Home</span>
           </router-link>
         </div>
@@ -19,7 +19,7 @@
         <div class="flex items-center">
           <svg
             aria-hidden="true"
-            class="h-full w-6 flex-shrink-0 text-gray-200"
+            class="h-full w-6 shrink-0 text-gray-200"
             fill="currentColor"
             preserveAspectRatio="none"
             viewBox="0 0 24 44"

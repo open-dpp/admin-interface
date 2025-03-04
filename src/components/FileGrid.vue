@@ -26,7 +26,7 @@
           alt=""
           class="pointer-events-none object-cover group-hover:opacity-75"
         />
-        <button class="absolute inset-0 focus:outline-none" type="button">
+        <button class="absolute inset-0 focus:outline-hidden" type="button">
           <span class="sr-only">View details for {{ file.title }}</span>
         </button>
       </div>
