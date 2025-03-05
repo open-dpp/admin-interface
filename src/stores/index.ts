@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { LAST_SELECTED_ORGANIZATION_ID_KEY } from "../const";
 import apiClient from "../lib/api-client";
 
@@ -18,8 +18,19 @@ export const useIndexStore = defineStore("index", () => {
     }
     localStorage.setItem(LAST_SELECTED_ORGANIZATION_ID_KEY, organizationId);
     selectedOrganization.value = organizationId;
-    apiClient.setActiveOrganizationId(selectedOrganization.value);
   };
+
+  watch(
+    () => selectedOrganization.value,
+    (newVal) => {
+      if (newVal) {
+        apiClient.setActiveOrganizationId(newVal);
+      }
+    },
+    {
+      immediate: true,
+    },
+  );
 
   return { selectedOrganization, selectOrganization };
 });
