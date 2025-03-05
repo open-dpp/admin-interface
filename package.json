@@ -10,6 +10,7 @@
     "lint": "eslint --fix src",
     "test": "vitest --run src/",
     "cypress": "cypress open --component",
+    "cypress:headless": "cypress run --component --headless",
     "preview": "vite preview"
   },
   "dependencies": {

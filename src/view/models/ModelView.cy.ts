@@ -96,7 +96,7 @@ describe("<Model />", () => {
     cy.get('[data-cy="d2"]').should("have.value", "val2");
     cy.get('[data-cy="d1"]').type("add1");
     cy.get('[data-cy="d2"]').type("add2");
-    cy.contains("button", "Senden").click();
+    cy.contains("button", "Speichern").click();
     cy.wait("@updateData").then((interceptor) => {
       expect(interceptor.request.body).to.deep.equal([
         {
