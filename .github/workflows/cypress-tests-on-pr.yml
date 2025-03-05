@@ -1,7 +1,9 @@
 name: Build and publish docker image
 
 on:
-  merge_group:
+  pull_request:
+    branches:
+      - main
 
 jobs:
 
