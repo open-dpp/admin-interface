@@ -1,6 +1,9 @@
 name: Build and publish docker image
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
 
@@ -35,39 +38,39 @@ jobs:
           VITE_KEYCLOAK_ROOT: "http://auth.open-dpp.localhost.20080"
         run: npm run test
 
-#  cypress-component-tests:
-#    runs-on: ubuntu-latest # Use the latest Ubuntu runner
-#
-#    steps:
-#      # Step 1: Checkout the repository
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#
-#      # Step 2: Set up Node.js
-#      - name: Setup Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: ${{ env.NODE_VERSION }} # Use the Node.js version compatible with your project
-#
-#      # Step 3: Install dependencies
-#      - name: Install dependencies
-#        run: npm install
-#
-#      # Step 4: Run Cypress Component Tests
-#      - name: Run Cypress Component Tests
-#        run: npx cypress run-ct
-#        env:
-#          KEYCLOAK_DISABLED: "true"
-#
-#      # Step 5: Upload Cypress artifacts (optional)
-#      - name: Upload Cypress Artifacts
-#        if: always() # This ensures artifacts are uploaded even if the tests fail
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: cypress-artifacts
-#          path: |
-#            cypress/videos/
-#            cypress/screenshots/
+  #  cypress-component-tests:
+  #    runs-on: ubuntu-latest # Use the latest Ubuntu runner
+  #
+  #    steps:
+  #      # Step 1: Checkout the repository
+  #      - name: Checkout code
+  #        uses: actions/checkout@v3
+  #
+  #      # Step 2: Set up Node.js
+  #      - name: Setup Node.js
+  #        uses: actions/setup-node@v3
+  #        with:
+  #          node-version: ${{ env.NODE_VERSION }} # Use the Node.js version compatible with your project
+  #
+  #      # Step 3: Install dependencies
+  #      - name: Install dependencies
+  #        run: npm install
+  #
+  #      # Step 4: Run Cypress Component Tests
+  #      - name: Run Cypress Component Tests
+  #        run: npx cypress run-ct
+  #        env:
+  #          KEYCLOAK_DISABLED: "true"
+  #
+  #      # Step 5: Upload Cypress artifacts (optional)
+  #      - name: Upload Cypress Artifacts
+  #        if: always() # This ensures artifacts are uploaded even if the tests fail
+  #        uses: actions/upload-artifact@v3
+  #        with:
+  #          name: cypress-artifacts
+  #          path: |
+  #            cypress/videos/
+  #            cypress/screenshots/
 
   build-publish-docker-image:
     runs-on: ubuntu-latest
