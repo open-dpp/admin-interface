@@ -4,16 +4,17 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-
-import axiosIns from "../../lib/axios";
 import { VIEW_ROOT_URL } from "../../const";
 import QrCode from "../../components/QrCode.vue";
+import apiClient from "../../lib/api-client";
 
 const route = useRoute();
 const url = ref<string>();
 
 onMounted(async () => {
-  const response = await axiosIns.get(`/models/${route.params.modelId}`);
+  const response = await apiClient.models.getModelById(
+    String(route.params.modelId),
+  );
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const model = response.data as any;
   url.value = `${VIEW_ROOT_URL}/${model.uniqueProductIdentifiers[0].uuid}`;
