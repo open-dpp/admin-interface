@@ -33,9 +33,9 @@
 <script lang="ts" setup>
 import { useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
-import axiosIns from "../../lib/axios";
 import Item from "../../types/Item";
 import ItemList from "../../components/products/ItemList.vue";
+import apiClient from "../../lib/api-client";
 
 const route = useRoute();
 const buttonLabel = "Neuen Artikel hinzufügen";
@@ -43,12 +43,12 @@ const buttonLabel = "Neuen Artikel hinzufügen";
 const items = ref<Item[]>([]);
 
 const fetchItems = async () => {
-  const response = await axiosIns.get(`/models/${route.params.modelId}/items`);
+  const response = await apiClient.items.getItems(String(route.params.modelId));
   items.value = response.data;
 };
 
 const onAdd = async () => {
-  await axiosIns.post(`/models/${route.params.modelId}/items`);
+  await apiClient.items.createItem(String(route.params.modelId));
   await fetchItems();
 };
 

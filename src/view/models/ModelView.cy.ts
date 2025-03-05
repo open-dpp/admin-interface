@@ -4,6 +4,7 @@ import { createMemoryHistory, createRouter } from "vue-router";
 import { API_URL } from "../../const";
 import { routes } from "../../router";
 import { ProductDataModelDto, SectionType } from "@open-dpp/api-client";
+import { useIndexStore } from "../../stores";
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -53,10 +54,16 @@ describe("<Model />", () => {
       productDataModelId: productDataModel.id,
     };
 
-    cy.intercept("GET", `${API_URL}/models/${model.id}`, {
-      statusCode: 200,
-      body: model, // Mock response
-    }).as("getModel");
+    const orgaId = "orga1";
+
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/models/${model.id}`,
+      {
+        statusCode: 200,
+        body: model, // Mock response
+      },
+    ).as("getModel");
 
     cy.intercept(
       "GET",
@@ -67,12 +74,18 @@ describe("<Model />", () => {
       },
     ).as("getProductModelData");
 
-    cy.intercept("PATCH", `${API_URL}/models/${model.id}/data-values`, {
-      statusCode: 200,
-      body: model, // Mock response
-    }).as("updateData");
+    cy.intercept(
+      "PATCH",
+      `${API_URL}/organizations/${orgaId}/models/${model.id}/data-values`,
+      {
+        statusCode: 200,
+        body: model, // Mock response
+      },
+    ).as("updateData");
 
-    cy.wrap(router.push(`/models/${model.id}`));
+    const indexStore = useIndexStore();
+    indexStore.selectOrganization(orgaId);
+    cy.wrap(router.push(`/organizations/${orgaId}/models/${model.id}`));
     cy.mountWithPinia(ModelView, { router });
     cy.wait("@getModel").its("response.statusCode").should("eq", 200);
     cy.wait("@getProductModelData")
@@ -83,7 +96,7 @@ describe("<Model />", () => {
     cy.get('[data-cy="d2"]').should("have.value", "val2");
     cy.get('[data-cy="d1"]').type("add1");
     cy.get('[data-cy="d2"]').type("add2");
-    cy.contains("button", "Senden").click();
+    cy.contains("button", "Speichern").click();
     cy.wait("@updateData").then((interceptor) => {
       expect(interceptor.request.body).to.deep.equal([
         {

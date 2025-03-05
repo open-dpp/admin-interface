@@ -1,1 +1,1 @@
-import "../plugins/tailwind";
+// import "../plugins/tailwind";

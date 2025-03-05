@@ -7,7 +7,7 @@
 - `npm run lint` - Run ESLint with fix
 - `npm run test` - Run all tests
 - `npm run test src/components/__tests__/ItemList.spec.ts` - Run single test file
-- `npx cypress open --component` - Open Cypress component testing
+- `npm run cypress` - Open Cypress component testing
 
 ## Code Style Guidelines
 - **Formatting**: Follows Prettier defaults with ESLint integration

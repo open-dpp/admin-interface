@@ -84,6 +84,7 @@
               >
                 <button
                   class="-mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold text-gray-900"
+                  :data-cy="organization.id"
                   @click="setOrganization(organization.id)"
                 >
                   <CheckIcon aria-hidden="true" class="size-5 text-gray-400" />
