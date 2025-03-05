@@ -9,6 +9,7 @@
     "check-ts": "vue-tsc --noEmit",
     "lint": "eslint --fix src",
     "test": "vitest --run src/",
+    "cypress": "cypress open --component",
     "preview": "vite preview"
   },
   "dependencies": {

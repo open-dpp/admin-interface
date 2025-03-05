@@ -3,6 +3,7 @@ import { createMemoryHistory, createRouter } from "vue-router";
 import { API_URL } from "../../const";
 import { routes } from "../../router";
 import CreateModelView from "./CreateModelView.vue";
+import { useIndexStore } from "../../stores";
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -20,23 +21,29 @@ describe("<CreateModelVew />", () => {
     }).as("getProductDataModels");
 
     const modelId = "mid1";
-    cy.intercept("POST", `${API_URL}/models`, {
+    const orgaId = "orgaId";
+    cy.intercept("POST", `${API_URL}/organizations/${orgaId}/models`, {
       statusCode: 201,
       body: { id: modelId }, // Mock response
     }).as("createModel");
 
     cy.intercept(
       "POST",
-      `${API_URL}/models/${modelId}/product-data-models/${phoneModel.id}`,
+      `${API_URL}/organizations/${orgaId}/models/${modelId}/product-data-models/${phoneModel.id}`,
       {
         statusCode: 200,
         body: { id: modelId, productDataModelId: "p1" }, // Mock response
       },
     ).as("assignProductDataModel");
 
-    cy.wrap(router.push(`/models/create`));
+    const indexStore = useIndexStore();
+    indexStore.selectOrganization(orgaId);
+    cy.wrap(router.push(`/organizations/${orgaId}/models/create`));
     cy.spy(router, "push").as("pushSpy");
-    cy.mountWithPinia(CreateModelView, { router });
+    cy.mountWithPinia(CreateModelView, {
+      props: { organizationId: orgaId },
+      router,
+    });
     cy.wait("@getProductDataModels")
       .its("response.statusCode")
       .should("eq", 200);
@@ -49,6 +56,9 @@ describe("<CreateModelVew />", () => {
     cy.wait("@assignProductDataModel")
       .its("response.statusCode")
       .should("eq", 200);
-    cy.get("@pushSpy").should("have.been.calledWith", "/models");
+    cy.get("@pushSpy").should(
+      "have.been.calledWith",
+      `/organizations/${orgaId}/models`,
+    );
   });
 });
