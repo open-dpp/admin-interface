@@ -1,5 +1,4 @@
-name: Build and publish docker image
-
+name: Run cypress component tests
 on:
   pull_request:
     branches:
