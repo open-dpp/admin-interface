@@ -10,7 +10,7 @@
     <div class="relative flex flex-row gap-2">
       <div
         v-if="organizationsStore.organizations.length > 0"
-        class="flex flex-grow mt-2"
+        class="flex grow mt-2"
       >
         <ListboxButton
           class="grid w-full cursor-default grid-cols-1 rounded-md bg-white py-1.5 pl-3 pr-2 text-left text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
@@ -30,7 +30,7 @@
           leave-to-class="opacity-0"
         >
           <ListboxOptions
-            class="absolute z-10 mt-1 -top-[calc(200%-8px)] max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm"
+            class="absolute z-10 mt-1 -top-[calc(200%-8px)] max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-hidden sm:text-sm"
           >
             <ListboxOption
               as="template"
@@ -42,7 +42,7 @@
               <li
                 :class="[
                   active
-                    ? 'bg-indigo-600 text-white outline-none'
+                    ? 'bg-indigo-600 text-white outline-hidden'
                     : 'text-gray-900',
                   'relative cursor-default select-none py-2 pl-8 pr-4',
                 ]"
@@ -72,7 +72,7 @@
       <router-link to="/organizations/create">
         <button
           type="button"
-          class="flex items-center p-2 rounded mt-2 bg-indigo-500 text-white"
+          class="flex items-center p-2 rounded-sm mt-2 bg-indigo-500 text-white"
         >
           <PlusCircleIcon class="size-5" />
           <span
@@ -85,7 +85,7 @@
       <router-link v-if="false" to="/organizations">
         <button
           type="button"
-          class="flex items-center p-2 rounded mt-2 bg-indigo-700 text-white"
+          class="flex items-center p-2 rounded-sm mt-2 bg-indigo-700 text-white"
         >
           <ListBulletIcon class="size-5" />
         </button>

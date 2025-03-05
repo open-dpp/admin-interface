@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-hidden bg-white shadow sm:rounded-lg">
+  <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
     <div class="px-4 py-6 sm:px-6">
       <h3 class="text-base/7 font-semibold text-gray-900">
         Organisation Informationen
@@ -59,7 +59,7 @@
                 <div class="flex w-0 flex-1 items-center">
                   <UserCircleIcon
                     aria-hidden="true"
-                    class="h-5 w-5 flex-shrink-0 text-gray-400"
+                    class="h-5 w-5 shrink-0 text-gray-400"
                   />
                   <div class="ml-4 flex min-w-0 flex-1 gap-2">
                     <span class="truncate font-medium">{{ member.email }}</span>
@@ -75,7 +75,7 @@
                     >
                   </div>
                 </div>
-                <div class="ml-4 flex-shrink-0">
+                <div class="ml-4 shrink-0">
                   <a
                     class="font-medium text-red-600 hover:text-red-500"
                     href="#"
@@ -92,7 +92,7 @@
                 type="text"
               />
               <button
-                class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 type="button"
                 @click="inviteUserToOrg"
               >

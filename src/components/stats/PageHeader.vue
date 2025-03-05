@@ -8,7 +8,7 @@
         >
           <ChevronLeftIcon
             aria-hidden="true"
-            class="-ml-1 mr-1 h-5 w-5 flex-shrink-0 text-gray-400"
+            class="-ml-1 mr-1 h-5 w-5 shrink-0 text-gray-400"
           />
           Back
         </a>
