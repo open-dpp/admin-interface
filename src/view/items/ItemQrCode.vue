@@ -4,7 +4,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import { VIEW_ROOT_URL } from "../../const";
+import { config } from "../../const";
 import QrCode from "../../components/QrCode.vue";
 import apiClient from "../../lib/api-client";
 
@@ -17,6 +17,6 @@ onMounted(async () => {
     String(route.params.itemId),
   );
   const item = response.data;
-  url.value = `${VIEW_ROOT_URL}/${item.uniqueProductIdentifiers[0].uuid}`;
+  url.value = `${config.VIEW_ROOT_URL}/${item.uniqueProductIdentifiers[0].uuid}`;
 });
 </script>

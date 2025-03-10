@@ -1,9 +1,9 @@
 import axios from "axios";
 import { logout } from "./keycloak";
-import { API_URL } from "../const";
+import { config } from "../const";
 
 const axiosIns = axios.create({
-  baseURL: API_URL,
+  baseURL: config.API_URL,
 });
 
 axiosIns.interceptors.response.use(

@@ -1,10 +1,10 @@
 import Keycloak, { KeycloakInitOptions } from "keycloak-js";
 import { setAxiosAuthHeader } from "./axios";
-import { API_URL, KEYCLOAK_URL } from "../const";
+import { config } from "../const";
 import apiClient from "./api-client";
 
 export const keycloakIns = new Keycloak({
-  url: KEYCLOAK_URL,
+  url: config.KEYCLOAK_URL,
   realm: "open-dpp",
   clientId: "frontend",
 });
@@ -57,7 +57,7 @@ export const logout = async () => {
 };
 
 export const generateRegistrationLink = (token: string) => {
-  return API_URL + "/register/" + token;
+  return config.API_URL + "/register/" + token;
 };
 
 export default keycloakIns;

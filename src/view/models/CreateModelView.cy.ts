@@ -1,6 +1,6 @@
 import { createMemoryHistory, createRouter } from "vue-router";
 
-import { API_URL } from "../../const";
+import { config } from "../../const";
 import { routes } from "../../router";
 import CreateModelView from "./CreateModelView.vue";
 import { useIndexStore } from "../../stores";
@@ -15,21 +15,21 @@ describe("<CreateModelVew />", () => {
     const laptopModel = { name: "Laptop neu", id: "id1" };
     const phoneModel = { name: "Handy", id: "id2" };
 
-    cy.intercept("GET", `${API_URL}/product-data-models`, {
+    cy.intercept("GET", `${config.API_URL}/product-data-models`, {
       statusCode: 200,
       body: [laptopModel, phoneModel], // Mock response
     }).as("getProductDataModels");
 
     const modelId = "mid1";
     const orgaId = "orgaId";
-    cy.intercept("POST", `${API_URL}/organizations/${orgaId}/models`, {
+    cy.intercept("POST", `${config.API_URL}/organizations/${orgaId}/models`, {
       statusCode: 201,
       body: { id: modelId }, // Mock response
     }).as("createModel");
 
     cy.intercept(
       "POST",
-      `${API_URL}/organizations/${orgaId}/models/${modelId}/product-data-models/${phoneModel.id}`,
+      `${config.API_URL}/organizations/${orgaId}/models/${modelId}/product-data-models/${phoneModel.id}`,
       {
         statusCode: 200,
         body: { id: modelId, productDataModelId: "p1" }, // Mock response

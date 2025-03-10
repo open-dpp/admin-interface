@@ -4,7 +4,7 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import { VIEW_ROOT_URL } from "../../const";
+import { config } from "../../const";
 import QrCode from "../../components/QrCode.vue";
 import apiClient from "../../lib/api-client";
 
@@ -17,6 +17,6 @@ onMounted(async () => {
   );
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const model = response.data as any;
-  url.value = `${VIEW_ROOT_URL}/${model.uniqueProductIdentifiers[0].uuid}`;
+  url.value = `${config.VIEW_ROOT_URL}/${model.uniqueProductIdentifiers[0].uuid}`;
 });
 </script>

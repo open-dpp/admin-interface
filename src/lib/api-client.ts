@@ -1,8 +1,8 @@
 import { OpenDppApiClient } from "@open-dpp/api-client";
-import { API_URL } from "../const";
+import { config } from "../const";
 
 const apiClient = new OpenDppApiClient({
-  baseURL: API_URL,
+  baseURL: config.API_URL,
 });
 
 export default apiClient;

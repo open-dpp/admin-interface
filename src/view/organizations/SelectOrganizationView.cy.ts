@@ -1,6 +1,6 @@
 import { createMemoryHistory, createRouter } from "vue-router";
 
-import { API_URL } from "../../const";
+import { config } from "../../const";
 import { routes } from "../../router";
 import SelectOrganizationView from "./SelectOrganizationView.vue";
 import { useOrganizationsStore } from "../../stores/organizations";
@@ -34,7 +34,7 @@ describe("<SelectOrganizationView />", () => {
   ];
 
   it("renders organizations and selects one", async () => {
-    cy.intercept("GET", `${API_URL}/organizations`, {
+    cy.intercept("GET", `${config.API_URL}/organizations`, {
       statusCode: 200,
       body: organizations, // Mock response
     }).as("getOrganizations");

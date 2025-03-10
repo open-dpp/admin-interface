@@ -1,7 +1,7 @@
 import ModelView from "./ModelView.vue";
 import { createMemoryHistory, createRouter } from "vue-router";
 
-import { API_URL } from "../../const";
+import { config } from "../../const";
 import { routes } from "../../router";
 import { ProductDataModelDto, SectionType } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
@@ -58,7 +58,7 @@ describe("<Model />", () => {
 
     cy.intercept(
       "GET",
-      `${API_URL}/organizations/${orgaId}/models/${model.id}`,
+      `${config.API_URL}/organizations/${orgaId}/models/${model.id}`,
       {
         statusCode: 200,
         body: model, // Mock response
@@ -67,7 +67,7 @@ describe("<Model />", () => {
 
     cy.intercept(
       "GET",
-      `${API_URL}/product-data-models/${productDataModel.id}`,
+      `${config.API_URL}/product-data-models/${productDataModel.id}`,
       {
         statusCode: 200,
         body: productDataModel, // Mock response
@@ -76,7 +76,7 @@ describe("<Model />", () => {
 
     cy.intercept(
       "PATCH",
-      `${API_URL}/organizations/${orgaId}/models/${model.id}/data-values`,
+      `${config.API_URL}/organizations/${orgaId}/models/${model.id}/data-values`,
       {
         statusCode: 200,
         body: model, // Mock response

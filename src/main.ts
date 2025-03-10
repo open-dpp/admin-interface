@@ -4,7 +4,7 @@ import App from "./App.vue";
 import { router } from "./router";
 import { createPinia } from "pinia";
 import keycloakIns, { initializeKeycloak } from "./lib/keycloak";
-import { keycloakDisabled } from "./const";
+import { config } from "./const";
 import { useIndexStore } from "./stores";
 import { defaultConfig, plugin } from "@formkit/vue";
 import { genesisIcons } from "@formkit/icons";
@@ -36,7 +36,7 @@ const startApp = async () => {
     }),
   );
   const indexStore = useIndexStore();
-  if (!keycloakDisabled) {
+  if (!config.KEYCLOAK_DISABLED) {
     app.provide("$keycloak", keycloakIns);
     await initializeKeycloak(keycloakIns);
     if (keycloakIns.authenticated) {

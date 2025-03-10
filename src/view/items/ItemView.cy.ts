@@ -1,7 +1,7 @@
 import ItemView from "./ItemView.vue";
 import { createMemoryHistory, createRouter } from "vue-router";
 
-import { API_URL } from "../../const";
+import { config } from "../../const";
 import Item from "../../types/Item";
 import { routes } from "../../router";
 import { useIndexStore } from "../../stores";
@@ -19,7 +19,7 @@ describe("<ItemView />", () => {
     const orgaId = "orgaId";
     cy.intercept(
       "GET",
-      `${API_URL}/organizations/${orgaId}/models/${modelId}/items`,
+      `${config.API_URL}/organizations/${orgaId}/models/${modelId}/items`,
       {
         statusCode: 200,
         body: data, // Mock response
@@ -28,7 +28,7 @@ describe("<ItemView />", () => {
 
     cy.intercept(
       "POST",
-      `${API_URL}/organizations/${orgaId}/models/${modelId}/items`,
+      `${config.API_URL}/organizations/${orgaId}/models/${modelId}/items`,
       {
         statusCode: 201,
         body: data, // Mock response
@@ -55,7 +55,7 @@ describe("<ItemView />", () => {
     const orgaId = "orgaId";
     cy.intercept(
       "GET",
-      `${API_URL}/organizations/${orgaId}/models/${modelId}/items`,
+      `${config.API_URL}/organizations/${orgaId}/models/${modelId}/items`,
       {
         statusCode: 200,
         body: data, // Mock response
@@ -64,7 +64,7 @@ describe("<ItemView />", () => {
 
     cy.intercept(
       "POST",
-      `${API_URL}/organizations/${orgaId}/models/${modelId}/items`,
+      `${config.API_URL}/organizations/${orgaId}/models/${modelId}/items`,
       {
         statusCode: 201,
         body: data, // Mock response
