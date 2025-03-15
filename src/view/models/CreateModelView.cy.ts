@@ -15,13 +15,18 @@ describe("<CreateModelVew />", () => {
     const laptopModel = { name: "Laptop neu", id: "id1" };
     const phoneModel = { name: "Handy", id: "id2" };
 
-    cy.intercept("GET", `${API_URL}/product-data-models`, {
-      statusCode: 200,
-      body: [laptopModel, phoneModel], // Mock response
-    }).as("getProductDataModels");
+    const orgaId = "orgaId";
+
+    cy.intercept(
+      "GET",
+      `${API_URL}/product-data-models?organization=${orgaId}`,
+      {
+        statusCode: 200,
+        body: [laptopModel, phoneModel], // Mock response
+      },
+    ).as("getProductDataModels");
 
     const modelId = "mid1";
-    const orgaId = "orgaId";
     cy.intercept("POST", `${API_URL}/organizations/${orgaId}/models`, {
       statusCode: 201,
       body: { id: modelId }, // Mock response

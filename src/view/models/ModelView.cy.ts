@@ -3,7 +3,12 @@ import { createMemoryHistory, createRouter } from "vue-router";
 
 import { API_URL } from "../../const";
 import { routes } from "../../router";
-import { ProductDataModelDto, SectionType } from "@open-dpp/api-client";
+import {
+  DataFieldType,
+  ProductDataModelDto,
+  SectionType,
+  VisibilityLevel,
+} from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 
 const router = createRouter({
@@ -18,6 +23,7 @@ describe("<Model />", () => {
       id: "pdm1",
       name: "Laptop neu",
       version: "1.0",
+      visibility: VisibilityLevel.PRIVATE,
       sections: [
         {
           id: "s1",
@@ -26,7 +32,7 @@ describe("<Model />", () => {
           dataFields: [
             {
               id: "f1",
-              type: "TextField",
+              type: DataFieldType.TEXT_FIELD,
               name: "Prozessor",
               options: {
                 min: 24,
@@ -34,7 +40,7 @@ describe("<Model />", () => {
             },
             {
               id: "f2",
-              type: "TextField",
+              type: DataFieldType.TEXT_FIELD,
               name: "Neuer Title 2",
               options: {
                 min: 2,
@@ -54,14 +60,37 @@ describe("<Model />", () => {
       productDataModelId: productDataModel.id,
     };
 
+    const otherModel = {
+      id: "otherId",
+      name: "My other model",
+      dataValues: [
+        {
+          id: "otherD1",
+          value: "otherVal1",
+          dataFieldId: "f1",
+          dataSectionId: "s1",
+        },
+        {
+          id: "otherD2",
+          value: "otherVal2",
+          dataFieldId: "f2",
+          dataSectionId: "s1",
+        },
+      ],
+      productDataModelId: productDataModel.id,
+    };
+
     const orgaId = "orga1";
 
     cy.intercept(
       "GET",
-      `${API_URL}/organizations/${orgaId}/models/${model.id}`,
-      {
-        statusCode: 200,
-        body: model, // Mock response
+      `${API_URL}/organizations/${orgaId}/models/*`,
+      (req) => {
+        const modelId = req.url.split("/").pop();
+        req.reply({
+          statusCode: 200,
+          body: modelId === model.id ? model : otherModel, // Mock response
+        });
       },
     ).as("getModel");
 
@@ -85,8 +114,10 @@ describe("<Model />", () => {
 
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);
-    cy.wrap(router.push(`/organizations/${orgaId}/models/${model.id}`));
+
     cy.mountWithPinia(ModelView, { router });
+    cy.wrap(router.push(`/organizations/${orgaId}/models/${model.id}`));
+
     cy.wait("@getModel").its("response.statusCode").should("eq", 200);
     cy.wait("@getProductModelData")
       .its("response.statusCode")
@@ -106,6 +137,16 @@ describe("<Model />", () => {
         { id: "d2", value: "val2add2" },
       ]);
       expect(interceptor.response?.statusCode).to.equal(200);
+      cy.wrap(
+        router.push(`/organizations/${orgaId}/models/${otherModel.id}`),
+      ).then(() => {
+        cy.wait("@getModel").its("response.statusCode").should("eq", 200);
+        cy.wait("@getProductModelData")
+          .its("response.statusCode")
+          .should("eq", 200);
+        cy.get('[data-cy="otherD1"]').should("have.value", "otherVal1");
+        cy.get('[data-cy="otherD2"]').should("have.value", "otherVal2");
+      });
     });
   });
 });
