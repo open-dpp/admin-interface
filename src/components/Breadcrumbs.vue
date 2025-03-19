@@ -15,7 +15,11 @@
           </router-link>
         </div>
       </li>
-      <li v-for="page in layoutStore.breadcrumbs" :key="page.name" class="flex">
+      <li
+        v-for="page in layoutStore.breadcrumbs.slice(-4)"
+        :key="page.name"
+        class="flex"
+      >
         <div class="flex items-center">
           <svg
             aria-hidden="true"

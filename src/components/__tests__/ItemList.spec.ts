@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/vue";
-import ItemList from "../products/ItemList.vue";
+import ItemList from "../items/ItemList.vue";
 import { createMemoryHistory, createRouter } from "vue-router";
 import { routes } from "../../router";
 import { createPinia } from "pinia";
