@@ -25,6 +25,16 @@ export const useDraftStore = defineStore("draft", () => {
     }
   };
 
+  const deleteSection = async (sectionId: string) => {
+    if (draft.value) {
+      const response = await apiClient.productDataModelDrafts.deleteSection(
+        draft.value.id,
+        sectionId,
+      );
+      draft.value = response.data;
+    }
+  };
+
   const addDataField = async (
     sectionId: string,
     data: DataFieldDraftCreateDto,
@@ -39,5 +49,26 @@ export const useDraftStore = defineStore("draft", () => {
     }
   };
 
-  return { draft, fetchDraft, addSection, addDataField };
+  const deleteDataField = async (dataFieldId: string) => {
+    const foundSection = draft.value?.sections.find((s) =>
+      s.dataFields.some((d) => d.id === dataFieldId),
+    );
+    if (draft.value && foundSection) {
+      const response = await apiClient.productDataModelDrafts.deleteDataField(
+        draft.value.id,
+        foundSection.id,
+        dataFieldId,
+      );
+      draft.value = response.data;
+    }
+  };
+
+  return {
+    draft,
+    fetchDraft,
+    addSection,
+    addDataField,
+    deleteSection,
+    deleteDataField,
+  };
 });

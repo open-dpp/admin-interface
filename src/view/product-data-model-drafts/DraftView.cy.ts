@@ -67,28 +67,62 @@ describe("<DraftView />", () => {
     });
   });
 
-  it("renders draft and creates a new section data field", () => {
-    const section = {
-      id: "s1",
-      name: "Tech Specs",
-      type: SectionType.GROUP,
-      dataFields: [
-        {
-          id: "d1",
-          name: "Processor",
-          type: DataFieldType.TEXT_FIELD,
-        },
-      ],
-    };
-    const draft: ProductDataModelDraftDto = {
-      id: "draftId",
-      name: "My draft",
-      version: "1.0.0",
-      publications: [],
-      sections: [section],
-      createdByUserId: "u1",
-      ownedByOrganizationId: "u2",
-    };
+  const section = {
+    id: "s1",
+    name: "Tech Specs",
+    type: SectionType.GROUP,
+    dataFields: [
+      {
+        id: "d1",
+        name: "Processor",
+        type: DataFieldType.TEXT_FIELD,
+      },
+    ],
+  };
+  const draft: ProductDataModelDraftDto = {
+    id: "draftId",
+    name: "My draft",
+    version: "1.0.0",
+    publications: [],
+    sections: [section],
+    createdByUserId: "u1",
+    ownedByOrganizationId: "u2",
+  };
+
+  it("renders draft and deletes section", () => {
+    const orgaId = "orgaId";
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+      {
+        statusCode: 200,
+        body: draft, // Mock response
+      },
+    ).as("getDraft");
+
+    cy.intercept(
+      "DELETE",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}`,
+      {
+        statusCode: 200,
+        body: draft, // Mock response
+      },
+    ).as("deleteSection");
+
+    const indexStore = useIndexStore();
+    indexStore.selectOrganization(orgaId);
+
+    cy.wrap(
+      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+    );
+    cy.mountWithPinia(DraftView, { router });
+
+    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+    cy.get('[data-cy="deleteSection"]').click();
+    cy.wait("@deleteSection").its("response.statusCode").should("eq", 200);
+  });
+
+  it("renders draft and creates a new data field", () => {
     const orgaId = "orgaId";
     const newDataFieldName = "Mein neues Datenfeld";
 
@@ -132,5 +166,43 @@ describe("<DraftView />", () => {
       name: newDataFieldName,
       type: DataFieldType.TEXT_FIELD,
     });
+  });
+
+  it("renders draft and deletes a data field", () => {
+    const orgaId = "orgaId";
+    const dataFieldIdToDelete = section.dataFields[0].id;
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+      {
+        statusCode: 200,
+        body: draft, // Mock response
+      },
+    ).as("getDraft");
+
+    cy.intercept(
+      "DELETE",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}/data-fields/${dataFieldIdToDelete}`,
+      {
+        statusCode: 200,
+        body: draft, // Mock response
+      },
+    ).as("deleteDataField");
+
+    const indexStore = useIndexStore();
+    indexStore.selectOrganization(orgaId);
+
+    cy.wrap(
+      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+    );
+    cy.mountWithPinia(DraftView, { router });
+
+    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+    cy.contains(section.name).should("be.visible");
+    section.dataFields.forEach((d) => {
+      cy.contains(d.name).should("be.visible");
+    });
+    cy.get('[data-cy="deleteDataField"]').click();
+    cy.wait("@deleteDataField").its("response.statusCode").should("eq", 200);
   });
 });
