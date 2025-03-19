@@ -99,18 +99,18 @@ import {
   Bars3BottomLeftIcon,
 } from "@heroicons/vue/24/outline";
 import { DataFieldType } from "@open-dpp/api-client";
-import apiClient from "../../lib/api-client";
 import { ref } from "vue";
 
 import { reset } from "@formkit/core";
+import { useDraftStore } from "../../stores/draft";
 
-const props = defineProps<{ draftId: string; sectionId: string }>();
+const props = defineProps<{ sectionId: string }>();
+const draftStore = useDraftStore();
 
 const showAddDataField = ref<boolean>(false);
 
 const selectedType = ref<DataFieldType>(DataFieldType.TEXT_FIELD);
 
-const emits = defineEmits(["sectionCreated"]);
 const items = [
   {
     title: "TextFeld",
@@ -126,16 +126,11 @@ const onSelect = (type: DataFieldType) => {
 };
 
 const create = async (fields: { name: string }) => {
-  await apiClient.productDataModelDrafts.addDataField(
-    props.draftId,
-    props.sectionId,
-    {
-      name: fields.name,
-      type: selectedType.value,
-    },
-  );
+  await draftStore.addDataField(props.sectionId, {
+    name: fields.name,
+    type: selectedType.value,
+  });
   showAddDataField.value = false;
   reset("createDataFieldForm");
-  emits("sectionCreated");
 };
 </script>

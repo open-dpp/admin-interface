@@ -97,17 +97,15 @@ import {
   PlusCircleIcon,
 } from "@heroicons/vue/24/outline";
 import { SectionType } from "@open-dpp/api-client";
-import apiClient from "../../lib/api-client";
 import { ref } from "vue";
 
 import { reset } from "@formkit/core";
-const props = defineProps<{ draftId: string }>();
+import { useDraftStore } from "../../stores/draft";
 
 const showAddSection = ref<boolean>(false);
-
+const draftStore = useDraftStore();
 const selectedType = ref<SectionType>(SectionType.GROUP);
 
-const emits = defineEmits(["sectionCreated"]);
 const items = [
   {
     title: "Gruppierung",
@@ -132,12 +130,11 @@ const onSelect = (type: SectionType) => {
 };
 
 const create = async (fields: { name: string }) => {
-  await apiClient.productDataModelDrafts.addSection(props.draftId, {
+  await draftStore.addSection({
     name: fields.name,
     type: selectedType.value,
   });
   showAddSection.value = false;
   reset("createSectionForm");
-  emits("sectionCreated");
 };
 </script>
