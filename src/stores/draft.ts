@@ -5,6 +5,7 @@ import {
   DataFieldDraftCreateDto,
   ProductDataModelDraftDto,
   SectionDraftCreateDto,
+  SectionDraftUpdateDto,
 } from "@open-dpp/api-client";
 
 export const useDraftStore = defineStore("draft", () => {
@@ -30,6 +31,20 @@ export const useDraftStore = defineStore("draft", () => {
       const response = await apiClient.productDataModelDrafts.deleteSection(
         draft.value.id,
         sectionId,
+      );
+      draft.value = response.data;
+    }
+  };
+
+  const modifySection = async (
+    sectionId: string,
+    data: SectionDraftUpdateDto,
+  ) => {
+    if (draft.value) {
+      const response = await apiClient.productDataModelDrafts.modifySection(
+        draft.value.id,
+        sectionId,
+        data,
       );
       draft.value = response.data;
     }
@@ -67,8 +82,9 @@ export const useDraftStore = defineStore("draft", () => {
     draft,
     fetchDraft,
     addSection,
-    addDataField,
+    modifySection,
     deleteSection,
+    addDataField,
     deleteDataField,
   };
 });

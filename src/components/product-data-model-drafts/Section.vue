@@ -13,7 +13,7 @@
               props.section.type === SectionType.REPEATABLE
                 ? 'bg-pink-500'
                 : 'bg-indigo-500',
-              'flex size-12 shrink-0 items-center justify-center',
+              'flex size-13 items-center justify-center',
             ]"
           >
             <component
@@ -31,9 +31,12 @@
           </div>
         </div>
         <div class="flex gap-x-6 p-4">
-          <button type="button" data-cy="editDataField">
+          <router-link
+            :to="`/organizations/${indexStore.selectedOrganization}/data-model-drafts/${draftStore.draft.id}/sections/${section.id}`"
+            data-cy="editSection"
+          >
             <PencilIcon class="size-5 fill-indigo-300" aria-hidden="true" />
-          </button>
+          </router-link>
           <button @click="onDelete" type="button" data-cy="deleteSection">
             <TrashIcon class="size-5 fill-red-300" aria-hidden="true" />
           </button>
@@ -62,9 +65,11 @@ import AddDataField from "./AddDataField.vue";
 import { useDraftStore } from "../../stores/draft";
 import DataField from "./DataField.vue";
 import { PencilIcon, TrashIcon } from "@heroicons/vue/20/solid";
+import { useIndexStore } from "../../stores";
 
 const props = defineProps<{ section: SectionDraftDto }>();
 const draftStore = useDraftStore();
+const indexStore = useIndexStore();
 
 const onDelete = async () => {
   await draftStore.deleteSection(props.section.id);

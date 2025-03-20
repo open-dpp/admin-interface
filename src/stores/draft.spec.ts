@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => {
     deleteSection: vi.fn(),
     addDataField: vi.fn(),
     deleteDataField: vi.fn(),
+    modifySection: vi.fn(),
   };
 });
 
@@ -28,6 +29,7 @@ vi.mock("../lib/api-client", () => ({
       addDataField: mocks.addDataField,
       deleteSection: mocks.deleteSection,
       deleteDataField: mocks.deleteDataField,
+      modifySection: mocks.modifySection,
     },
   },
 }));
@@ -84,6 +86,20 @@ describe("DraftStore", () => {
         draft.id,
         newSection,
       ),
+    );
+    expect(draftStore.draft).toEqual(draft);
+  });
+
+  it("should modify section", async () => {
+    const draftStore = useDraftStore();
+    mocks.modifySection.mockResolvedValue({ data: draft });
+    draftStore.draft = draft;
+    const modifySection = { name: "My new section name" };
+    await draftStore.modifySection(section.id, modifySection);
+    await waitFor(() =>
+      expect(
+        apiClient.productDataModelDrafts.modifySection,
+      ).toHaveBeenCalledWith(draft.id, section.id, modifySection),
     );
     expect(draftStore.draft).toEqual(draft);
   });
