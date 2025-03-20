@@ -47,6 +47,7 @@
         <div class="divide-y divide-gray-100">
           <DataField
             v-for="dataField in props.section.dataFields"
+            :section-id="section.id"
             :data-field="dataField"
             :key="dataField.id"
             class="gap-2 p-2"

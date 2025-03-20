@@ -150,6 +150,34 @@ describe("<DraftView />", () => {
     );
   });
 
+  it("renders draft and navigates to data field edit", () => {
+    const orgaId = "orgaId";
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+      {
+        statusCode: 200,
+        body: draft, // Mock response
+      },
+    ).as("getDraft");
+
+    const indexStore = useIndexStore();
+    indexStore.selectOrganization(orgaId);
+
+    cy.wrap(
+      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+    );
+    cy.mountWithPinia(DraftView, { router });
+
+    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+    cy.get('[data-cy="editDataField"]').click();
+    cy.spy(router, "push").as("pushSpy");
+    cy.get("@pushSpy").should(
+      "have.been.calledWith",
+      `/organizations/${orgaId}/data-model-drafts/${draft.id}/sections/${section.id}/data-fields/${section.dataFields[0].id}`,
+    );
+  });
+
   it("renders draft and creates a new data field", () => {
     const orgaId = "orgaId";
     const newDataFieldName = "Mein neues Datenfeld";

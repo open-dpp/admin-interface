@@ -8,9 +8,13 @@
           >Textfeld</span
         >
       </div>
-      <button type="button" data-cy="editDataField">
+      <router-link
+        :to="`/organizations/${indexStore.selectedOrganization}/data-model-drafts/${draftStore.draft?.id}/sections/${props.sectionId}/data-fields/${dataField.id}`"
+        type="button"
+        data-cy="editDataField"
+      >
         <PencilIcon class="size-5 fill-indigo-300" aria-hidden="true" />
-      </button>
+      </router-link>
       <button type="button" @click="onDelete" data-cy="deleteDataField">
         <TrashIcon class="size-5 fill-red-300" aria-hidden="true" />
       </button>
@@ -22,10 +26,13 @@
 import { TrashIcon, PencilIcon } from "@heroicons/vue/20/solid";
 import { DataFieldDraftDto } from "../../../../open-dpp-api-client";
 import { useDraftStore } from "../../stores/draft";
+import { useIndexStore } from "../../stores";
 
 const props = defineProps<{
+  sectionId: string;
   dataField: DataFieldDraftDto;
 }>();
+const indexStore = useIndexStore();
 const draftStore = useDraftStore();
 
 const onDelete = async () => {
