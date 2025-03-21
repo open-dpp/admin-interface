@@ -1,4 +1,5 @@
 <template>
+  <NotificationHandler />
   <div>
     <TransitionRoot :show="sidebarOpen" as="template">
       <Dialog class="relative z-50 lg:hidden" @close="sidebarOpen = false">
@@ -40,6 +41,7 @@
                   <button
                     class="-m-2.5 p-2.5"
                     type="button"
+                    data-cy="closeSidebar"
                     @click="sidebarOpen = false"
                   >
                     <span class="sr-only">Close sidebar</span>
@@ -49,6 +51,7 @@
               </TransitionChild>
               <!-- Sidebar component, swap this element with another sidebar if you like -->
               <div
+                data-cy="sidebar"
                 class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4"
               >
                 <div class="flex h-16 shrink-0 items-center">
@@ -239,6 +242,7 @@
         <button
           class="-m-2.5 p-2.5 text-gray-700 lg:hidden"
           type="button"
+          data-cy="openSidebar"
           @click="sidebarOpen = true"
         >
           <span class="sr-only">Open sidebar</span>
@@ -376,6 +380,7 @@ import {
   HomeIcon,
   UsersIcon,
   XMarkIcon,
+  Square3Stack3DIcon,
 } from "@heroicons/vue/24/outline";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
 import logo from "../../assets/Logo-with-text.png";
@@ -386,6 +391,7 @@ import SelectOrganization from "../organizations/SelectOrganization.vue";
 import RingLoader from "../RingLoader.vue";
 import { useLayoutStore } from "../../stores/layout";
 import { DASHBOARD } from "../../router/routes/base";
+import NotificationHandler from "../notifications/NotificationHandler.vue";
 
 const route = useRoute();
 const indexStore = useIndexStore();
@@ -402,8 +408,14 @@ const unfilteredNavigation = computed<Array<MenuItemInterface>>(() => [
   { name: "Dashboard", to: DASHBOARD.path, icon: HomeIcon, show: () => true },
   {
     name: "Modelle",
-    to: "/organizations/" + indexStore.selectedOrganization + "/models",
+    to: `/organizations/${indexStore.selectedOrganization}/models`,
     icon: CubeIcon,
+    show: () => indexStore.selectedOrganization !== null,
+  },
+  {
+    name: "Datenmodell entwerfen",
+    to: `/organizations/${indexStore.selectedOrganization}/data-model-drafts`,
+    icon: Square3Stack3DIcon,
     show: () => indexStore.selectedOrganization !== null,
   },
   {

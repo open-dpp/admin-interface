@@ -48,7 +48,7 @@ import { ProductDataModelGetAllDto } from "@open-dpp/api-client";
 
 const props = defineProps<{ productDataModels: ProductDataModelGetAllDto[] }>();
 const selectableDataModels = props.productDataModels.map((p) => ({
-  label: p.name,
+  label: `${p.name} ${p.version}`,
   value: p.id,
 }));
 

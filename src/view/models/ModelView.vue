@@ -26,20 +26,30 @@
         </dl>
       </div>
     </div>
-    <ModelForm v-if="modelFormStore.model && modelFormStore.productDataModel" />
+    <ModelForm
+      v-if="
+        modelFormStore.model &&
+        modelFormStore.productDataModel &&
+        !modelFormStore.fetchInFlight
+      "
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { useRoute } from "vue-router";
-import { onMounted } from "vue";
+import { watch } from "vue";
 import ModelForm from "../../components/models/ModelForm.vue";
 import { useModelFormStore } from "../../stores/model.form";
 
 const route = useRoute();
 const modelFormStore = useModelFormStore();
 
-onMounted(async () => {
-  await modelFormStore.fetchModel(String(route.params.modelId));
-});
+watch(
+  () => route.params.modelId, // The store property to watch
+  async () => {
+    await modelFormStore.fetchModel(String(route.params.modelId));
+  },
+  { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
+);
 </script>

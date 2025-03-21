@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/vue";
-import ItemList from "../products/ItemList.vue";
+import ItemList from "../items/ItemList.vue";
 import { createMemoryHistory, createRouter } from "vue-router";
 import { routes } from "../../router";
 import { createPinia } from "pinia";
@@ -28,17 +28,12 @@ describe("ItemList.vue", () => {
     const rows = screen.getAllByRole("row");
     expect(rows).toHaveLength(3);
     const headerCells = within(rows[0]).getAllByRole("columnheader");
-    expect(headerCells.map((h) => h.textContent)).toEqual(["", " ID "]);
-    expect(
-      (within(headerCells[0]).getByRole("checkbox") as HTMLInputElement)
-        .checked,
-    ).toBeFalsy();
+    expect(headerCells.map((h) => h.textContent)).toEqual(["ID", "Aktionen"]);
+
     rows.slice(1).forEach((row, index) => {
       const cells = within(row).getAllByRole("cell");
-      expect(
-        (within(cells[0]).getByRole("checkbox") as HTMLInputElement).checked,
-      ).toBeFalsy();
-      expect(cells[1].textContent).toEqual(items[index].id);
+      expect(cells[0].textContent).toEqual(items[index].id);
+      expect(cells[1].textContent).toEqual("QR-Code");
     });
   });
   test("should create item", async () => {

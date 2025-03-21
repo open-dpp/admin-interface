@@ -48,7 +48,7 @@ const onSubmit = async (
 };
 
 onMounted(async () => {
-  const response = await apiClient.productDataModels.getProductDataModels();
+  const response = await apiClient.productDataModels.getAll();
   productDataModels.value = response.data;
 });
 </script>
