@@ -5,6 +5,7 @@ import {
   DataFieldDraftCreateDto,
   DataFieldDraftUpdateDto,
   ProductDataModelDraftDto,
+  PublicationCreateDto,
   SectionDraftCreateDto,
   SectionDraftUpdateDto,
 } from "@open-dpp/api-client";
@@ -113,6 +114,16 @@ export const useDraftStore = defineStore("draft", () => {
     }
   };
 
+  const publish = async (data: PublicationCreateDto) => {
+    if (draft.value) {
+      const response = await apiClient.productDataModelDrafts.publish(
+        draft.value.id,
+        data,
+      );
+      draft.value = response.data;
+    }
+  };
+
   return {
     draft,
     fetchDraft,
@@ -124,5 +135,6 @@ export const useDraftStore = defineStore("draft", () => {
     deleteDataField,
     findSectionOfDataField,
     findDataField,
+    publish,
   };
 });

@@ -6,9 +6,11 @@ import {
   DataFieldType,
   ProductDataModelDraftDto,
   SectionType,
+  VisibilityLevel,
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 import DraftView from "./DraftView.vue";
+import { useNotificationStore } from "../../stores/notification";
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -16,16 +18,28 @@ const router = createRouter({
 });
 
 describe("<DraftView />", () => {
+  const section = {
+    id: "s1",
+    name: "Tech Specs",
+    type: SectionType.GROUP,
+    dataFields: [
+      {
+        id: "d1",
+        name: "Processor",
+        type: DataFieldType.TEXT_FIELD,
+      },
+    ],
+  };
+  const draft: ProductDataModelDraftDto = {
+    id: "draftId",
+    name: "My draft",
+    version: "1.0.0",
+    publications: [],
+    sections: [section],
+    createdByUserId: "u1",
+    ownedByOrganizationId: "u2",
+  };
   it("renders draft and creates a new section", () => {
-    const draft: ProductDataModelDraftDto = {
-      id: "draftId",
-      name: "My draft",
-      version: "1.0.0",
-      publications: [],
-      sections: [],
-      createdByUserId: "u1",
-      ownedByOrganizationId: "u2",
-    };
     const orgaId = "orgaId";
     const newSectionName = "Mein neuer Abschnitt";
 
@@ -57,6 +71,7 @@ describe("<DraftView />", () => {
 
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
     cy.contains(`Datenmodellentwurf ${draft.name}`).should("be.visible");
+    cy.contains(`Version ${draft.version}`).should("be.visible");
     cy.contains("button", "Abschnitt hinzufügen").click();
     cy.contains("li", "Repeater").click();
     cy.get('[data-cy="name"]').type(newSectionName);
@@ -67,27 +82,55 @@ describe("<DraftView />", () => {
     });
   });
 
-  const section = {
-    id: "s1",
-    name: "Tech Specs",
-    type: SectionType.GROUP,
-    dataFields: [
+  it("renders draft and publish it", () => {
+    const orgaId = "orgaId";
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
       {
-        id: "d1",
-        name: "Processor",
-        type: DataFieldType.TEXT_FIELD,
+        statusCode: 200,
+        body: draft, // Mock response
       },
-    ],
-  };
-  const draft: ProductDataModelDraftDto = {
-    id: "draftId",
-    name: "My draft",
-    version: "1.0.0",
-    publications: [],
-    sections: [section],
-    createdByUserId: "u1",
-    ownedByOrganizationId: "u2",
-  };
+    ).as("getDraft");
+
+    cy.intercept(
+      "POST",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/publish`,
+      {
+        statusCode: 200,
+        body: draft, // Mock response
+      },
+    ).as("publishDraft");
+
+    const indexStore = useIndexStore();
+    indexStore.selectOrganization(orgaId);
+
+    const notificationStore = useNotificationStore();
+
+    cy.spy(notificationStore, "addSuccessNotification").as("notifySpy");
+
+    cy.wrap(
+      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+    );
+    cy.mountWithPinia(DraftView, { router });
+
+    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+    cy.get('[data-cy="selectVisibility"]').click();
+    cy.contains("für jeden sichtbar").click();
+    cy.contains("button", "Veröffentlichen").click();
+    cy.wait("@publishDraft").its("request.body").should("deep.equal", {
+      visibility: VisibilityLevel.PUBLIC,
+    });
+
+    cy.get("@notifySpy").should(
+      "have.been.calledWith",
+      "Ihr Entwurf wurde erfolgreich veröffentlicht. Sie können nun darauf basierend Modelle anlegen.",
+      {
+        label: "Modell anlegen",
+        to: `/organizations/${orgaId}/models/create`,
+      },
+    );
+  });
 
   it("renders draft and deletes section", () => {
     const orgaId = "orgaId";

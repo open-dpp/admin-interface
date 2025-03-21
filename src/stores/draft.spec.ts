@@ -8,6 +8,7 @@ import {
   ProductDataModelDraftDto,
   SectionType,
 } from "@open-dpp/api-client";
+import { VisibilityLevel } from "@open-dpp/api-client";
 
 const mocks = vi.hoisted(() => {
   return {
@@ -18,6 +19,7 @@ const mocks = vi.hoisted(() => {
     deleteDataField: vi.fn(),
     modifySection: vi.fn(),
     modifyDataField: vi.fn(),
+    publish: vi.fn(),
   };
 });
 
@@ -32,6 +34,7 @@ vi.mock("../lib/api-client", () => ({
       deleteDataField: mocks.deleteDataField,
       modifySection: mocks.modifySection,
       modifyDataField: mocks.modifyDataField,
+      publish: mocks.publish,
     },
   },
 }));
@@ -163,6 +166,21 @@ describe("DraftStore", () => {
       expect(
         apiClient.productDataModelDrafts.modifyDataField,
       ).toHaveBeenCalledWith(draft.id, section.id, dataFieldId, modification),
+    );
+    expect(draftStore.draft).toEqual(draft);
+  });
+
+  it("should publish draft", async () => {
+    const draftStore = useDraftStore();
+    mocks.publish.mockResolvedValue({ data: draft });
+    draftStore.draft = draft;
+    const publishRequest = { visibility: VisibilityLevel.PRIVATE };
+    await draftStore.publish(publishRequest);
+    await waitFor(() =>
+      expect(apiClient.productDataModelDrafts.publish).toHaveBeenCalledWith(
+        draft.id,
+        publishRequest,
+      ),
     );
     expect(draftStore.draft).toEqual(draft);
   });

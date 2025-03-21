@@ -1,4 +1,5 @@
 <template>
+  <NotificationHandler />
   <div>
     <TransitionRoot :show="sidebarOpen" as="template">
       <Dialog class="relative z-50 lg:hidden" @close="sidebarOpen = false">
@@ -390,6 +391,7 @@ import SelectOrganization from "../organizations/SelectOrganization.vue";
 import RingLoader from "../RingLoader.vue";
 import { useLayoutStore } from "../../stores/layout";
 import { DASHBOARD } from "../../router/routes/base";
+import NotificationHandler from "../notifications/NotificationHandler.vue";
 
 const route = useRoute();
 const indexStore = useIndexStore();

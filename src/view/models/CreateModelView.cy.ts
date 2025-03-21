@@ -12,8 +12,8 @@ const router = createRouter({
 
 describe("<CreateModelVew />", () => {
   it("creates model with selected product data model", () => {
-    const laptopModel = { name: "Laptop neu", id: "id1" };
-    const phoneModel = { name: "Handy", id: "id2" };
+    const laptopModel = { name: "Laptop neu", id: "id1", version: "1.0.0" };
+    const phoneModel = { name: "Handy", id: "id2", version: "1.2.0" };
 
     const orgaId = "orgaId";
 
@@ -53,7 +53,9 @@ describe("<CreateModelVew />", () => {
       .its("response.statusCode")
       .should("eq", 200);
     cy.get('[data-cy="name"]').type("My first model");
-    cy.get('[data-cy="productDataModelId"]').select(phoneModel.name);
+    cy.get('[data-cy="productDataModelId"]').select(
+      `${phoneModel.name} ${phoneModel.version}`,
+    );
     cy.contains("button", "Erstellen").click();
     cy.wait("@createModel")
       .its("request.body")
