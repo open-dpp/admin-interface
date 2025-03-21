@@ -14,7 +14,7 @@
 <script lang="ts" setup>
 import DraftsList from "../../components/product-data-model-drafts/DraftsList.vue";
 import { onMounted, ref } from "vue";
-import { ProductDataModelDraftGetAllDto } from "../../../../open-dpp-api-client/src";
+import { ProductDataModelDraftGetAllDto } from "@open-dpp/api-client";
 import apiClient from "../../lib/api-client";
 import EmptyState from "../../components/models/EmptyState.vue";
 import { useIndexStore } from "../../stores";

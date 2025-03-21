@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ProductDataModelDraftGetAllDto } from "../../../../open-dpp-api-client";
+import { ProductDataModelDraftGetAllDto } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 import ListHeader from "../lists/ListHeader.vue";
 import { computed } from "vue";

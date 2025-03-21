@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import { TrashIcon, PencilIcon } from "@heroicons/vue/20/solid";
-import { DataFieldDraftDto } from "../../../../open-dpp-api-client";
+import { DataFieldDraftDto } from "@open-dpp/api-client";
 import { useDraftStore } from "../../stores/draft";
 import { useIndexStore } from "../../stores";
 

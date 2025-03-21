@@ -7,7 +7,7 @@ import {
   DataFieldType,
   ProductDataModelDraftDto,
   SectionType,
-} from "../../../../open-dpp-api-client/src";
+} from "@open-dpp/api-client";
 
 const router = createRouter({
   history: createMemoryHistory(),
