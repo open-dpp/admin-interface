@@ -11,13 +11,13 @@
       </div>
     </div>
     <div class="mt-8 flow-root">
-      <CreateDraftView @submit="onSubmit" />
+      <CreateDraftForm @submit="onSubmit" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import CreateDraftView from "../../components/product-data-model-drafts/CreateDraftForm.vue";
+import CreateDraftForm from "../../components/product-data-model-drafts/CreateDraftForm.vue";
 import apiClient from "../../lib/api-client";
 import { useRoute, useRouter } from "vue-router";
 

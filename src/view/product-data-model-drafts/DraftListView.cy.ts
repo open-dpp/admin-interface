@@ -37,7 +37,6 @@ describe("<DraftListView />", () => {
 
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);
-
     cy.wrap(router.push(`/organizations/${orgaId}/data-model-drafts`));
     cy.mountWithPinia(DraftListView, { router });
 
@@ -78,8 +77,8 @@ describe("<DraftListView />", () => {
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);
     cy.spy(router, "push").as("pushSpy");
-    cy.mountWithPinia(DraftListView, { router });
     cy.wrap(router.push(`/organizations/${orgaId}/data-model-drafts`));
+    cy.mountWithPinia(DraftListView, { router });
 
     cy.wait("@getDrafts").its("response.statusCode").should("eq", 200);
     cy.contains("Neues Datenmodell entwerfen").should("be.visible");
