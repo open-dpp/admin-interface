@@ -4,6 +4,7 @@
     class="flex border-b border-gray-200 bg-white min-h-12"
   >
     <ol
+      data-cy="breadcrumb"
       class="ml-3 flex w-full max-w-(--breakpoint-xl) space-x-4 px-4 sm:px-6 lg:px-8"
       role="list"
     >
@@ -15,7 +16,11 @@
           </router-link>
         </div>
       </li>
-      <li v-for="page in layoutStore.breadcrumbs" :key="page.name" class="flex">
+      <li
+        v-for="page in layoutStore.breadcrumbs.slice(-4)"
+        :key="page.name"
+        class="flex"
+      >
         <div class="flex items-center">
           <svg
             aria-hidden="true"

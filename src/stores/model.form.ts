@@ -7,11 +7,12 @@ import {
   SectionType,
 } from "@open-dpp/api-client";
 import apiClient from "../lib/api-client";
-import { groupBy, maxBy, merge, minBy } from "lodash";
+import { assign, groupBy, maxBy, minBy, pick, keys } from "lodash";
 
 export const useModelFormStore = defineStore("model.form", () => {
   const model = ref<ModelDto>();
   const productDataModel = ref<ProductDataModelDto>();
+  const fetchInFlight = ref<boolean>(false);
 
   const getDataOfSection = (sectionId: string) => {
     return model.value?.dataValues.filter((d) => d.dataSectionId === sectionId);
@@ -24,7 +25,7 @@ export const useModelFormStore = defineStore("model.form", () => {
     const dataValues = Object.fromEntries(
       getDataOfSection(sectionId)?.map((d) => [d.id, d.value]) ?? [],
     );
-    return merge({ ...existingFormData }, { ...dataValues });
+    return assign({}, dataValues, pick(existingFormData, keys(dataValues)));
   };
 
   const getFormSchema = (sectionId: string) => {
@@ -120,6 +121,8 @@ export const useModelFormStore = defineStore("model.form", () => {
               }))
             : [],
         };
+      } else if (r.type === "hr") {
+        return { $el: "hr" };
       } else {
         return {
           $cmp: r.type,
@@ -158,7 +161,9 @@ export const useModelFormStore = defineStore("model.form", () => {
   };
 
   const fetchModel = async (id: string) => {
+    fetchInFlight.value = true;
     const response = await apiClient.models.getModelById(id);
+
     model.value = response.data;
     if (model.value.productDataModelId) {
       const response =
@@ -167,6 +172,7 @@ export const useModelFormStore = defineStore("model.form", () => {
         );
       productDataModel.value = response.data;
     }
+    fetchInFlight.value = false;
   };
 
   const updateModelData = async (dataValues: DataValuePatchDto[]) => {
@@ -182,6 +188,7 @@ export const useModelFormStore = defineStore("model.form", () => {
   return {
     model,
     productDataModel,
+    fetchInFlight,
     fetchModel,
     updateModelData,
     addRowToSection,

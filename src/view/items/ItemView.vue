@@ -34,7 +34,7 @@
 import { useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
 import Item from "../../types/Item";
-import ItemList from "../../components/products/ItemList.vue";
+import ItemList from "../../components/items/ItemList.vue";
 import apiClient from "../../lib/api-client";
 
 const route = useRoute();
