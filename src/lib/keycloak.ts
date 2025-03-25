@@ -38,12 +38,15 @@ export const initializeKeycloak = async (keycloak: Keycloak) => {
     // await authStore.login();
   }
 
-  setInterval(() => updateKeycloakToken(keycloak), 60000);
+  setInterval(() => updateKeycloakToken(keycloak, 70), 60000);
   return keycloak;
 };
 
-export const updateKeycloakToken = async (keycloak: Keycloak) => {
-  const isRefreshed = await keycloak.updateToken(70);
+export const updateKeycloakToken = async (
+  keycloak: Keycloak,
+  minValidity: number,
+) => {
+  const isRefreshed = await keycloak.updateToken(minValidity);
   if (isRefreshed && keycloak.token) {
     setAxiosAuthHeader(keycloak.token);
     apiClient.setApiKey(keycloak.token);

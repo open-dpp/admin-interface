@@ -40,6 +40,7 @@ import { reset } from "@formkit/core";
 import { useOrganizationsStore } from "../../stores/organizations";
 import { useIndexStore } from "../../stores";
 import { useRouter } from "vue-router";
+import keycloakIns, { updateKeycloakToken } from "../../lib/keycloak";
 
 const router = useRouter();
 
@@ -58,7 +59,8 @@ const create = async (fields: {
   const responseData = await organizationStore.createOrganization({
     name: fields.stepper.generalInfo.name,
   });
-  new Promise((resolve) => setTimeout(resolve, 250));
+  await new Promise((resolve) => setTimeout(resolve, 250));
+  await updateKeycloakToken(keycloakIns, 1000);
   submitted.value = true;
   reset("createOrganizationForm");
   await organizationStore.fetchOrganizations();
