@@ -24,6 +24,8 @@ describe("<Model />", () => {
       name: "Laptop neu",
       version: "1.0",
       visibility: VisibilityLevel.PRIVATE,
+      createdByUserId: "userId",
+      ownedByOrganizationId: "ownedByOrganizationId",
       sections: [
         {
           id: "s1",
