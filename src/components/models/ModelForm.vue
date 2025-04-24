@@ -1,6 +1,8 @@
 <template>
   <div
-    v-for="section of modelFormStore.productDataModel?.sections"
+    v-for="section of modelFormStore.productDataModel?.sections.filter(
+      (s) => s.parentId === undefined,
+    )"
     v-bind:key="section.id"
   >
     <RepeatableSectionForm

@@ -2,10 +2,14 @@ import { createPinia, setActivePinia } from "pinia";
 import { expect, it, vi } from "vitest";
 import apiClient from "../lib/api-client";
 import { waitFor } from "@testing-library/vue";
-import { ViewDto } from "@open-dpp/api-client";
+import {
+  GridContainerDto,
+  GridItemDto,
+  ViewDto,
+  NodeType,
+} from "@open-dpp/api-client";
 import { randomUUID } from "node:crypto";
 import { useViewStore } from "./view";
-import { NodeType } from "../../../open-dpp-api-client";
 
 const mocks = vi.hoisted(() => {
   return {
@@ -36,13 +40,29 @@ describe("ViewStore", () => {
     setActivePinia(createPinia());
   });
 
+  const gridItem: GridItemDto = {
+    id: randomUUID(),
+    type: NodeType.GRID_ITEM,
+    colSpan: { sm: 7, lg: 8 },
+    colStart: { xs: 5, sm: 9 },
+    rowSpan: { sm: 4, lg: 4 },
+    rowStart: { xs: 2, lg: 8 },
+  };
+
+  const gridContainer: GridContainerDto = {
+    id: randomUUID(),
+    type: NodeType.GRID_CONTAINER,
+    cols: { sm: 7, lg: 8 },
+    children: [gridItem],
+  };
+
   const view: ViewDto = {
     id: randomUUID(),
     name: "name",
     version: "1.0.0",
     ownedByOrganizationId: randomUUID(),
     createdByUserId: randomUUID(),
-    nodes: [{ id: randomUUID(), type: NodeType.GRID_CONTAINER }],
+    nodes: [gridContainer],
     dataModelId: randomUUID(),
   };
 
@@ -117,5 +137,33 @@ describe("ViewStore", () => {
       ),
     );
     expect(viewStore.view).toEqual(view);
+  });
+
+  it("should generate grid col classes", () => {
+    const viewStore = useViewStore();
+    viewStore.view = view;
+    const classes = viewStore.generateClassesForNode(gridContainer.id);
+    expect(classes).toEqual("sm:grid-cols-7 lg:grid-cols-8");
+  });
+
+  it("should generate grid item classes", () => {
+    const viewStore = useViewStore();
+    viewStore.view = view;
+    const classes = viewStore.generateClassesForNode(gridItem.id);
+    expect(classes).toEqual(
+      "sm:col-span-7 lg:col-span-8 xs:col-start-5 sm:col-start-9 sm:row-span-4 lg:row-span-4 xs:row-start-2 lg:row-start-8",
+    );
+  });
+
+  it("find node", () => {
+    const viewStore = useViewStore();
+    viewStore.view = view;
+    let found = viewStore.findNodeWithParentById(gridItem.id);
+    expect(found?.node).toEqual(gridItem);
+    expect(found?.parent).toEqual(gridContainer);
+
+    found = viewStore.findNodeWithParentById(gridContainer.id);
+    expect(found?.node).toEqual(gridContainer);
+    expect(found?.parent).toBeUndefined();
   });
 });

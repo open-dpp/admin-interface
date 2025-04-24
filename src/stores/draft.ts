@@ -4,6 +4,7 @@ import apiClient from "../lib/api-client";
 import {
   DataFieldDraftCreateDto,
   DataFieldDraftUpdateDto,
+  ProductDataModelDraftCreateDto,
   ProductDataModelDraftDto,
   PublicationCreateDto,
   SectionDraftCreateDto,
@@ -12,6 +13,11 @@ import {
 
 export const useDraftStore = defineStore("draft", () => {
   const draft = ref<ProductDataModelDraftDto>();
+
+  const createDraft = async (data: ProductDataModelDraftCreateDto) => {
+    const response = await apiClient.productDataModelDrafts.create(data);
+    draft.value = response.data;
+  };
 
   const fetchDraft = async (id: string) => {
     const response = await apiClient.productDataModelDrafts.getById(id);
@@ -64,6 +70,10 @@ export const useDraftStore = defineStore("draft", () => {
       );
       draft.value = response.data;
     }
+  };
+
+  const findSectionById = (sectionId: string) => {
+    return draft.value?.sections.find((s) => s.id === sectionId);
   };
 
   const findSectionOfDataField = (dataFieldId: string) => {
@@ -126,6 +136,7 @@ export const useDraftStore = defineStore("draft", () => {
 
   return {
     draft,
+    createDraft,
     fetchDraft,
     addSection,
     modifySection,
@@ -133,6 +144,7 @@ export const useDraftStore = defineStore("draft", () => {
     addDataField,
     modifyDataField,
     deleteDataField,
+    findSectionById,
     findSectionOfDataField,
     findDataField,
     publish,

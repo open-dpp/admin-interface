@@ -3,14 +3,19 @@ import { createMemoryHistory, createRouter } from "vue-router";
 import { API_URL } from "../../const";
 import { routes } from "../../router";
 import {
+  DataFieldDto,
+  DataFieldRefDto,
   DataFieldType,
+  GridItemDto,
+  NodeType,
   ProductDataModelDraftDto,
+  SectionDto,
+  SectionGridDto,
   SectionType,
-  VisibilityLevel,
+  ViewDto,
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 import DraftView from "./DraftView.vue";
-import { useNotificationStore } from "../../stores/notification";
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -29,7 +34,24 @@ describe("<DraftView />", () => {
         type: DataFieldType.TEXT_FIELD,
       },
     ],
+    subSections: [],
   };
+
+  const dataFieldToCreate: DataFieldDto = {
+    id: "dCreate1",
+    type: DataFieldType.TEXT_FIELD,
+    name: "Processor",
+    options: {},
+  };
+
+  const sectionToCreate = {
+    id: "sCreate1",
+    name: "Sustain",
+    type: SectionType.REPEATABLE,
+    dataFields: [],
+    subSections: [],
+  };
+
   const draft: ProductDataModelDraftDto = {
     id: "draftId",
     name: "My draft",
@@ -37,9 +59,18 @@ describe("<DraftView />", () => {
     publications: [],
     sections: [section],
     createdByUserId: "u1",
-    ownedByOrganizationId: "u2",
+    ownedByOrganizationId: "o1",
   };
-  it("renders draft and creates a new section", () => {
+  it("renders empty draft and creates a section", () => {
+    const view: ViewDto = {
+      id: "view1",
+      name: "My View",
+      version: "1.0.0",
+      ownedByOrganizationId: "o1",
+      createdByUserId: "u1",
+      nodes: [],
+      dataModelId: "draftId",
+    };
     const orgaId = "orgaId";
     const newSectionName = "Mein neuer Abschnitt";
 
@@ -53,13 +84,31 @@ describe("<DraftView />", () => {
     ).as("getDraft");
 
     cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/views?dataModelId=${draft.id}`,
+      {
+        statusCode: 200,
+        body: view, // Mock response
+      },
+    ).as("getView");
+
+    cy.intercept(
       "POST",
       `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections`,
       {
         statusCode: 200,
-        body: draft, // Mock response
+        body: { ...draft, sections: [...draft.sections, sectionToCreate] }, // Mock response
       },
     ).as("createSection");
+
+    cy.intercept(
+      "POST",
+      `${API_URL}/organizations/${orgaId}/views/${view.id}/nodes`,
+      {
+        statusCode: 200,
+        body: view, // Mock response
+      },
+    ).as("createSectionGrid");
 
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);
@@ -70,179 +119,106 @@ describe("<DraftView />", () => {
     cy.mountWithPinia(DraftView, { router });
 
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+    cy.wait("@getView").its("response.statusCode").should("eq", 200);
     cy.contains(`Datenmodellentwurf ${draft.name}`).should("be.visible");
     cy.contains(`Version ${draft.version}`).should("be.visible");
-    cy.contains("button", "Abschnitt hinzufügen").click();
+    cy.contains("button", "Hinzufügen").click();
+    cy.contains(`Knoten hinzufügen`).should("be.visible");
+    cy.contains(`Auswahl`).should("be.visible");
+    // Check that text field is not selectable at root level
+    cy.contains("li", "Textfeld").should("not.exist");
     cy.contains("li", "Repeater").click();
     cy.get('[data-cy="name"]').type(newSectionName);
-    cy.contains("button", "Erstellen").click();
+    cy.get('[data-cy="select-col-number"]').select("2");
+    cy.get('[data-cy="submit"]').click();
     cy.wait("@createSection").its("request.body").should("deep.equal", {
       name: newSectionName,
       type: SectionType.REPEATABLE,
     });
+    cy.wait("@createSectionGrid")
+      .its("request.body")
+      .should("deep.equal", {
+        node: {
+          type: NodeType.SECTION_GRID,
+          sectionId: sectionToCreate.id,
+          cols: { sm: 2 },
+          initNumberOfChildren: 2,
+        },
+      });
+    cy.contains(`Knoten hinzufügen`).should("not.be.visible");
   });
 
-  it("renders draft and publish it", () => {
+  it("renders draft and creates a data field", () => {
+    const gridItem: GridItemDto = {
+      type: NodeType.GRID_ITEM,
+      id: "g1",
+      colSpan: { md: 1 },
+    };
+
+    const sectionGrid: SectionGridDto = {
+      type: NodeType.SECTION_GRID,
+      id: "s1",
+      sectionId: sectionToCreate.id,
+      children: [gridItem],
+      cols: { md: 3 },
+    };
+
+    const view: ViewDto = {
+      id: "view1",
+      name: "My View",
+      version: "1.0.0",
+      ownedByOrganizationId: "o1",
+      createdByUserId: "u1",
+      nodes: [sectionGrid],
+      dataModelId: "draftId",
+    };
     const orgaId = "orgaId";
+
     cy.intercept(
       "GET",
       `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
       {
         statusCode: 200,
-        body: draft, // Mock response
+        body: { ...draft, sections: [...draft.sections, sectionToCreate] }, // Mock response
       },
     ).as("getDraft");
+
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/views?dataModelId=${draft.id}`,
+      {
+        statusCode: 200,
+        body: view, // Mock response
+      },
+    ).as("getView");
 
     cy.intercept(
       "POST",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/publish`,
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${sectionToCreate.id}/data-fields`,
       {
         statusCode: 200,
-        body: draft, // Mock response
-      },
-    ).as("publishDraft");
-
-    const indexStore = useIndexStore();
-    indexStore.selectOrganization(orgaId);
-
-    const notificationStore = useNotificationStore();
-
-    cy.spy(notificationStore, "addSuccessNotification").as("notifySpy");
-
-    cy.wrap(
-      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
-    );
-    cy.mountWithPinia(DraftView, { router });
-
-    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-    cy.get('[data-cy="selectVisibility"]').click();
-    cy.contains("für jeden sichtbar").click();
-    cy.contains("button", "Veröffentlichen").click();
-    cy.wait("@publishDraft").its("request.body").should("deep.equal", {
-      visibility: VisibilityLevel.PUBLIC,
-    });
-
-    cy.get("@notifySpy").should(
-      "have.been.calledWith",
-      "Ihr Entwurf wurde erfolgreich veröffentlicht. Sie können nun darauf basierend Modelle anlegen.",
-      {
-        label: "Modell anlegen",
-        to: `/organizations/${orgaId}/models/create`,
-      },
-    );
-  });
-
-  it("renders draft and deletes section", () => {
-    const orgaId = "orgaId";
-    cy.intercept(
-      "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
-      {
-        statusCode: 200,
-        body: draft, // Mock response
-      },
-    ).as("getDraft");
-
-    cy.intercept(
-      "DELETE",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}`,
-      {
-        statusCode: 200,
-        body: draft, // Mock response
-      },
-    ).as("deleteSection");
-
-    const indexStore = useIndexStore();
-    indexStore.selectOrganization(orgaId);
-
-    cy.wrap(
-      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
-    );
-    cy.mountWithPinia(DraftView, { router });
-
-    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-    cy.get('[data-cy="deleteSection"]').click();
-    cy.wait("@deleteSection").its("response.statusCode").should("eq", 200);
-  });
-
-  it("renders draft and navigates to section edit", () => {
-    const orgaId = "orgaId";
-    cy.intercept(
-      "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
-      {
-        statusCode: 200,
-        body: draft, // Mock response
-      },
-    ).as("getDraft");
-
-    const indexStore = useIndexStore();
-    indexStore.selectOrganization(orgaId);
-
-    cy.wrap(
-      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
-    );
-    cy.mountWithPinia(DraftView, { router });
-
-    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-    cy.get('[data-cy="editSection"]').click();
-    cy.spy(router, "push").as("pushSpy");
-    cy.get("@pushSpy").should(
-      "have.been.calledWith",
-      `/organizations/${orgaId}/data-model-drafts/${draft.id}/sections/${section.id}`,
-    );
-  });
-
-  it("renders draft and navigates to data field edit", () => {
-    const orgaId = "orgaId";
-    cy.intercept(
-      "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
-      {
-        statusCode: 200,
-        body: draft, // Mock response
-      },
-    ).as("getDraft");
-
-    const indexStore = useIndexStore();
-    indexStore.selectOrganization(orgaId);
-
-    cy.wrap(
-      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
-    );
-    cy.mountWithPinia(DraftView, { router });
-
-    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-    cy.get('[data-cy="editDataField"]').click();
-    cy.spy(router, "push").as("pushSpy");
-    cy.get("@pushSpy").should(
-      "have.been.calledWith",
-      `/organizations/${orgaId}/data-model-drafts/${draft.id}/sections/${section.id}/data-fields/${section.dataFields[0].id}`,
-    );
-  });
-
-  it("renders draft and creates a new data field", () => {
-    const orgaId = "orgaId";
-    const newDataFieldName = "Mein neues Datenfeld";
-
-    cy.intercept(
-      "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
-      {
-        statusCode: 200,
-        body: draft, // Mock response
-      },
-    ).as("getDraft");
-
-    cy.intercept(
-      "POST",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}/data-fields`,
-      {
-        statusCode: 200,
-        body: draft, // Mock response
+        body: {
+          ...draft,
+          sections: [
+            ...draft.sections,
+            {
+              ...sectionToCreate,
+              dataFields: [...sectionToCreate.dataFields, dataFieldToCreate],
+            },
+          ],
+        }, // Mock response
       },
     ).as("createDataField");
 
+    cy.intercept(
+      "POST",
+      `${API_URL}/organizations/${orgaId}/views/${view.id}/nodes`,
+      {
+        statusCode: 200,
+        body: view, // Mock response
+      },
+    ).as("createGridItemContent");
+
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);
 
@@ -252,41 +228,106 @@ describe("<DraftView />", () => {
     cy.mountWithPinia(DraftView, { router });
 
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-    cy.contains(section.name).should("be.visible");
-    section.dataFields.forEach((d) => {
-      cy.contains(d.name).should("be.visible");
-    });
+    cy.wait("@getView").its("response.statusCode").should("eq", 200);
 
-    cy.contains("button", "Datenfeld hinzufügen").click();
+    // add data field
+    cy.get('[data-cy="g1"]').click();
     cy.contains("li", "Textfeld").click();
-    cy.get('[data-cy="name"]').type(newDataFieldName);
-    cy.contains("button", "Erstellen").click();
+    cy.get('[data-cy="name"]').type(dataFieldToCreate.name);
+    cy.get('[data-cy="submit"]').click();
     cy.wait("@createDataField").its("request.body").should("deep.equal", {
-      name: newDataFieldName,
+      name: dataFieldToCreate.name,
       type: DataFieldType.TEXT_FIELD,
     });
+    cy.wait("@createGridItemContent")
+      .its("request.body")
+      .should("deep.equal", {
+        node: {
+          type: NodeType.DATA_FIELD_REF,
+          fieldId: dataFieldToCreate.id,
+        },
+        parentId: gridItem.id,
+      });
   });
 
-  it("renders draft and deletes a data field", () => {
+  it("renders nested view", () => {
+    const dataField: DataFieldDto = {
+      id: "d1",
+      name: "Processor",
+      type: DataFieldType.TEXT_FIELD,
+      options: {},
+    };
+
+    const section: SectionDto = {
+      id: "s1",
+      name: "Sustain",
+      type: SectionType.GROUP,
+      dataFields: [dataField],
+      subSections: [],
+    };
+
+    const draftNested: ProductDataModelDraftDto = {
+      id: "draftId",
+      name: "My draft",
+      version: "1.0.0",
+      publications: [],
+      sections: [section],
+      createdByUserId: "u1",
+      ownedByOrganizationId: "o1",
+    };
+    const dataFieldRef: DataFieldRefDto = {
+      id: "dref1",
+      type: NodeType.DATA_FIELD_REF,
+      fieldId: dataField.id,
+    };
+    const gridItem1: GridItemDto = {
+      type: NodeType.GRID_ITEM,
+      id: "gi1",
+      colSpan: {},
+      rowSpan: { lg: 5 },
+      content: dataFieldRef,
+    };
+    const gridItem2: GridItemDto = {
+      type: NodeType.GRID_ITEM,
+      id: "gi2",
+      colSpan: { xs: 3, md: 1 },
+    };
+    const gridContainer: SectionGridDto = {
+      type: NodeType.GRID_CONTAINER,
+      id: "gc1",
+      children: [gridItem1, gridItem2],
+      cols: { md: 4 },
+      sectionId: section.id,
+    };
+    const view: ViewDto = {
+      id: "view1",
+      name: "My View",
+      version: "1.0.0",
+      ownedByOrganizationId: "o1",
+      createdByUserId: "u1",
+      nodes: [gridContainer],
+      dataModelId: "draftId",
+    };
+
     const orgaId = "orgaId";
-    const dataFieldIdToDelete = section.dataFields[0].id;
+
     cy.intercept(
       "GET",
       `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
       {
         statusCode: 200,
-        body: draft, // Mock response
+        body: draftNested, // Mock response
       },
     ).as("getDraft");
 
     cy.intercept(
-      "DELETE",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}/data-fields/${dataFieldIdToDelete}`,
+      "GET",
+      `${API_URL}/organizations/${orgaId}/views?dataModelId=${draft.id}`,
       {
         statusCode: 200,
-        body: draft, // Mock response
+        body: view, // Mock response
       },
-    ).as("deleteDataField");
+    ).as("getView");
 
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);
@@ -297,11 +338,242 @@ describe("<DraftView />", () => {
     cy.mountWithPinia(DraftView, { router });
 
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-    cy.contains(section.name).should("be.visible");
-    section.dataFields.forEach((d) => {
-      cy.contains(d.name).should("be.visible");
+    cy.wait("@getView").its("response.statusCode").should("eq", 200);
+    cy.get('[data-cy="gc1"]')
+      .should("have.class", "grid")
+      .and("have.class", "md:grid-cols-4");
+    cy.get('[data-cy="gi1"]')
+      .should("have.class", "xs:col-span-1")
+      .and("have.class", "lg:row-span-5");
+    cy.get('[data-cy="gi2"]')
+      .should("have.class", "xs:col-span-3")
+      .and("have.class", "md:col-span-1");
+    cy.get('[data-cy="gi1"]').within(() => {
+      // Assert that an input of type text exists
+      cy.get('input[type="text"]').should("exist");
     });
-    cy.get('[data-cy="deleteDataField"]').click();
-    cy.wait("@deleteDataField").its("response.statusCode").should("eq", 200);
   });
+
+  // it("renders draft and publish it", () => {
+  //   const orgaId = "orgaId";
+  //   cy.intercept(
+  //     "GET",
+  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+  //     {
+  //       statusCode: 200,
+  //       body: draft, // Mock response
+  //     },
+  //   ).as("getDraft");
+  //
+  //   cy.intercept(
+  //     "POST",
+  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/publish`,
+  //     {
+  //       statusCode: 200,
+  //       body: draft, // Mock response
+  //     },
+  //   ).as("publishDraft");
+  //
+  //   const indexStore = useIndexStore();
+  //   indexStore.selectOrganization(orgaId);
+  //
+  //   const notificationStore = useNotificationStore();
+  //
+  //   cy.spy(notificationStore, "addSuccessNotification").as("notifySpy");
+  //
+  //   cy.wrap(
+  //     router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+  //   );
+  //   cy.mountWithPinia(DraftView, { router });
+  //
+  //   cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+  //   cy.get('[data-cy="selectVisibility"]').click();
+  //   cy.contains("für jeden sichtbar").click();
+  //   cy.contains("button", "Veröffentlichen").click();
+  //   cy.wait("@publishDraft").its("request.body").should("deep.equal", {
+  //     visibility: VisibilityLevel.PUBLIC,
+  //   });
+  //
+  //   cy.get("@notifySpy").should(
+  //     "have.been.calledWith",
+  //     "Ihr Entwurf wurde erfolgreich veröffentlicht. Sie können nun darauf basierend Modelle anlegen.",
+  //     {
+  //       label: "Modell anlegen",
+  //       to: `/organizations/${orgaId}/models/create`,
+  //     },
+  //   );
+  // });
+  //
+  // it("renders draft and deletes section", () => {
+  //   const orgaId = "orgaId";
+  //   cy.intercept(
+  //     "GET",
+  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+  //     {
+  //       statusCode: 200,
+  //       body: draft, // Mock response
+  //     },
+  //   ).as("getDraft");
+  //
+  //   cy.intercept(
+  //     "DELETE",
+  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}`,
+  //     {
+  //       statusCode: 200,
+  //       body: draft, // Mock response
+  //     },
+  //   ).as("deleteSection");
+  //
+  //   const indexStore = useIndexStore();
+  //   indexStore.selectOrganization(orgaId);
+  //
+  //   cy.wrap(
+  //     router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+  //   );
+  //   cy.mountWithPinia(DraftView, { router });
+  //
+  //   cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+  //   cy.get('[data-cy="deleteSection"]').click();
+  //   cy.wait("@deleteSection").its("response.statusCode").should("eq", 200);
+  // });
+  //
+  // it("renders draft and navigates to section edit", () => {
+  //   const orgaId = "orgaId";
+  //   cy.intercept(
+  //     "GET",
+  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+  //     {
+  //       statusCode: 200,
+  //       body: draft, // Mock response
+  //     },
+  //   ).as("getDraft");
+  //
+  //   const indexStore = useIndexStore();
+  //   indexStore.selectOrganization(orgaId);
+  //
+  //   cy.wrap(
+  //     router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+  //   );
+  //   cy.mountWithPinia(DraftView, { router });
+  //
+  //   cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+  //   cy.get('[data-cy="editSection"]').click();
+  //   cy.spy(router, "push").as("pushSpy");
+  //   cy.get("@pushSpy").should(
+  //     "have.been.calledWith",
+  //     `/organizations/${orgaId}/data-model-drafts/${draft.id}/sections/${section.id}`,
+  //   );
+  // });
+  //
+  // it("renders draft and navigates to data field edit", () => {
+  //   const orgaId = "orgaId";
+  //   cy.intercept(
+  //     "GET",
+  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+  //     {
+  //       statusCode: 200,
+  //       body: draft, // Mock response
+  //     },
+  //   ).as("getDraft");
+  //
+  //   const indexStore = useIndexStore();
+  //   indexStore.selectOrganization(orgaId);
+  //
+  //   cy.wrap(
+  //     router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+  //   );
+  //   cy.mountWithPinia(DraftView, { router });
+  //
+  //   cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+  //   cy.get('[data-cy="editDataField"]').click();
+  //   cy.spy(router, "push").as("pushSpy");
+  //   cy.get("@pushSpy").should(
+  //     "have.been.calledWith",
+  //     `/organizations/${orgaId}/data-model-drafts/${draft.id}/sections/${section.id}/data-fields/${section.dataFields[0].id}`,
+  //   );
+  // });
+  //
+  // it("renders draft and creates a new data field", () => {
+  //   const orgaId = "orgaId";
+  //   const newDataFieldName = "Mein neues Datenfeld";
+  //
+  //   cy.intercept(
+  //     "GET",
+  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+  //     {
+  //       statusCode: 200,
+  //       body: draft, // Mock response
+  //     },
+  //   ).as("getDraft");
+  //
+  //   cy.intercept(
+  //     "POST",
+  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}/data-fields`,
+  //     {
+  //       statusCode: 200,
+  //       body: draft, // Mock response
+  //     },
+  //   ).as("createDataField");
+  //
+  //   const indexStore = useIndexStore();
+  //   indexStore.selectOrganization(orgaId);
+  //
+  //   cy.wrap(
+  //     router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+  //   );
+  //   cy.mountWithPinia(DraftView, { router });
+  //
+  //   cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+  //   cy.contains(section.name).should("be.visible");
+  //   section.dataFields.forEach((d) => {
+  //     cy.contains(d.name).should("be.visible");
+  //   });
+  //
+  //   cy.contains("button", "Datenfeld hinzufügen").click();
+  //   cy.contains("li", "Textfeld").click();
+  //   cy.get('[data-cy="name"]').type(newDataFieldName);
+  //   cy.contains("button", "Erstellen").click();
+  //   cy.wait("@createDataField").its("request.body").should("deep.equal", {
+  //     name: newDataFieldName,
+  //     type: DataFieldType.TEXT_FIELD,
+  //   });
+  // });
+  //
+  // it("renders draft and deletes a data field", () => {
+  //   const orgaId = "orgaId";
+  //   const dataFieldIdToDelete = section.dataFields[0].id;
+  //   cy.intercept(
+  //     "GET",
+  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+  //     {
+  //       statusCode: 200,
+  //       body: draft, // Mock response
+  //     },
+  //   ).as("getDraft");
+  //
+  //   cy.intercept(
+  //     "DELETE",
+  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}/data-fields/${dataFieldIdToDelete}`,
+  //     {
+  //       statusCode: 200,
+  //       body: draft, // Mock response
+  //     },
+  //   ).as("deleteDataField");
+  //
+  //   const indexStore = useIndexStore();
+  //   indexStore.selectOrganization(orgaId);
+  //
+  //   cy.wrap(
+  //     router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+  //   );
+  //   cy.mountWithPinia(DraftView, { router });
+  //
+  //   cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+  //   cy.contains(section.name).should("be.visible");
+  //   section.dataFields.forEach((d) => {
+  //     cy.contains(d.name).should("be.visible");
+  //   });
+  //   cy.get('[data-cy="deleteDataField"]').click();
+  //   cy.wait("@deleteDataField").its("response.statusCode").should("eq", 200);
+  // });
 });

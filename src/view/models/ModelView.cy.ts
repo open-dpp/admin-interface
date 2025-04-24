@@ -17,7 +17,7 @@ const router = createRouter({
 });
 
 describe("<Model />", () => {
-  it("renders items and creates a new one", () => {
+  it("renders model form and modify its data", () => {
     // see: https://on.cypress.io/mounting-vue
     const productDataModel: ProductDataModelDto = {
       id: "pdm1",
@@ -31,6 +31,8 @@ describe("<Model />", () => {
           id: "s1",
           type: SectionType.GROUP,
           name: "Technische Spezifikation",
+          parentId: undefined,
+          subSections: ["s1.1"],
           dataFields: [
             {
               id: "f1",
@@ -46,6 +48,23 @@ describe("<Model />", () => {
               name: "Neuer Title 2",
               options: {
                 min: 2,
+              },
+            },
+          ],
+        },
+        {
+          id: "s1.1",
+          type: SectionType.REPEATABLE,
+          name: "Dimensions",
+          parentId: "s1",
+          subSections: [],
+          dataFields: [
+            {
+              id: "f1.1",
+              type: DataFieldType.TEXT_FIELD,
+              name: "Größe",
+              options: {
+                min: 24,
               },
             },
           ],

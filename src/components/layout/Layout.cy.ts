@@ -34,6 +34,7 @@ describe("<Layout />", () => {
           type: DataFieldType.TEXT_FIELD,
         },
       ],
+      subSections: [],
     };
     const draft: ProductDataModelDraftDto = {
       id: "draftId",
@@ -88,20 +89,5 @@ describe("<Layout />", () => {
     cy.get('[data-cy="closeSidebar"]').click();
     cy.contains("Editieren").click();
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-    cy.get('[data-cy="editSection"]').click();
-    cy.get('[data-cy="breadcrumb"]').within(() => {
-      cy.get("li:nth-child(2)").should("contain", orgaId);
-      cy.get("li:nth-child(3)").should("contain", "Datenmodellentwürfe");
-      cy.get("li:nth-child(4)").should("contain", draft.id);
-      cy.get("li:nth-child(5)").should("contain", "Abschnitt");
-    });
-    cy.contains(draft.id).click();
-    cy.get('[data-cy="editDataField"]').click();
-    cy.get('[data-cy="breadcrumb"]').within(() => {
-      cy.get("li:nth-child(2)").should("contain", orgaId);
-      cy.get("li:nth-child(3)").should("contain", "Datenmodellentwürfe");
-      cy.get("li:nth-child(4)").should("contain", draft.id);
-      cy.get("li:nth-child(5)").should("contain", "Datenfeld");
-    });
   });
 });

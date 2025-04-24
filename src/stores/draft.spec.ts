@@ -13,6 +13,7 @@ import { VisibilityLevel } from "@open-dpp/api-client";
 const mocks = vi.hoisted(() => {
   return {
     getDraftId: vi.fn(),
+    create: vi.fn(),
     addSection: vi.fn(),
     deleteSection: vi.fn(),
     addDataField: vi.fn(),
@@ -35,6 +36,7 @@ vi.mock("../lib/api-client", () => ({
       modifySection: mocks.modifySection,
       modifyDataField: mocks.modifyDataField,
       publish: mocks.publish,
+      create: mocks.create,
     },
   },
 }));
@@ -56,6 +58,7 @@ describe("DraftStore", () => {
         type: DataFieldType.TEXT_FIELD,
       },
     ],
+    subSections: [],
   };
 
   const draft: ProductDataModelDraftDto = {
@@ -67,6 +70,21 @@ describe("DraftStore", () => {
     createdByUserId: "u1",
     ownedByOrganizationId: "u2",
   };
+
+  it("should create draft", async () => {
+    const draftStore = useDraftStore();
+    mocks.create.mockResolvedValue({ data: draft });
+    const createDto = {
+      name: "My draft",
+    };
+    await draftStore.createDraft(createDto);
+    await waitFor(() =>
+      expect(apiClient.productDataModelDrafts.create).toHaveBeenCalledWith(
+        createDto,
+      ),
+    );
+    expect(draftStore.draft).toEqual(draft);
+  });
 
   it("should fetch draft", async () => {
     const draftStore = useDraftStore();
@@ -183,5 +201,12 @@ describe("DraftStore", () => {
       ),
     );
     expect(draftStore.draft).toEqual(draft);
+  });
+
+  it("should find section by id", async () => {
+    const draftStore = useDraftStore();
+    draftStore.draft = draft;
+    const found = draftStore.findSectionById(section.id);
+    expect(found).toEqual(section);
   });
 });
