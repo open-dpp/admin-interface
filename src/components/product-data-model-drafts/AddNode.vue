@@ -13,7 +13,6 @@ import {
   SidebarContentType,
   useDraftSidebarStore,
 } from "../../stores/draftSidebar";
-import { defineProps } from "vue";
 import { PlusCircleIcon } from "@heroicons/vue/24/outline";
 
 const props = defineProps<{ parentId?: string }>();
