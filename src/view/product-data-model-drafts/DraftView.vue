@@ -6,10 +6,10 @@
       >
         <div>
           <h3 class="text-base/7 font-semibold text-gray-900">
-            Datenmodellentwurf {{ draftStore.draft.name }}
+            Datenmodellentwurf {{ draftStore.draft.data.name }}
           </h3>
           <p class="mt-1 max-w-2xl text-sm/6 text-gray-500">
-            Version {{ draftStore.draft.version }}
+            Version {{ draftStore.draft.data.version }}
           </p>
         </div>
         <div class="">
@@ -17,13 +17,18 @@
         </div>
       </div>
     </div>
-    <AddNode />
-    <div v-if="viewStore.view" class="flex flex-col gap-4">
+    <AddNode
+      :col-span="{ sm: 1 }"
+      :col-start="{ sm: 1 }"
+      :row-start="{ sm: 1 }"
+    />
+    <div v-if="draftStore.draft.view" class="grid grid-cols-1 gap-4">
       <GridSection
-        v-for="node of viewStore.view.nodes"
+        v-for="node of draftStore.draft.view.nodes.filter(
+          (n) => n.parentId === undefined && isSectionGrid(n),
+        )"
         :key="node.id"
-        :grid-section="node as GridContainerDto"
-        :parent-id="undefined"
+        :section-grid="node as SectionGridDto"
       />
     </div>
     <DraftSidebar />
@@ -34,25 +39,26 @@
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useDraftStore } from "../../stores/draft";
-import { GridContainerDto, VisibilityLevel } from "@open-dpp/api-client";
+import {
+  isSectionGrid,
+  SectionGridDto,
+  VisibilityLevel,
+} from "@open-dpp/api-client";
 import PublishDraftButton from "../../components/product-data-model-drafts/PublishDraftButton.vue";
 import { useNotificationStore } from "../../stores/notification";
 import { useIndexStore } from "../../stores";
 import AddNode from "../../components/product-data-model-drafts/AddNode.vue";
 import DraftSidebar from "../../components/product-data-model-drafts/DraftSidebar.vue";
-import { useViewStore } from "../../stores/view";
 import GridSection from "../../components/product-data-model-drafts/GridSection.vue";
 
 const route = useRoute();
 
 const draftStore = useDraftStore();
-const viewStore = useViewStore();
 const notificationStore = useNotificationStore();
 const indexStore = useIndexStore();
 
 const fetchData = async () => {
   await draftStore.fetchDraft(String(route.params.draftId));
-  await viewStore.fetchView(draftStore.draft!.id);
 };
 
 const onPublish = async (visibility: VisibilityLevel) => {

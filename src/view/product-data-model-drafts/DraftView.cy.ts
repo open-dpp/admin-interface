@@ -6,13 +6,12 @@ import {
   DataFieldDto,
   DataFieldRefDto,
   DataFieldType,
-  GridItemDto,
   NodeType,
   ProductDataModelDraftDto,
-  SectionDto,
+  SectionDraftDto,
   SectionGridDto,
   SectionType,
-  ViewDto,
+  TargetGroup,
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 import DraftView from "./DraftView.vue";
@@ -23,7 +22,7 @@ const router = createRouter({
 });
 
 describe("<DraftView />", () => {
-  const section = {
+  const section: SectionDraftDto = {
     id: "s1",
     name: "Tech Specs",
     type: SectionType.GROUP,
@@ -37,236 +36,18 @@ describe("<DraftView />", () => {
     subSections: [],
   };
 
-  const dataFieldToCreate: DataFieldDto = {
-    id: "dCreate1",
-    type: DataFieldType.TEXT_FIELD,
-    name: "Processor",
-    options: {},
-  };
-
-  const sectionToCreate = {
-    id: "sCreate1",
-    name: "Sustain",
-    type: SectionType.REPEATABLE,
-    dataFields: [],
-    subSections: [],
+  const sectionGridNode: SectionGridDto = {
+    id: "sg1",
+    type: NodeType.SECTION_GRID,
+    cols: { sm: 3 },
+    colStart: { sm: 1 },
+    colSpan: { sm: 1 },
+    children: [],
+    sectionId: section.id,
   };
 
   const draft: ProductDataModelDraftDto = {
-    id: "draftId",
-    name: "My draft",
-    version: "1.0.0",
-    publications: [],
-    sections: [section],
-    createdByUserId: "u1",
-    ownedByOrganizationId: "o1",
-  };
-  it("renders empty draft and creates a section", () => {
-    const view: ViewDto = {
-      id: "view1",
-      name: "My View",
-      version: "1.0.0",
-      ownedByOrganizationId: "o1",
-      createdByUserId: "u1",
-      nodes: [],
-      dataModelId: "draftId",
-    };
-    const orgaId = "orgaId";
-    const newSectionName = "Mein neuer Abschnitt";
-
-    cy.intercept(
-      "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
-      {
-        statusCode: 200,
-        body: draft, // Mock response
-      },
-    ).as("getDraft");
-
-    cy.intercept(
-      "GET",
-      `${API_URL}/organizations/${orgaId}/views?dataModelId=${draft.id}`,
-      {
-        statusCode: 200,
-        body: view, // Mock response
-      },
-    ).as("getView");
-
-    cy.intercept(
-      "POST",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections`,
-      {
-        statusCode: 200,
-        body: { ...draft, sections: [...draft.sections, sectionToCreate] }, // Mock response
-      },
-    ).as("createSection");
-
-    cy.intercept(
-      "POST",
-      `${API_URL}/organizations/${orgaId}/views/${view.id}/nodes`,
-      {
-        statusCode: 200,
-        body: view, // Mock response
-      },
-    ).as("createSectionGrid");
-
-    const indexStore = useIndexStore();
-    indexStore.selectOrganization(orgaId);
-
-    cy.wrap(
-      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
-    );
-    cy.mountWithPinia(DraftView, { router });
-
-    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-    cy.wait("@getView").its("response.statusCode").should("eq", 200);
-    cy.contains(`Datenmodellentwurf ${draft.name}`).should("be.visible");
-    cy.contains(`Version ${draft.version}`).should("be.visible");
-    cy.contains("button", "Hinzufügen").click();
-    cy.contains(`Knoten hinzufügen`).should("be.visible");
-    cy.contains(`Auswahl`).should("be.visible");
-    // Check that text field is not selectable at root level
-    cy.contains("li", "Textfeld").should("not.exist");
-    cy.contains("li", "Repeater").click();
-    cy.get('[data-cy="name"]').type(newSectionName);
-    cy.get('[data-cy="select-col-number"]').select("2");
-    cy.get('[data-cy="submit"]').click();
-    cy.wait("@createSection").its("request.body").should("deep.equal", {
-      name: newSectionName,
-      type: SectionType.REPEATABLE,
-    });
-    cy.wait("@createSectionGrid")
-      .its("request.body")
-      .should("deep.equal", {
-        node: {
-          type: NodeType.SECTION_GRID,
-          sectionId: sectionToCreate.id,
-          cols: { sm: 2 },
-          initNumberOfChildren: 2,
-        },
-      });
-    cy.contains(`Knoten hinzufügen`).should("not.be.visible");
-  });
-
-  it("renders draft and creates a data field", () => {
-    const gridItem: GridItemDto = {
-      type: NodeType.GRID_ITEM,
-      id: "g1",
-      colSpan: { md: 1 },
-    };
-
-    const sectionGrid: SectionGridDto = {
-      type: NodeType.SECTION_GRID,
-      id: "s1",
-      sectionId: sectionToCreate.id,
-      children: [gridItem],
-      cols: { md: 3 },
-    };
-
-    const view: ViewDto = {
-      id: "view1",
-      name: "My View",
-      version: "1.0.0",
-      ownedByOrganizationId: "o1",
-      createdByUserId: "u1",
-      nodes: [sectionGrid],
-      dataModelId: "draftId",
-    };
-    const orgaId = "orgaId";
-
-    cy.intercept(
-      "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
-      {
-        statusCode: 200,
-        body: { ...draft, sections: [...draft.sections, sectionToCreate] }, // Mock response
-      },
-    ).as("getDraft");
-
-    cy.intercept(
-      "GET",
-      `${API_URL}/organizations/${orgaId}/views?dataModelId=${draft.id}`,
-      {
-        statusCode: 200,
-        body: view, // Mock response
-      },
-    ).as("getView");
-
-    cy.intercept(
-      "POST",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${sectionToCreate.id}/data-fields`,
-      {
-        statusCode: 200,
-        body: {
-          ...draft,
-          sections: [
-            ...draft.sections,
-            {
-              ...sectionToCreate,
-              dataFields: [...sectionToCreate.dataFields, dataFieldToCreate],
-            },
-          ],
-        }, // Mock response
-      },
-    ).as("createDataField");
-
-    cy.intercept(
-      "POST",
-      `${API_URL}/organizations/${orgaId}/views/${view.id}/nodes`,
-      {
-        statusCode: 200,
-        body: view, // Mock response
-      },
-    ).as("createGridItemContent");
-
-    const indexStore = useIndexStore();
-    indexStore.selectOrganization(orgaId);
-
-    cy.wrap(
-      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
-    );
-    cy.mountWithPinia(DraftView, { router });
-
-    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-    cy.wait("@getView").its("response.statusCode").should("eq", 200);
-
-    // add data field
-    cy.get('[data-cy="g1"]').click();
-    cy.contains("li", "Textfeld").click();
-    cy.get('[data-cy="name"]').type(dataFieldToCreate.name);
-    cy.get('[data-cy="submit"]').click();
-    cy.wait("@createDataField").its("request.body").should("deep.equal", {
-      name: dataFieldToCreate.name,
-      type: DataFieldType.TEXT_FIELD,
-    });
-    cy.wait("@createGridItemContent")
-      .its("request.body")
-      .should("deep.equal", {
-        node: {
-          type: NodeType.DATA_FIELD_REF,
-          fieldId: dataFieldToCreate.id,
-        },
-        parentId: gridItem.id,
-      });
-  });
-
-  it("renders nested view", () => {
-    const dataField: DataFieldDto = {
-      id: "d1",
-      name: "Processor",
-      type: DataFieldType.TEXT_FIELD,
-      options: {},
-    };
-
-    const section: SectionDto = {
-      id: "s1",
-      name: "Sustain",
-      type: SectionType.GROUP,
-      dataFields: [dataField],
-      subSections: [],
-    };
-
-    const draftNested: ProductDataModelDraftDto = {
+    data: {
       id: "draftId",
       name: "My draft",
       version: "1.0.0",
@@ -274,85 +55,301 @@ describe("<DraftView />", () => {
       sections: [section],
       createdByUserId: "u1",
       ownedByOrganizationId: "o1",
-    };
-    const dataFieldRef: DataFieldRefDto = {
-      id: "dref1",
-      type: NodeType.DATA_FIELD_REF,
-      fieldId: dataField.id,
-    };
-    const gridItem1: GridItemDto = {
-      type: NodeType.GRID_ITEM,
-      id: "gi1",
-      colSpan: {},
-      rowSpan: { lg: 5 },
-      content: dataFieldRef,
-    };
-    const gridItem2: GridItemDto = {
-      type: NodeType.GRID_ITEM,
-      id: "gi2",
-      colSpan: { xs: 3, md: 1 },
-    };
-    const gridContainer: SectionGridDto = {
-      type: NodeType.GRID_CONTAINER,
-      id: "gc1",
-      children: [gridItem1, gridItem2],
-      cols: { md: 4 },
-      sectionId: section.id,
-    };
-    const view: ViewDto = {
+    },
+    view: {
       id: "view1",
-      name: "My View",
+      targetGroup: TargetGroup.ALL,
       version: "1.0.0",
-      ownedByOrganizationId: "o1",
-      createdByUserId: "u1",
-      nodes: [gridContainer],
+      nodes: [sectionGridNode],
       dataModelId: "draftId",
+    },
+  };
+
+  it("renders draft and creates a section", () => {
+    const orgaId = "orgaId";
+    const newSectionName = "Mein neuer Abschnitt";
+
+    const sectionToCreate = {
+      id: "sCreate1",
+      name: "Sustain",
+      type: SectionType.REPEATABLE,
+      dataFields: [],
+      subSections: [],
     };
 
-    const orgaId = "orgaId";
+    const sectionGridToCreate: SectionGridDto = {
+      id: "sgCreate1",
+      type: NodeType.SECTION_GRID,
+      cols: { sm: 3 },
+      colStart: { sm: 1 },
+      colSpan: { sm: 3 },
+      sectionId: sectionToCreate.id,
+      children: [],
+    };
 
     cy.intercept(
       "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.data.id}`,
       {
         statusCode: 200,
-        body: draftNested, // Mock response
+        body: draft, // Mock response
       },
     ).as("getDraft");
 
     cy.intercept(
-      "GET",
-      `${API_URL}/organizations/${orgaId}/views?dataModelId=${draft.id}`,
+      "POST",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.data.id}/sections`,
       {
         statusCode: 200,
-        body: view, // Mock response
+        body: {
+          data: {
+            ...draft.data,
+            sections: [...draft.data.sections, sectionToCreate],
+          },
+          view: {
+            ...draft.view,
+            nodes: [...draft.view.nodes, sectionGridToCreate],
+          },
+        },
       },
-    ).as("getView");
+    ).as("createSection");
 
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);
 
     cy.wrap(
-      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+      router.push(
+        `/organizations/${orgaId}/data-model-drafts/${draft.data.id}`,
+      ),
     );
     cy.mountWithPinia(DraftView, { router });
 
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-    cy.wait("@getView").its("response.statusCode").should("eq", 200);
-    cy.get('[data-cy="gc1"]')
-      .should("have.class", "grid")
-      .and("have.class", "md:grid-cols-4");
-    cy.get('[data-cy="gi1"]')
-      .should("have.class", "xs:col-span-1")
-      .and("have.class", "lg:row-span-5");
-    cy.get('[data-cy="gi2"]')
-      .should("have.class", "xs:col-span-3")
-      .and("have.class", "md:col-span-1");
-    cy.get('[data-cy="gi1"]').within(() => {
-      // Assert that an input of type text exists
-      cy.get('input[type="text"]').should("exist");
+    cy.contains(`Datenmodellentwurf ${draft.data.name}`).should("be.visible");
+    cy.contains(`Version ${draft.data.version}`).should("be.visible");
+    cy.contains("button", "Hinzufügen").click();
+    cy.contains(`Knoten hinzufügen`).should("be.visible");
+    cy.contains(`Auswahl`).should("be.visible");
+    // Check that text field is not selectable at root level
+    cy.contains("li", "Textfeld").should("not.exist");
+    cy.contains("li", "Repeater").click();
+    cy.get('[data-cy="name"]').type(newSectionName);
+    cy.get('[data-cy="select-col-number"]').select(
+      sectionGridToCreate.cols.sm!.toFixed(),
+    );
+    cy.get('[data-cy="submit"]').click();
+    cy.wait("@createSection").then(({ request }) => {
+      const expected = {
+        name: newSectionName,
+        type: SectionType.REPEATABLE,
+        view: {
+          cols: sectionGridToCreate.cols,
+          colSpan: { sm: 1 },
+          colStart: { sm: 1 },
+          rowStart: { sm: 1 },
+        },
+      };
+      cy.expectDeepEqualWithDiff(request.body, expected);
     });
+
+    cy.contains(`Knoten hinzufügen`).should("not.be.visible");
   });
+
+  it("renders draft and creates a data field", () => {
+    const orgaId = "orgaId";
+
+    const dataFieldToCreate: DataFieldDto = {
+      id: "dCreate1",
+      type: DataFieldType.TEXT_FIELD,
+      name: "Processor",
+      options: {},
+    };
+
+    const dataFieldRefToCreate: DataFieldRefDto = {
+      id: "drefCreate1",
+      type: NodeType.DATA_FIELD_REF,
+      fieldId: dataFieldToCreate.id,
+      colStart: { sm: 2 },
+      rowStart: { sm: 1 },
+      colSpan: { sm: 1 },
+      children: [],
+      parentId: sectionGridNode.id,
+    };
+
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.data.id}`,
+      {
+        statusCode: 200,
+        body: draft,
+      },
+    ).as("getDraft");
+
+    cy.intercept(
+      "POST",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.data.id}/sections/${section.id}/data-fields`,
+      {
+        statusCode: 200,
+        body: {
+          data: {
+            ...draft.data,
+            sections: [
+              {
+                ...section,
+                dataFields: [section.dataFields, dataFieldToCreate],
+              },
+            ],
+          },
+          view: {
+            ...draft.view,
+            nodes: [
+              { ...sectionGridNode, children: [dataFieldRefToCreate.id] },
+              dataFieldRefToCreate,
+            ],
+          },
+        }, // Mock response
+      },
+    ).as("createDataField");
+
+    const indexStore = useIndexStore();
+    indexStore.selectOrganization(orgaId);
+
+    cy.wrap(
+      router.push(
+        `/organizations/${orgaId}/data-model-drafts/${draft.data.id}`,
+      ),
+    );
+    cy.mountWithPinia(DraftView, { router });
+
+    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+
+    // add data field
+    cy.get(`[data-cy="${sectionGridNode.id}-1"]`).click();
+    cy.contains("li", "Textfeld").click();
+    cy.get('[data-cy="name"]').type(dataFieldToCreate.name);
+    cy.get('[data-cy="submit"]').click();
+
+    cy.wait("@createDataField").then(({ request }) => {
+      const expected = {
+        name: dataFieldToCreate.name,
+        type: DataFieldType.TEXT_FIELD,
+        view: {
+          colSpan: { sm: 1 },
+          colStart: { sm: 2 },
+          rowStart: { sm: 1 },
+        },
+      };
+      cy.expectDeepEqualWithDiff(request.body, expected);
+    });
+
+    cy.get(`[data-cy="${dataFieldRefToCreate.id}"]`)
+      .find("input")
+      .should("have.attr", "placeholder", dataFieldToCreate.name);
+  });
+  //
+  // it("renders nested view", () => {
+  //   const dataField: DataFieldDto = {
+  //     id: "d1",
+  //     name: "Processor",
+  //     type: DataFieldType.TEXT_FIELD,
+  //     options: {},
+  //   };
+  //
+  //   const section: SectionDto = {
+  //     id: "s1",
+  //     name: "Sustain",
+  //     type: SectionType.GROUP,
+  //     dataFields: [dataField],
+  //     subSections: [],
+  //   };
+  //
+  //   const draftNested: ProductDataModelDraftDto = {
+  //     id: "draftId",
+  //     name: "My draft",
+  //     version: "1.0.0",
+  //     publications: [],
+  //     sections: [section],
+  //     createdByUserId: "u1",
+  //     ownedByOrganizationId: "o1",
+  //   };
+  //   const dataFieldRef: DataFieldRefDto = {
+  //     id: "dref1",
+  //     type: NodeType.DATA_FIELD_REF,
+  //     fieldId: dataField.id,
+  //   };
+  //   const gridItem1: GridItemDto = {
+  //     type: NodeType.GRID_ITEM,
+  //     id: "gi1",
+  //     colSpan: {},
+  //     rowSpan: { lg: 5 },
+  //     content: dataFieldRef,
+  //   };
+  //   const gridItem2: GridItemDto = {
+  //     type: NodeType.GRID_ITEM,
+  //     id: "gi2",
+  //     colSpan: { xs: 3, md: 1 },
+  //   };
+  //   const gridContainer: SectionGridDto = {
+  //     type: NodeType.GRID_CONTAINER,
+  //     id: "gc1",
+  //     children: [gridItem1, gridItem2],
+  //     cols: { md: 4 },
+  //     sectionId: section.id,
+  //   };
+  //   const view: ViewDto = {
+  //     id: "view1",
+  //     name: "My View",
+  //     version: "1.0.0",
+  //     ownedByOrganizationId: "o1",
+  //     createdByUserId: "u1",
+  //     nodes: [gridContainer],
+  //     dataModelId: "draftId",
+  //   };
+  //
+  //   const orgaId = "orgaId";
+  //
+  //   cy.intercept(
+  //     "GET",
+  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+  //     {
+  //       statusCode: 200,
+  //       body: draftNested, // Mock response
+  //     },
+  //   ).as("getDraft");
+  //
+  //   cy.intercept(
+  //     "GET",
+  //     `${API_URL}/organizations/${orgaId}/views?dataModelId=${draft.id}`,
+  //     {
+  //       statusCode: 200,
+  //       body: view, // Mock response
+  //     },
+  //   ).as("getView");
+  //
+  //   const indexStore = useIndexStore();
+  //   indexStore.selectOrganization(orgaId);
+  //
+  //   cy.wrap(
+  //     router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+  //   );
+  //   cy.mountWithPinia(DraftView, { router });
+  //
+  //   cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+  //   cy.wait("@getView").its("response.statusCode").should("eq", 200);
+  //   cy.get('[data-cy="gc1"]')
+  //     .should("have.class", "grid")
+  //     .and("have.class", "md:grid-cols-4");
+  //   cy.get('[data-cy="gi1"]')
+  //     .should("have.class", "xs:col-span-1")
+  //     .and("have.class", "lg:row-span-5");
+  //   cy.get('[data-cy="gi2"]')
+  //     .should("have.class", "xs:col-span-3")
+  //     .and("have.class", "md:col-span-1");
+  //   cy.get('[data-cy="gi1"]').within(() => {
+  //     // Assert that an input of type text exists
+  //     cy.get('input[type="text"]').should("exist");
+  //   });
+  // });
 
   // it("renders draft and publish it", () => {
   //   const orgaId = "orgaId";

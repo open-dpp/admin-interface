@@ -14,12 +14,21 @@ import {
   useDraftSidebarStore,
 } from "../../stores/draftSidebar";
 import { PlusCircleIcon } from "@heroicons/vue/24/outline";
+import { ResponsiveConfigDto } from "@open-dpp/api-client";
 
-const props = defineProps<{ parentId?: string }>();
+const props = defineProps<{
+  parentId?: string;
+  colSpan: ResponsiveConfigDto;
+  colStart: ResponsiveConfigDto;
+  rowStart: ResponsiveConfigDto;
+}>();
 
 const open = () => {
   draftSidebarStore.open(SidebarContentType.NODE_SELECTION, {
     parentId: props.parentId,
+    colSpan: props.colSpan,
+    colStart: props.colStart,
+    rowStart: props.rowStart,
   });
 };
 

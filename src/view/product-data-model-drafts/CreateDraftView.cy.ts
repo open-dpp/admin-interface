@@ -11,10 +11,9 @@ const router = createRouter({
 });
 
 describe("<CreateDraftView />", () => {
-  it("creates draft with corresponding view", () => {
+  it("creates draft", () => {
     const orgaId = "orgaId";
     const draftName = "My draft";
-    const viewName = `Standard view ${draftName}`;
     const draftId = "draftId";
 
     cy.intercept(
@@ -22,14 +21,9 @@ describe("<CreateDraftView />", () => {
       `${API_URL}/organizations/${orgaId}/product-data-model-drafts`,
       {
         statusCode: 201,
-        body: { id: draftId, name: draftName }, // Mock response
+        body: { data: { id: draftId, name: draftName } }, // Mock response
       },
     ).as("createDraft");
-
-    cy.intercept("POST", `${API_URL}/organizations/${orgaId}/views`, {
-      statusCode: 201,
-      body: { name: viewName }, // Mock response
-    }).as("viewDraft");
 
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);
@@ -43,10 +37,6 @@ describe("<CreateDraftView />", () => {
     cy.wait("@createDraft")
       .its("request.body")
       .should("deep.equal", { name: draftName });
-
-    cy.wait("@viewDraft")
-      .its("request.body")
-      .should("deep.equal", { name: viewName, dataModelId: draftId });
 
     cy.get("@pushSpy").should(
       "have.been.calledWith",

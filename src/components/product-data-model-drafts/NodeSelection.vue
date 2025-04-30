@@ -50,7 +50,11 @@ import {
   type VNodeProps,
   watch,
 } from "vue";
-import { DataFieldType, SectionType } from "@open-dpp/api-client";
+import {
+  DataFieldType,
+  ResponsiveConfigDto,
+  SectionType,
+} from "@open-dpp/api-client";
 import { ArrowPathIcon, TableCellsIcon } from "@heroicons/vue/24/outline";
 import {
   SidebarContentType,
@@ -59,7 +63,12 @@ import {
 
 const selectedType = ref<string>(SectionType.GROUP);
 
-const props = defineProps<{ parentId?: string }>();
+const props = defineProps<{
+  parentId?: string;
+  colSpan: ResponsiveConfigDto;
+  colStart: ResponsiveConfigDto;
+  rowStart: ResponsiveConfigDto;
+}>();
 
 const draftSidebarStore = useDraftSidebarStore();
 
@@ -119,6 +128,9 @@ const onSelect = (type: string) => {
   draftSidebarStore.setContentWithProps(SidebarContentType.NODE_FORM, {
     type,
     parentId: props.parentId,
+    colSpan: props.colSpan,
+    colStart: props.colStart,
+    rowStart: props.rowStart,
   });
 };
 </script>
