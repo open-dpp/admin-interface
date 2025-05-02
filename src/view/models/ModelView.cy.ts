@@ -4,9 +4,15 @@ import { createMemoryHistory, createRouter } from "vue-router";
 import { API_URL } from "../../const";
 import { routes } from "../../router";
 import {
+  DataFieldDto,
+  DataFieldRefDto,
   DataFieldType,
+  NodeType,
   ProductDataModelDto,
+  SectionDto,
+  SectionGridDto,
   SectionType,
+  TargetGroup,
   VisibilityLevel,
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
@@ -18,58 +24,121 @@ const router = createRouter({
 
 describe("<Model />", () => {
   it("renders model form and modify its data", () => {
+    const dataField1: DataFieldDto = {
+      id: "f1",
+      type: DataFieldType.TEXT_FIELD,
+      name: "Prozessor",
+      options: {
+        min: 24,
+      },
+    };
+    const dataFieldRef1: DataFieldRefDto = {
+      id: "df1",
+      children: [],
+      type: NodeType.DATA_FIELD_REF,
+      fieldId: dataField1.id,
+      colStart: { sm: 1 },
+      colSpan: { sm: 1 },
+      rowStart: { sm: 1 },
+    };
+    const dataField2: DataFieldDto = {
+      id: "f2",
+      type: DataFieldType.TEXT_FIELD,
+      name: "Neuer Title 2",
+      options: {
+        min: 2,
+      },
+    };
+    const dataFieldRef2: DataFieldRefDto = {
+      id: "df2",
+      children: [],
+      type: NodeType.DATA_FIELD_REF,
+      fieldId: dataField2.id,
+      colStart: { sm: 2 },
+      colSpan: { sm: 1 },
+      rowStart: { sm: 1 },
+    };
+    const section1: SectionDto = {
+      id: "s1",
+      type: SectionType.GROUP,
+      name: "Technische Spezifikation",
+      parentId: undefined,
+      subSections: ["s1.1"],
+      dataFields: [dataField1, dataField2],
+    };
+
+    const sectionGrid: SectionGridDto = {
+      id: "sg1",
+      type: NodeType.SECTION_GRID,
+      cols: { sm: 3 },
+      colStart: { sm: 1 },
+      colSpan: { sm: 3 },
+      sectionId: section1.id,
+      children: [dataFieldRef1.id, dataFieldRef2.id],
+    };
+
+    const dataField21: DataFieldDto = {
+      id: "f1.1",
+      type: DataFieldType.TEXT_FIELD,
+      name: "Größe",
+      options: {
+        min: 24,
+      },
+    };
+
+    const dataFieldRef21: DataFieldRefDto = {
+      id: "df1.1",
+      children: [],
+      type: NodeType.DATA_FIELD_REF,
+      fieldId: dataField21.id,
+      colStart: { sm: 1 },
+      colSpan: { sm: 1 },
+      rowStart: { sm: 1 },
+    };
+
+    const section2 = {
+      id: "s1.1",
+      type: SectionType.REPEATABLE,
+      name: "Dimensions",
+      parentId: "s1",
+      subSections: [],
+      dataFields: [dataField21],
+    };
+
+    const sectionGrid2: SectionGridDto = {
+      id: "sg2",
+      type: NodeType.SECTION_GRID,
+      cols: { sm: 3 },
+      colStart: { sm: 1 },
+      colSpan: { sm: 3 },
+      sectionId: section2.id,
+      children: [dataFieldRef21.id],
+    };
+
     // see: https://on.cypress.io/mounting-vue
     const productDataModel: ProductDataModelDto = {
-      id: "pdm1",
-      name: "Laptop neu",
-      version: "1.0",
-      visibility: VisibilityLevel.PRIVATE,
-      createdByUserId: "userId",
-      ownedByOrganizationId: "ownedByOrganizationId",
-      sections: [
-        {
-          id: "s1",
-          type: SectionType.GROUP,
-          name: "Technische Spezifikation",
-          parentId: undefined,
-          subSections: ["s1.1"],
-          dataFields: [
-            {
-              id: "f1",
-              type: DataFieldType.TEXT_FIELD,
-              name: "Prozessor",
-              options: {
-                min: 24,
-              },
-            },
-            {
-              id: "f2",
-              type: DataFieldType.TEXT_FIELD,
-              name: "Neuer Title 2",
-              options: {
-                min: 2,
-              },
-            },
-          ],
-        },
-        {
-          id: "s1.1",
-          type: SectionType.REPEATABLE,
-          name: "Dimensions",
-          parentId: "s1",
-          subSections: [],
-          dataFields: [
-            {
-              id: "f1.1",
-              type: DataFieldType.TEXT_FIELD,
-              name: "Größe",
-              options: {
-                min: 24,
-              },
-            },
-          ],
-        },
-      ],
+      data: {
+        id: "pdm1",
+        name: "Laptop neu",
+        version: "1.0",
+        visibility: VisibilityLevel.PRIVATE,
+        createdByUserId: "userId",
+        ownedByOrganizationId: "ownedByOrganizationId",
+        sections: [section1, section2],
+      },
+      view: {
+        id: "viewId",
+        version: "1.0",
+        dataModelId: "pdm1",
+        targetGroup: TargetGroup.ALL,
+        nodes: [
+          sectionGrid,
+          dataFieldRef1,
+          dataFieldRef2,
+          sectionGrid2,
+          dataFieldRef21,
+        ],
+      },
     };
     const model = {
       id: "someId",
@@ -78,7 +147,7 @@ describe("<Model />", () => {
         { id: "d1", value: "val1", dataFieldId: "f1", dataSectionId: "s1" },
         { id: "d2", value: "val2", dataFieldId: "f2", dataSectionId: "s1" },
       ],
-      productDataModelId: productDataModel.id,
+      productDataModelId: productDataModel.data.id,
     };
 
     const otherModel = {
@@ -98,7 +167,7 @@ describe("<Model />", () => {
           dataSectionId: "s1",
         },
       ],
-      productDataModelId: productDataModel.id,
+      productDataModelId: productDataModel.data.id,
     };
 
     const orgaId = "orga1";
@@ -117,7 +186,7 @@ describe("<Model />", () => {
 
     cy.intercept(
       "GET",
-      `${API_URL}/product-data-models/${productDataModel.id}`,
+      `${API_URL}/product-data-models/${productDataModel.data.id}`,
       {
         statusCode: 200,
         body: productDataModel, // Mock response

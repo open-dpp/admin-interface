@@ -4,7 +4,6 @@ import apiClient from "../lib/api-client";
 import {
   DataFieldDraftCreateDto,
   DataFieldDraftUpdateDto,
-  isSectionGrid,
   NodeDto,
   ProductDataModelDraftCreateDto,
   ProductDataModelDraftDto,
@@ -14,6 +13,7 @@ import {
   SectionDraftUpdateDto,
   SectionGridDto,
 } from "@open-dpp/api-client";
+import { generateClassesForNode } from "../lib/view";
 
 export const useDraftStore = defineStore("draft", () => {
   const draft = ref<ProductDataModelDraftDto>();
@@ -138,39 +138,13 @@ export const useDraftStore = defineStore("draft", () => {
     }
   };
 
-  const generateClasses = (config: ResponsiveConfigDto, className: string) => {
-    const hasBreakpoints = Object.keys(config).length > 0;
-
-    const effectiveBreakpoints = hasBreakpoints ? config : { xs: 1 }; // default if none are provided
-
-    return Object.entries(effectiveBreakpoints).map(
-      ([key, value]) => `${key}:${className}-${value}`,
-    );
-  };
-
   const findNodeById = (nodeId: string): NodeDto | undefined => {
     return draft.value?.view.nodes.find((n) => n.id === nodeId);
   };
 
-  const generateClassesForNode = (nodeId: string): string => {
+  const generateClassesForNodeById = (nodeId: string): string => {
     const found = findNodeById(nodeId);
-    if (found) {
-      const classes = generateClasses(found.colSpan, "col-span");
-      if (found.colStart) {
-        classes.push(...generateClasses(found.colStart, "col-start"));
-      }
-      if (found.rowSpan) {
-        classes.push(...generateClasses(found.rowSpan, "row-span"));
-      }
-      if (found.rowStart) {
-        classes.push(...generateClasses(found.rowStart, "row-start"));
-      }
-      if (isSectionGrid(found)) {
-        classes.push(...generateClasses(found.cols, "grid-cols"));
-      }
-      return classes.join(" ");
-    }
-    return "";
+    return generateClassesForNode(found);
   };
 
   const findEmptySpacesInSectionGrid = (sectionGrid: SectionGridDto) => {
@@ -199,7 +173,7 @@ export const useDraftStore = defineStore("draft", () => {
     findSectionOfDataField,
     findDataField,
     publish,
-    generateClassesForNode,
+    generateClassesForNodeById,
     findNodeById,
     findEmptySpacesInSectionGrid,
   };

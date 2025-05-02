@@ -1,24 +1,27 @@
 <template>
   <div
-    v-for="section of modelFormStore.productDataModel?.sections.filter(
-      (s) => s.parentId === undefined,
-    )"
-    v-bind:key="section.id"
+    v-if="modelFormStore.productDataModel?.view"
+    class="grid grid-cols-1 gap-4"
   >
-    <RepeatableSectionForm
-      v-if="section.type == SectionType.REPEATABLE"
-      :section="section"
-      @submit="onSubmit"
-    />
-    <GroupSectionForm v-else :section="section" @submit="onSubmit" />
+    <div
+      v-for="node of modelFormStore.productDataModel.view.nodes.filter(
+        (n) => n.parentId === undefined && isSectionGrid(n),
+      )"
+      :key="node.id"
+    >
+      <SectionForm
+        v-if="isSectionGrid(node)"
+        :sectionGrid="node"
+        @submit="onSubmit"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { DataValuePatchDto, SectionType } from "@open-dpp/api-client";
-import RepeatableSectionForm from "./form-components/RepeatableSectionForm.vue";
+import { DataValuePatchDto, isSectionGrid } from "@open-dpp/api-client";
 import { useModelFormStore } from "../../stores/model.form";
-import GroupSectionForm from "./form-components/GroupSectionForm.vue";
+import SectionForm from "./form-components/SectionForm.vue";
 
 const modelFormStore = useModelFormStore();
 

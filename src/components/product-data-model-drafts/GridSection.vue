@@ -5,7 +5,7 @@
       :data-cy="props.sectionGrid.id"
       :class="[
         'grid gap-1 p-0.5',
-        draftStore.generateClassesForNode(props.sectionGrid.id),
+        draftStore.generateClassesForNodeById(props.sectionGrid.id),
       ]"
     >
       <GridItem
@@ -13,7 +13,7 @@
         :key="gridItemId"
         :data-cy="gridItemId"
         :grid-item-id="gridItemId"
-        :class="[draftStore.generateClassesForNode(gridItemId)]"
+        :class="[draftStore.generateClassesForNodeById(gridItemId)]"
       />
       <AddNode
         v-for="(emptySpace, index) in draftStore.findEmptySpacesInSectionGrid(

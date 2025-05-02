@@ -1,11 +1,12 @@
 <template>
   <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
     <div class="px-4 py-6 sm:px-6">
-      <div class="px-4 py-6 sm:px-6 flex flex-row justify-between w-full">
+      <div>
         <h3 class="text-base/7 font-semibold text-gray-900">
-          {{ `Abschnitt ${props.section.name}` }}
+          {{ `Abschnitt ${section?.name} ${section?.type}` }}
         </h3>
         <button
+          v-if="section?.type === SectionType.REPEATABLE"
           class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           type="button"
           @click="onAddRow"
@@ -14,7 +15,6 @@
         </button>
       </div>
       <FormKit
-        id="repeatable-form"
         v-model="formData"
         :actions="false"
         type="form"
@@ -25,21 +25,28 @@
           :library="{ TextField }"
           :schema="formSchema"
         />
-        <FormKit v-if="formSchema.length > 0" label="Speichern" type="submit" />
+        <FormKit label="Speichern" type="submit" />
       </FormKit>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { DataValuePatchDto, SectionDto } from "@open-dpp/api-client";
+import {
+  DataValuePatchDto,
+  SectionDto,
+  SectionGridDto,
+  SectionType,
+} from "@open-dpp/api-client";
 import { ref, watch } from "vue";
 import TextField from "./TextField.vue";
 import { useModelFormStore } from "../../../stores/model.form";
 
-const modelFormStore = useModelFormStore();
+const props = defineProps<{
+  sectionGrid: SectionGridDto;
+}>();
 
-const props = defineProps<{ section: SectionDto }>();
+const modelFormStore = useModelFormStore();
 
 const emits = defineEmits<{
   (e: "submit", dataValues: DataValuePatchDto[]): void;
@@ -48,21 +55,25 @@ const emits = defineEmits<{
 const formData = ref<Record<string, unknown>>({});
 const formSchema = ref();
 
+const section = ref<SectionDto>();
+
 watch(
   () => modelFormStore.model?.dataValues, // The store property to watch
   () => {
-    formSchema.value = modelFormStore.getFormSchema(props.section.id);
-    formData.value = modelFormStore.getFormData(
-      props.section.id,
-      formData.value,
-    );
+    section.value = modelFormStore.findSectionById(props.sectionGrid.sectionId);
+    if (section.value) {
+      formSchema.value = modelFormStore.getFormSchema(
+        props.sectionGrid,
+        section.value,
+      );
+      formData.value = modelFormStore.getFormData(
+        section.value.id,
+        formData.value,
+      );
+    }
   },
   { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
 );
-
-const onAddRow = async () => {
-  await modelFormStore.addRowToSection(props.section.id);
-};
 
 const onSubmit = async () => {
   emits(
@@ -72,5 +83,11 @@ const onSubmit = async () => {
       value,
     })),
   );
+};
+
+const onAddRow = async () => {
+  if (section.value) {
+    await modelFormStore.addRowToSection(section.value.id);
+  }
 };
 </script>

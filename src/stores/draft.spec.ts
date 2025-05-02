@@ -253,7 +253,7 @@ describe("DraftStore", () => {
   it("should generate classes for section grid", () => {
     const draftStore = useDraftStore();
     draftStore.draft = draft;
-    const classes = draftStore.generateClassesForNode(sectionGrid.id);
+    const classes = draftStore.generateClassesForNodeById(sectionGrid.id);
 
     expect(classes).toEqual(
       "sm:col-span-2 xl:col-span-3 sm:col-start-1 lg:col-start-9 sm:grid-cols-1 lg:grid-cols-8",
