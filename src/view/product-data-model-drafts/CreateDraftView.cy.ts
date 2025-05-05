@@ -21,7 +21,7 @@ describe("<CreateDraftView />", () => {
       `${API_URL}/organizations/${orgaId}/product-data-model-drafts`,
       {
         statusCode: 201,
-        body: { data: { id: draftId, name: draftName } }, // Mock response
+        body: { id: draftId, name: draftName }, // Mock response
       },
     ).as("createDraft");
 

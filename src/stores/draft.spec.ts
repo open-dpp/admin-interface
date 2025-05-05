@@ -5,12 +5,9 @@ import { waitFor } from "@testing-library/vue";
 import { findEmptyGridSpaces, useDraftStore } from "./draft";
 import {
   DataFieldType,
-  NodeDto,
-  NodeType,
+  LayoutDto,
   ProductDataModelDraftDto,
-  SectionGridDto,
   SectionType,
-  TargetGroup,
   VisibilityLevel,
 } from "@open-dpp/api-client";
 
@@ -60,38 +57,33 @@ describe("DraftStore", () => {
         id: "d1",
         name: "Processor",
         type: DataFieldType.TEXT_FIELD,
+        options: {},
+        layout: {
+          colStart: { sm: 1 },
+          colSpan: { sm: 1 },
+          rowStart: { sm: 1 },
+          rowSpan: { sm: 1 },
+        },
       },
     ],
     subSections: [],
-  };
-
-  const sectionGrid: SectionGridDto = {
-    id: "sg1",
-    type: NodeType.SECTION_GRID,
-    cols: { sm: 1, lg: 8 },
-    colStart: { sm: 1, lg: 9 },
-    colSpan: { sm: 2, xl: 3 },
-    sectionId: section.id,
-    children: [],
+    layout: {
+      cols: { sm: 1, lg: 8 },
+      colStart: { sm: 1, lg: 9 },
+      colSpan: { sm: 2, xl: 3 },
+      rowStart: { sm: 1 },
+      rowSpan: { sm: 1 },
+    },
   };
 
   const draft: ProductDataModelDraftDto = {
-    data: {
-      id: "draftId",
-      name: "My draft",
-      version: "1.0.0",
-      publications: [],
-      sections: [section],
-      createdByUserId: "u1",
-      ownedByOrganizationId: "u2",
-    },
-    view: {
-      id: "viewId",
-      dataModelId: "draftId",
-      version: "1.0.0",
-      targetGroup: TargetGroup.ALL,
-      nodes: [sectionGrid],
-    },
+    id: "draftId",
+    name: "My draft",
+    version: "1.0.0",
+    publications: [],
+    sections: [section],
+    createdByUserId: "u1",
+    ownedByOrganizationId: "u2",
   };
 
   it("should create draft", async () => {
@@ -112,10 +104,10 @@ describe("DraftStore", () => {
   it("should fetch draft", async () => {
     const draftStore = useDraftStore();
     mocks.getDraftId.mockResolvedValue({ data: draft });
-    await draftStore.fetchDraft(draft.data.id);
+    await draftStore.fetchDraft(draft.id);
     await waitFor(() =>
       expect(apiClient.productDataModelDrafts.getById).toHaveBeenCalledWith(
-        draft.data.id,
+        draft.id,
       ),
     );
     expect(draftStore.draft).toEqual(draft);
@@ -128,12 +120,18 @@ describe("DraftStore", () => {
     const newSection = {
       name: "My new section",
       type: SectionType.GROUP,
-      view: { cols: { sm: 1 }, colStart: { sm: 2 }, colSpan: { sm: 7 } },
+      layout: {
+        cols: { sm: 1 },
+        colStart: { sm: 2 },
+        colSpan: { sm: 7 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
     };
     await draftStore.addSection(newSection);
     await waitFor(() =>
       expect(apiClient.productDataModelDrafts.addSection).toHaveBeenCalledWith(
-        draft.data.id,
+        draft.id,
         newSection,
       ),
     );
@@ -146,13 +144,19 @@ describe("DraftStore", () => {
     draftStore.draft = draft;
     const modifySection = {
       name: "My new section name",
-      view: { cols: { sm: 1 }, colStart: { sm: 2 }, colSpan: { sm: 7 } },
+      layout: {
+        cols: { sm: 1 },
+        colStart: { sm: 2 },
+        colSpan: { sm: 7 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
     };
     await draftStore.modifySection(section.id, modifySection);
     await waitFor(() =>
       expect(
         apiClient.productDataModelDrafts.modifySection,
-      ).toHaveBeenCalledWith(draft.data.id, section.id, modifySection),
+      ).toHaveBeenCalledWith(draft.id, section.id, modifySection),
     );
     expect(draftStore.draft).toEqual(draft);
   });
@@ -165,13 +169,18 @@ describe("DraftStore", () => {
     const newDataField = {
       name: "My new data field",
       type: DataFieldType.TEXT_FIELD,
-      view: { colStart: { sm: 2 }, colSpan: { sm: 7 } },
+      layout: {
+        colStart: { sm: 2 },
+        colSpan: { sm: 7 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
     };
     await draftStore.addDataField(sectionId, newDataField);
     await waitFor(() =>
       expect(
         apiClient.productDataModelDrafts.addDataField,
-      ).toHaveBeenCalledWith(draft.data.id, sectionId, newDataField),
+      ).toHaveBeenCalledWith(draft.id, sectionId, newDataField),
     );
     expect(draftStore.draft).toEqual(draft);
   });
@@ -185,7 +194,7 @@ describe("DraftStore", () => {
     await waitFor(() =>
       expect(
         apiClient.productDataModelDrafts.deleteSection,
-      ).toHaveBeenCalledWith(draft.data.id, sectionId),
+      ).toHaveBeenCalledWith(draft.id, sectionId),
     );
     expect(draftStore.draft).toEqual(draft);
   });
@@ -199,7 +208,7 @@ describe("DraftStore", () => {
     await waitFor(() =>
       expect(
         apiClient.productDataModelDrafts.deleteDataField,
-      ).toHaveBeenCalledWith(draft.data.id, section.id, dataFieldId),
+      ).toHaveBeenCalledWith(draft.id, section.id, dataFieldId),
     );
     expect(draftStore.draft).toEqual(draft);
   });
@@ -212,18 +221,18 @@ describe("DraftStore", () => {
     const modification = {
       name: "new name",
       options: { min: 2 },
-      view: { colStart: { sm: 2 }, colSpan: { sm: 7 } },
+      layout: {
+        colStart: { sm: 2 },
+        colSpan: { sm: 7 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
     };
     await draftStore.modifyDataField(dataFieldId, modification);
     await waitFor(() =>
       expect(
         apiClient.productDataModelDrafts.modifyDataField,
-      ).toHaveBeenCalledWith(
-        draft.data.id,
-        section.id,
-        dataFieldId,
-        modification,
-      ),
+      ).toHaveBeenCalledWith(draft.id, section.id, dataFieldId, modification),
     );
     expect(draftStore.draft).toEqual(draft);
   });
@@ -236,7 +245,7 @@ describe("DraftStore", () => {
     await draftStore.publish(publishRequest);
     await waitFor(() =>
       expect(apiClient.productDataModelDrafts.publish).toHaveBeenCalledWith(
-        draft.data.id,
+        draft.id,
         publishRequest,
       ),
     );
@@ -249,54 +258,45 @@ describe("DraftStore", () => {
     const found = draftStore.findSectionById(section.id);
     expect(found).toEqual(section);
   });
-
-  it("should generate classes for section grid", () => {
-    const draftStore = useDraftStore();
-    draftStore.draft = draft;
-    const classes = draftStore.generateClassesForNodeById(sectionGrid.id);
-
-    expect(classes).toEqual(
-      "sm:col-span-2 xl:col-span-3 sm:col-start-1 lg:col-start-9 sm:grid-cols-1 lg:grid-cols-8",
-    );
-  });
 });
 
 describe("findEmptyGridSpaces", () => {
   it("should find spaces", () => {
-    const notRelevantProps = {
-      id: "df2",
-      type: NodeType.DATA_FIELD_REF,
-      fieldId: "f2",
-      children: [],
-    };
-    const items: NodeDto[] = [
+    const items: LayoutDto[] = [
       {
-        ...notRelevantProps,
-        colStart: { md: 1 },
-        colSpan: { md: 2 },
-        rowStart: { md: 1 },
-        rowSpan: { md: 1 },
+        colStart: { sm: 1 },
+        colSpan: { sm: 2 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
       },
       {
-        ...notRelevantProps,
-        colStart: { md: 3 },
-        colSpan: { md: 1 },
-        rowStart: { md: 1 },
-        rowSpan: { md: 1 },
+        colStart: { sm: 3 },
+        colSpan: { sm: 1 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
       },
       {
-        ...notRelevantProps,
-        colStart: { md: 1 },
-        colSpan: { md: 1 },
-        rowStart: { md: 2 },
-        rowSpan: { md: 1 },
+        colStart: { sm: 1 },
+        colSpan: { sm: 1 },
+        rowStart: { sm: 2 },
+        rowSpan: { sm: 1 },
       },
     ];
 
-    const result = findEmptyGridSpaces(items, 3, "md");
+    const result = findEmptyGridSpaces(items, 3);
     expect(result).toEqual([
-      { colStart: { md: 2 }, rowStart: { md: 2 }, colSpan: { md: 1 } },
-      { colStart: { md: 3 }, rowStart: { md: 2 }, colSpan: { md: 1 } },
+      {
+        colStart: { sm: 2 },
+        rowStart: { sm: 2 },
+        colSpan: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+      {
+        colStart: { sm: 3 },
+        rowStart: { sm: 2 },
+        colSpan: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
     ]);
   });
 });

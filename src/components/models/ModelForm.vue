@@ -1,25 +1,18 @@
 <template>
-  <div
-    v-if="modelFormStore.productDataModel?.view"
-    class="grid grid-cols-1 gap-4"
-  >
+  <div v-if="modelFormStore.productDataModel" class="grid grid-cols-1 gap-4">
     <div
-      v-for="node of modelFormStore.productDataModel.view.nodes.filter(
-        (n) => n.parentId === undefined && isSectionGrid(n),
+      v-for="section of modelFormStore.productDataModel.sections.filter(
+        (s) => s.parentId === undefined,
       )"
-      :key="node.id"
+      :key="section.id"
     >
-      <SectionForm
-        v-if="isSectionGrid(node)"
-        :sectionGrid="node"
-        @submit="onSubmit"
-      />
+      <SectionForm :section="section" @submit="onSubmit" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { DataValuePatchDto, isSectionGrid } from "@open-dpp/api-client";
+import { DataValuePatchDto } from "@open-dpp/api-client";
 import { useModelFormStore } from "../../stores/model.form";
 import SectionForm from "./form-components/SectionForm.vue";
 

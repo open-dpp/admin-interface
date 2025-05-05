@@ -6,10 +6,10 @@
       >
         <div>
           <h3 class="text-base/7 font-semibold text-gray-900">
-            Datenmodellentwurf {{ draftStore.draft.data.name }}
+            Datenmodellentwurf {{ draftStore.draft.name }}
           </h3>
           <p class="mt-1 max-w-2xl text-sm/6 text-gray-500">
-            Version {{ draftStore.draft.data.version }}
+            Version {{ draftStore.draft.version }}
           </p>
         </div>
         <div class="">
@@ -18,17 +18,18 @@
       </div>
     </div>
     <AddNode
-      :col-span="{ sm: 1 }"
-      :col-start="{ sm: 1 }"
-      :row-start="{ sm: 1 }"
+      :layout="{
+        colSpan: { sm: 1 },
+        rowSpan: { sm: 1 },
+        colStart: { sm: 1 },
+        rowStart: { sm: rootSections.length + 1 },
+      }"
     />
-    <div v-if="draftStore.draft.view" class="grid grid-cols-1 gap-4">
-      <GridSection
-        v-for="node of draftStore.draft.view.nodes.filter(
-          (n) => n.parentId === undefined && isSectionGrid(n),
-        )"
-        :key="node.id"
-        :section-grid="node as SectionGridDto"
+    <div v-if="draftStore.draft" class="grid grid-cols-1 gap-4">
+      <SectionDraft
+        v-for="section of rootSections"
+        :key="section.id"
+        :section="section"
       />
     </div>
     <DraftSidebar />
@@ -36,26 +37,27 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useDraftStore } from "../../stores/draft";
-import {
-  isSectionGrid,
-  SectionGridDto,
-  VisibilityLevel,
-} from "@open-dpp/api-client";
+import { SectionDto, VisibilityLevel } from "@open-dpp/api-client";
 import PublishDraftButton from "../../components/product-data-model-drafts/PublishDraftButton.vue";
 import { useNotificationStore } from "../../stores/notification";
 import { useIndexStore } from "../../stores";
 import AddNode from "../../components/product-data-model-drafts/AddNode.vue";
 import DraftSidebar from "../../components/product-data-model-drafts/DraftSidebar.vue";
-import GridSection from "../../components/product-data-model-drafts/GridSection.vue";
+import SectionDraft from "../../components/product-data-model-drafts/SectionDraft.vue";
 
 const route = useRoute();
 
 const draftStore = useDraftStore();
 const notificationStore = useNotificationStore();
 const indexStore = useIndexStore();
+
+const rootSections = computed<SectionDto[]>(
+  () =>
+    draftStore.draft?.sections.filter((n) => n.parentId === undefined) ?? [],
+);
 
 const fetchData = async () => {
   await draftStore.fetchDraft(String(route.params.draftId));

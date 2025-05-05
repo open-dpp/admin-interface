@@ -1,11 +1,11 @@
 import { defineStore } from "pinia";
 import { Component, DefineComponent, markRaw, ref, shallowRef } from "vue";
-import NodeSelection from "../components/product-data-model-drafts/NodeSelection.vue";
-import NodeForm from "../components/product-data-model-drafts/NodeForm.vue";
+import ItemSelection from "../components/product-data-model-drafts/ItemSelection.vue";
+import ItemForm from "../components/product-data-model-drafts/ItemForm.vue";
 
 export enum SidebarContentType {
-  NODE_SELECTION = "NODE_SELECTION",
-  NODE_FORM = "NODE_FORM",
+  ITEM_SELECTION = "ITEM_SELECTION",
+  ITEM_FORM = "ITEM_FORM",
 }
 type Comp = Component | DefineComponent;
 type CompProps = Record<string, unknown>;
@@ -19,16 +19,16 @@ export const useDraftSidebarStore = defineStore("draftSidebar", () => {
 
   const sidebarContent = [
     {
-      type: SidebarContentType.NODE_SELECTION,
+      type: SidebarContentType.ITEM_SELECTION,
       title: "Knoten hinzufügen",
       subTitle: "Auswahl",
-      content: NodeSelection,
+      content: ItemSelection,
     },
     {
-      type: SidebarContentType.NODE_FORM,
+      type: SidebarContentType.ITEM_FORM,
       title: "Knoten hinzufügen",
       subTitle: "Konfiguration",
-      content: NodeForm,
+      content: ItemForm,
     },
   ];
 

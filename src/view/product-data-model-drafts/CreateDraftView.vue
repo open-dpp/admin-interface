@@ -32,7 +32,7 @@ const onSubmit = async (draftName: string) => {
   });
 
   await router.push(
-    `/organizations/${route.params.organizationId}/data-model-drafts/${draftStore.draft?.data.id}`,
+    `/organizations/${route.params.organizationId}/data-model-drafts/${draftStore.draft?.id}`,
   );
 };
 </script>

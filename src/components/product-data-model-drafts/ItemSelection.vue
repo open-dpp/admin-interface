@@ -50,11 +50,7 @@ import {
   type VNodeProps,
   watch,
 } from "vue";
-import {
-  DataFieldType,
-  ResponsiveConfigDto,
-  SectionType,
-} from "@open-dpp/api-client";
+import { DataFieldType, LayoutDto, SectionType } from "@open-dpp/api-client";
 import { ArrowPathIcon, TableCellsIcon } from "@heroicons/vue/24/outline";
 import {
   SidebarContentType,
@@ -65,9 +61,7 @@ const selectedType = ref<string>(SectionType.GROUP);
 
 const props = defineProps<{
   parentId?: string;
-  colSpan: ResponsiveConfigDto;
-  colStart: ResponsiveConfigDto;
-  rowStart: ResponsiveConfigDto;
+  layout: LayoutDto;
 }>();
 
 const draftSidebarStore = useDraftSidebarStore();
@@ -80,24 +74,21 @@ type SelectOption = {
   type: string;
 };
 
-const sections: SelectOption[] = [
-  {
-    title: "Gruppierung",
-    description:
-      "Fügen Sie einen Abschnitt hinzu, der mehrere Felder gruppiert",
-    icon: TableCellsIcon,
-    background: "bg-indigo-500",
-    type: SectionType.GROUP,
-  },
-  {
-    title: "Repeater",
-    description:
-      "Fügen Sie einen Repeater Abschnitt hinzu, um eine Gruppe von Feldern beliebig oft hinzuzufügen zu können.",
-    icon: ArrowPathIcon,
-    background: "bg-pink-500",
-    type: SectionType.REPEATABLE,
-  },
-];
+const repeater: SelectOption = {
+  title: "Repeater",
+  description:
+    "Fügen Sie einen Repeater Abschnitt hinzu, um eine Gruppe von Feldern beliebig oft hinzuzufügen zu können.",
+  icon: ArrowPathIcon,
+  background: "bg-pink-500",
+  type: SectionType.REPEATABLE,
+};
+const group: SelectOption = {
+  title: "Gruppierung",
+  description: "Fügen Sie einen Abschnitt hinzu, der mehrere Felder gruppiert",
+  icon: TableCellsIcon,
+  background: "bg-indigo-500",
+  type: SectionType.GROUP,
+};
 
 const itemsToSelect = ref<SelectOption[]>([]);
 
@@ -115,9 +106,9 @@ watch(
   () => props.parentId, // The store property to watch
   () => {
     if (props.parentId) {
-      itemsToSelect.value = [...sections, ...dataFields];
+      itemsToSelect.value = [group, ...dataFields];
     } else {
-      itemsToSelect.value = sections;
+      itemsToSelect.value = [group, repeater];
     }
   },
   { immediate: true }, // Optional: to run the watcher immediately when the component mounts
@@ -125,12 +116,10 @@ watch(
 
 const onSelect = (type: string) => {
   selectedType.value = type;
-  draftSidebarStore.setContentWithProps(SidebarContentType.NODE_FORM, {
+  draftSidebarStore.setContentWithProps(SidebarContentType.ITEM_FORM, {
     type,
     parentId: props.parentId,
-    colSpan: props.colSpan,
-    colStart: props.colStart,
-    rowStart: props.rowStart,
+    layout: props.layout,
   });
 };
 </script>

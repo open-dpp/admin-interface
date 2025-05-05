@@ -4,18 +4,14 @@ import {
   DataValueCreateDto,
   DataValueDto,
   DataValuePatchDto,
-  isDataFieldRef,
-  isSectionGrid,
   ModelDto,
-  NodeDto,
   ProductDataModelDto,
   SectionDto,
-  SectionGridDto,
   SectionType,
 } from "@open-dpp/api-client";
 import apiClient from "../lib/api-client";
 import { assign, keys, maxBy, minBy, pick } from "lodash";
-import { generateClassesForNode } from "../lib/view";
+import { generateClassesForLayout } from "../lib/layout";
 
 type FormKitSchemaNode =
   | string // Text content
@@ -39,7 +35,7 @@ export const useModelFormStore = defineStore("model.form", () => {
   const fetchInFlight = ref<boolean>(false);
 
   const getDataOfSection = (sectionId: string): DataValueDto[] => {
-    const section = productDataModel.value?.data.sections.find(
+    const section = productDataModel.value?.sections.find(
       (s) => s.id === sectionId,
     );
     if (!section) {
@@ -67,84 +63,67 @@ export const useModelFormStore = defineStore("model.form", () => {
     return assign({}, dataValues, pick(existingFormData, keys(dataValues)));
   };
 
-  const findNodeById = (nodeId: string): NodeDto | undefined => {
-    return productDataModel.value?.view.nodes.find((n) => n.id === nodeId);
-  };
-
   const findSectionById = (sectionId: string) => {
-    return productDataModel.value?.data.sections.find(
-      (s) => s.id === sectionId,
-    );
+    return productDataModel.value?.sections.find((s) => s.id === sectionId);
   };
 
   const getFormSchemaRepeatable = (
-    sectionGrid: SectionGridDto,
     section: SectionDto,
   ): FormKitSchemaObject[] => {
     const dataValuesOfSectionAllRows = getDataOfSection(section.id);
     const minRow = minBy(dataValuesOfSectionAllRows, "row")?.row ?? 0;
-    const maxRow =
-      section.type !== SectionType.REPEATABLE
-        ? 0
-        : (maxBy(dataValuesOfSectionAllRows, "row")?.row ?? 0);
+    const maxRow = maxBy(dataValuesOfSectionAllRows, "row")?.row ?? 0;
 
     const rows = [];
     for (let rowIndex = minRow; rowIndex <= maxRow; rowIndex++) {
-      rows.push(...getFormSchema(sectionGrid, section, rowIndex));
+      rows.push(...getFormSchema(section, rowIndex));
     }
     return rows;
   };
 
   const getFormSchema = (
-    sectionGrid: SectionGridDto,
     section: SectionDto,
     row?: number,
   ): FormKitSchemaObject[] => {
     if (section.type === SectionType.REPEATABLE && row === undefined) {
-      return getFormSchemaRepeatable(sectionGrid, section);
+      return getFormSchemaRepeatable(section);
     }
     const dataValuesOfSection = getDataOfSection(section.id).filter(
       (d) => d.row === row,
     );
 
     const children = [];
-    for (const gridItemId of sectionGrid.children) {
-      const gridItem = findNodeById(gridItemId);
-      if (gridItem) {
-        if (isSectionGrid(gridItem)) {
-          const subSection = findSectionById(gridItem.sectionId);
-          if (subSection) {
-            children.push(...getFormSchema(gridItem, subSection, row));
-          }
-        }
-        if (isDataFieldRef(gridItem)) {
-          const dataField = section.dataFields.find(
-            (d) => d.id === gridItem.fieldId,
-          );
-          const dataValueId = dataValuesOfSection.find(
-            (d) => d.dataFieldId === dataField?.id,
-          )?.id;
 
-          if (dataField && dataValueId) {
-            children.push({
-              $cmp: dataField.type,
-              props: {
-                id: dataValueId,
-                name: dataValueId,
-                label: dataField!.name,
-                validation: "required",
-                className: generateClassesForNode(gridItem),
-              },
-            });
-          }
-        }
+    for (const subSectionId of section.subSections) {
+      const subSection = findSectionById(subSectionId);
+      if (subSection) {
+        children.push(...getFormSchema(subSection, row));
       }
     }
+    for (const dataField of section.dataFields) {
+      const dataValueId = dataValuesOfSection.find(
+        (d) => d.dataFieldId === dataField?.id,
+      )?.id;
+
+      if (dataValueId) {
+        children.push({
+          $cmp: dataField.type,
+          props: {
+            id: dataValueId,
+            name: dataValueId,
+            label: dataField!.name,
+            validation: "required",
+            className: generateClassesForLayout(dataField.layout),
+          },
+        });
+      }
+    }
+
     return [
       {
         $el: "div",
         attrs: {
-          class: `grid ${generateClassesForNode(sectionGrid)}`,
+          class: `grid ${generateClassesForLayout(section.layout)}`,
         },
         children: children,
       },
@@ -155,7 +134,7 @@ export const useModelFormStore = defineStore("model.form", () => {
     const dataValuesOfSection = getDataOfSection(sectionId);
 
     const maxRow = maxBy(dataValuesOfSection, "row")?.row;
-    const section = productDataModel.value?.data.sections.find(
+    const section = productDataModel.value?.sections.find(
       (s) => s.id === sectionId,
     );
     const dataValuesToCreate = [];

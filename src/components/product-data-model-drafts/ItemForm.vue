@@ -15,12 +15,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import {
-  DataFieldType,
-  isSectionGrid,
-  ResponsiveConfigDto,
-  SectionType,
-} from "@open-dpp/api-client";
+import { DataFieldType, LayoutDto, SectionType } from "@open-dpp/api-client";
 import { useDraftStore } from "../../stores/draft";
 import { z } from "zod";
 import { useDraftSidebarStore } from "../../stores/draftSidebar";
@@ -28,9 +23,7 @@ import { useDraftSidebarStore } from "../../stores/draftSidebar";
 const props = defineProps<{
   type: string;
   parentId?: string;
-  colSpan: ResponsiveConfigDto;
-  colStart: ResponsiveConfigDto;
-  rowStart: ResponsiveConfigDto;
+  layout: LayoutDto;
 }>();
 
 const formData = ref<Record<string, unknown>>({});
@@ -84,16 +77,12 @@ watch(
   { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
 );
 
-console.log(props);
 const numberFromString = z.preprocess(
   (val) => (typeof val === "string" ? Number(val) : val),
   z.number(),
 );
 
 const onSubmit = async () => {
-  const foundParentNode = props.parentId
-    ? draftStore.findNodeById(props.parentId)
-    : undefined;
   if (
     props.type === SectionType.GROUP ||
     props.type === SectionType.REPEATABLE
@@ -104,31 +93,17 @@ const onSubmit = async () => {
     await draftStore.addSection({
       type: props.type,
       name: data.name,
-      parentSectionId:
-        foundParentNode && isSectionGrid(foundParentNode)
-          ? foundParentNode.sectionId
-          : undefined,
-      view: {
-        cols: { sm: data.cols },
-        colStart: props.colStart,
-        colSpan: props.colSpan,
-        rowStart: props.rowStart,
-      },
+      parentSectionId: props.parentId,
+      layout: { cols: { sm: data.cols }, ...props.layout },
     });
     draftSidebarStore.close();
   } else if (props.type === DataFieldType.TEXT_FIELD && props.parentId) {
     const data = z.object({ name: z.string() }).parse(formData.value);
-    if (foundParentNode && isSectionGrid(foundParentNode)) {
-      await draftStore.addDataField(foundParentNode.sectionId, {
-        type: props.type,
-        name: data.name,
-        view: {
-          colStart: props.colStart,
-          colSpan: props.colSpan,
-          rowStart: props.rowStart,
-        },
-      });
-    }
+    await draftStore.addDataField(props.parentId, {
+      type: props.type,
+      name: data.name,
+      layout: props.layout,
+    });
   }
   draftSidebarStore.close();
 };

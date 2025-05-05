@@ -35,7 +35,6 @@
 import {
   DataValuePatchDto,
   SectionDto,
-  SectionGridDto,
   SectionType,
 } from "@open-dpp/api-client";
 import { ref, watch } from "vue";
@@ -43,7 +42,7 @@ import TextField from "./TextField.vue";
 import { useModelFormStore } from "../../../stores/model.form";
 
 const props = defineProps<{
-  sectionGrid: SectionGridDto;
+  section: SectionDto;
 }>();
 
 const modelFormStore = useModelFormStore();
@@ -55,22 +54,14 @@ const emits = defineEmits<{
 const formData = ref<Record<string, unknown>>({});
 const formSchema = ref();
 
-const section = ref<SectionDto>();
-
 watch(
   () => modelFormStore.model?.dataValues, // The store property to watch
   () => {
-    section.value = modelFormStore.findSectionById(props.sectionGrid.sectionId);
-    if (section.value) {
-      formSchema.value = modelFormStore.getFormSchema(
-        props.sectionGrid,
-        section.value,
-      );
-      formData.value = modelFormStore.getFormData(
-        section.value.id,
-        formData.value,
-      );
-    }
+    formSchema.value = modelFormStore.getFormSchema(props.section);
+    formData.value = modelFormStore.getFormData(
+      props.section.id,
+      formData.value,
+    );
   },
   { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
 );
@@ -86,8 +77,6 @@ const onSubmit = async () => {
 };
 
 const onAddRow = async () => {
-  if (section.value) {
-    await modelFormStore.addRowToSection(section.value.id);
-  }
+  await modelFormStore.addRowToSection(props.section.id);
 };
 </script>

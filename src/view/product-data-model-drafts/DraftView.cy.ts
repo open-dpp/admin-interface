@@ -4,14 +4,10 @@ import { API_URL } from "../../const";
 import { routes } from "../../router";
 import {
   DataFieldDto,
-  DataFieldRefDto,
   DataFieldType,
-  NodeType,
   ProductDataModelDraftDto,
-  SectionDraftDto,
-  SectionGridDto,
+  SectionDto,
   SectionType,
-  TargetGroup,
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 import DraftView from "./DraftView.vue";
@@ -22,47 +18,42 @@ const router = createRouter({
 });
 
 describe("<DraftView />", () => {
-  const section: SectionDraftDto = {
+  const section: SectionDto = {
     id: "s1",
     name: "Tech Specs",
     type: SectionType.GROUP,
+    layout: {
+      cols: { sm: 3 },
+      colStart: { sm: 1 },
+      colSpan: { sm: 1 },
+      rowStart: { sm: 1 },
+      rowSpan: { sm: 1 },
+    },
     dataFields: [
       {
         id: "d1",
         name: "Processor",
         type: DataFieldType.TEXT_FIELD,
+        options: {},
+        layout: {
+          colStart: { sm: 1 },
+          colSpan: { sm: 1 },
+          rowStart: { sm: 1 },
+          rowSpan: { sm: 1 },
+        },
       },
     ],
     subSections: [],
   };
 
-  const sectionGridNode: SectionGridDto = {
-    id: "sg1",
-    type: NodeType.SECTION_GRID,
-    cols: { sm: 3 },
-    colStart: { sm: 1 },
-    colSpan: { sm: 1 },
-    children: [],
-    sectionId: section.id,
-  };
-
   const draft: ProductDataModelDraftDto = {
-    data: {
-      id: "draftId",
-      name: "My draft",
-      version: "1.0.0",
-      publications: [],
-      sections: [section],
-      createdByUserId: "u1",
-      ownedByOrganizationId: "o1",
-    },
-    view: {
-      id: "view1",
-      targetGroup: TargetGroup.ALL,
-      version: "1.0.0",
-      nodes: [sectionGridNode],
-      dataModelId: "draftId",
-    },
+    id: "draftId",
+    name: "My draft",
+    version: "1.0.0",
+    publications: [],
+    sections: [section],
+    createdByUserId: "u1",
+    ownedByOrganizationId: "o1",
   };
 
   it("renders draft and creates a section", () => {
@@ -75,21 +66,18 @@ describe("<DraftView />", () => {
       type: SectionType.REPEATABLE,
       dataFields: [],
       subSections: [],
-    };
-
-    const sectionGridToCreate: SectionGridDto = {
-      id: "sgCreate1",
-      type: NodeType.SECTION_GRID,
-      cols: { sm: 3 },
-      colStart: { sm: 1 },
-      colSpan: { sm: 3 },
-      sectionId: sectionToCreate.id,
-      children: [],
+      layout: {
+        cols: { sm: 3 },
+        colStart: { sm: 1 },
+        colSpan: { sm: 1 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
     };
 
     cy.intercept(
       "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.data.id}`,
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
       {
         statusCode: 200,
         body: draft, // Mock response
@@ -98,18 +86,12 @@ describe("<DraftView />", () => {
 
     cy.intercept(
       "POST",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.data.id}/sections`,
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections`,
       {
         statusCode: 200,
         body: {
-          data: {
-            ...draft.data,
-            sections: [...draft.data.sections, sectionToCreate],
-          },
-          view: {
-            ...draft.view,
-            nodes: [...draft.view.nodes, sectionGridToCreate],
-          },
+          ...draft,
+          sections: [...draft.sections, sectionToCreate],
         },
       },
     ).as("createSection");
@@ -118,15 +100,13 @@ describe("<DraftView />", () => {
     indexStore.selectOrganization(orgaId);
 
     cy.wrap(
-      router.push(
-        `/organizations/${orgaId}/data-model-drafts/${draft.data.id}`,
-      ),
+      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
     );
     cy.mountWithPinia(DraftView, { router });
 
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-    cy.contains(`Datenmodellentwurf ${draft.data.name}`).should("be.visible");
-    cy.contains(`Version ${draft.data.version}`).should("be.visible");
+    cy.contains(`Datenmodellentwurf ${draft.name}`).should("be.visible");
+    cy.contains(`Version ${draft.version}`).should("be.visible");
     cy.contains("button", "Hinzufügen").click();
     cy.contains(`Knoten hinzufügen`).should("be.visible");
     cy.contains(`Auswahl`).should("be.visible");
@@ -135,19 +115,14 @@ describe("<DraftView />", () => {
     cy.contains("li", "Repeater").click();
     cy.get('[data-cy="name"]').type(newSectionName);
     cy.get('[data-cy="select-col-number"]').select(
-      sectionGridToCreate.cols.sm!.toFixed(),
+      sectionToCreate.layout.cols.sm.toFixed(),
     );
     cy.get('[data-cy="submit"]').click();
     cy.wait("@createSection").then(({ request }) => {
       const expected = {
         name: newSectionName,
         type: SectionType.REPEATABLE,
-        view: {
-          cols: sectionGridToCreate.cols,
-          colSpan: { sm: 1 },
-          colStart: { sm: 1 },
-          rowStart: { sm: 1 },
-        },
+        layout: sectionToCreate.layout,
       };
       cy.expectDeepEqualWithDiff(request.body, expected);
     });
@@ -163,22 +138,17 @@ describe("<DraftView />", () => {
       type: DataFieldType.TEXT_FIELD,
       name: "Processor",
       options: {},
-    };
-
-    const dataFieldRefToCreate: DataFieldRefDto = {
-      id: "drefCreate1",
-      type: NodeType.DATA_FIELD_REF,
-      fieldId: dataFieldToCreate.id,
-      colStart: { sm: 2 },
-      rowStart: { sm: 1 },
-      colSpan: { sm: 1 },
-      children: [],
-      parentId: sectionGridNode.id,
+      layout: {
+        colStart: { sm: 2 },
+        rowStart: { sm: 1 },
+        colSpan: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
     };
 
     cy.intercept(
       "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.data.id}`,
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
       {
         statusCode: 200,
         body: draft,
@@ -187,26 +157,17 @@ describe("<DraftView />", () => {
 
     cy.intercept(
       "POST",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.data.id}/sections/${section.id}/data-fields`,
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}/data-fields`,
       {
         statusCode: 200,
         body: {
-          data: {
-            ...draft.data,
-            sections: [
-              {
-                ...section,
-                dataFields: [section.dataFields, dataFieldToCreate],
-              },
-            ],
-          },
-          view: {
-            ...draft.view,
-            nodes: [
-              { ...sectionGridNode, children: [dataFieldRefToCreate.id] },
-              dataFieldRefToCreate,
-            ],
-          },
+          ...draft,
+          sections: [
+            {
+              ...section,
+              dataFields: [...section.dataFields, dataFieldToCreate],
+            },
+          ],
         }, // Mock response
       },
     ).as("createDataField");
@@ -215,16 +176,14 @@ describe("<DraftView />", () => {
     indexStore.selectOrganization(orgaId);
 
     cy.wrap(
-      router.push(
-        `/organizations/${orgaId}/data-model-drafts/${draft.data.id}`,
-      ),
+      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
     );
     cy.mountWithPinia(DraftView, { router });
 
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
 
     // add data field
-    cy.get(`[data-cy="${sectionGridNode.id}-1"]`).click();
+    cy.get(`[data-cy="${section.id}-1"]`).click();
     cy.contains("li", "Textfeld").click();
     cy.get('[data-cy="name"]').type(dataFieldToCreate.name);
     cy.get('[data-cy="submit"]').click();
@@ -233,16 +192,17 @@ describe("<DraftView />", () => {
       const expected = {
         name: dataFieldToCreate.name,
         type: DataFieldType.TEXT_FIELD,
-        view: {
+        layout: {
           colSpan: { sm: 1 },
-          colStart: { sm: 2 },
+          colStart: { sm: 3 },
           rowStart: { sm: 1 },
+          rowSpan: { sm: 1 },
         },
       };
       cy.expectDeepEqualWithDiff(request.body, expected);
     });
 
-    cy.get(`[data-cy="${dataFieldRefToCreate.id}"]`)
+    cy.get(`[data-cy="${dataFieldToCreate.id}"]`)
       .find("input")
       .should("have.attr", "placeholder", dataFieldToCreate.name);
   });

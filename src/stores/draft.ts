@@ -4,16 +4,15 @@ import apiClient from "../lib/api-client";
 import {
   DataFieldDraftCreateDto,
   DataFieldDraftUpdateDto,
-  NodeDto,
+  LayoutDto,
   ProductDataModelDraftCreateDto,
   ProductDataModelDraftDto,
   PublicationCreateDto,
   ResponsiveConfigDto,
   SectionDraftCreateDto,
   SectionDraftUpdateDto,
-  SectionGridDto,
+  SectionDto,
 } from "@open-dpp/api-client";
-import { generateClassesForNode } from "../lib/view";
 
 export const useDraftStore = defineStore("draft", () => {
   const draft = ref<ProductDataModelDraftDto>();
@@ -31,7 +30,7 @@ export const useDraftStore = defineStore("draft", () => {
   const addSection = async (data: SectionDraftCreateDto) => {
     if (draft.value) {
       const response = await apiClient.productDataModelDrafts.addSection(
-        draft.value.data.id,
+        draft.value.id,
         data,
       );
       draft.value = response.data;
@@ -41,7 +40,7 @@ export const useDraftStore = defineStore("draft", () => {
   const deleteSection = async (sectionId: string) => {
     if (draft.value) {
       const response = await apiClient.productDataModelDrafts.deleteSection(
-        draft.value.data.id,
+        draft.value.id,
         sectionId,
       );
       draft.value = response.data;
@@ -54,7 +53,7 @@ export const useDraftStore = defineStore("draft", () => {
   ) => {
     if (draft.value) {
       const response = await apiClient.productDataModelDrafts.modifySection(
-        draft.value.data.id,
+        draft.value.id,
         sectionId,
         data,
       );
@@ -68,7 +67,7 @@ export const useDraftStore = defineStore("draft", () => {
   ) => {
     if (draft.value) {
       const response = await apiClient.productDataModelDrafts.addDataField(
-        draft.value.data.id,
+        draft.value.id,
         sectionId,
         data,
       );
@@ -77,18 +76,18 @@ export const useDraftStore = defineStore("draft", () => {
   };
 
   const findSectionById = (sectionId: string) => {
-    return draft.value?.data.sections.find((s) => s.id === sectionId);
+    return draft.value?.sections.find((s) => s.id === sectionId);
   };
 
   const findSectionOfDataField = (dataFieldId: string) => {
-    return draft.value?.data.sections.find((s) =>
+    return draft.value?.sections.find((s) =>
       s.dataFields.some((d) => d.id === dataFieldId),
     );
   };
 
   const findDataField = (dataFieldId: string) => {
     if (draft.value) {
-      for (const section of draft.value.data.sections) {
+      for (const section of draft.value.sections) {
         const foundDataField = section.dataFields.find(
           (d) => d.id === dataFieldId,
         );
@@ -104,7 +103,7 @@ export const useDraftStore = defineStore("draft", () => {
     const foundSection = findSectionOfDataField(dataFieldId);
     if (draft.value && foundSection) {
       const response = await apiClient.productDataModelDrafts.deleteDataField(
-        draft.value.data.id,
+        draft.value.id,
         foundSection.id,
         dataFieldId,
       );
@@ -119,7 +118,7 @@ export const useDraftStore = defineStore("draft", () => {
     const foundSection = findSectionOfDataField(dataFieldId);
     if (draft.value && foundSection) {
       const response = await apiClient.productDataModelDrafts.modifyDataField(
-        draft.value.data.id,
+        draft.value.id,
         foundSection.id,
         dataFieldId,
         data,
@@ -131,31 +130,24 @@ export const useDraftStore = defineStore("draft", () => {
   const publish = async (data: PublicationCreateDto) => {
     if (draft.value) {
       const response = await apiClient.productDataModelDrafts.publish(
-        draft.value.data.id,
+        draft.value.id,
         data,
       );
       draft.value = response.data;
     }
   };
 
-  const findNodeById = (nodeId: string): NodeDto | undefined => {
-    return draft.value?.view.nodes.find((n) => n.id === nodeId);
-  };
-
-  const generateClassesForNodeById = (nodeId: string): string => {
-    const found = findNodeById(nodeId);
-    return generateClassesForNode(found);
-  };
-
-  const findEmptySpacesInSectionGrid = (sectionGrid: SectionGridDto) => {
-    const gridItems = sectionGrid.children
-      .map((gridItemId) => findNodeById(gridItemId))
-      .filter((n) => n !== undefined);
+  const findEmptySpacesInSectionLayout = (sectionDto: SectionDto) => {
+    const layoutItems: LayoutDto[] = [
+      ...sectionDto.dataFields.map((d) => d.layout),
+      ...sectionDto.subSections
+        .map((sid) => findSectionById(sid)?.layout)
+        .filter((l) => l !== undefined),
+    ];
     return findEmptyGridSpaces(
-      gridItems,
-      sectionGrid.cols!.sm!,
-      "sm",
-      gridItems.length === 0 ? 1 : undefined,
+      layoutItems,
+      sectionDto.layout.cols.sm,
+      layoutItems.length === 0 ? 1 : undefined,
     );
   };
 
@@ -173,17 +165,9 @@ export const useDraftStore = defineStore("draft", () => {
     findSectionOfDataField,
     findDataField,
     publish,
-    generateClassesForNodeById,
-    findNodeById,
-    findEmptySpacesInSectionGrid,
+    findEmptySpacesInSectionGrid: findEmptySpacesInSectionLayout,
   };
 });
-
-type EmptyCellResponsive = {
-  colStart: ResponsiveConfigDto;
-  colSpan: ResponsiveConfigDto;
-  rowStart: ResponsiveConfigDto;
-};
 
 export function generateClasses(
   config: ResponsiveConfigDto,
@@ -199,13 +183,12 @@ export function generateClasses(
 }
 
 export function findEmptyGridSpaces(
-  gridItems: NodeDto[],
+  layoutItems: LayoutDto[],
   cols: number,
-  breakpoint: "sm" | "md",
   totalRows?: number,
-): EmptyCellResponsive[] {
-  const emptyCells: EmptyCellResponsive[] = [];
-  if (gridItems.length === 0) {
+): LayoutDto[] {
+  const emptyCells: LayoutDto[] = [];
+  if (layoutItems.length === 0) {
     if (!totalRows) {
       // No data to infer total rows
       console.warn(
@@ -218,9 +201,10 @@ export function findEmptyGridSpaces(
     for (let r = 0; r < totalRows; r++) {
       for (let c = 0; c < cols; c++) {
         emptyCells.push({
-          colStart: { [breakpoint]: c + 1 },
-          rowStart: { [breakpoint]: r + 1 },
-          colSpan: { [breakpoint]: 1 },
+          colStart: { sm: c + 1 },
+          rowStart: { sm: r + 1 },
+          colSpan: { sm: 1 },
+          rowSpan: { sm: 1 },
         });
       }
     }
@@ -230,9 +214,9 @@ export function findEmptyGridSpaces(
   // Step 1: Calculate number of rows if not provided
   if (!totalRows) {
     totalRows = 0;
-    for (const item of gridItems) {
-      const rowStart = item.rowStart?.[breakpoint] ?? 1;
-      const rowSpan = item.rowSpan?.[breakpoint] ?? 1;
+    for (const item of layoutItems) {
+      const rowStart = item.rowStart.sm;
+      const rowSpan = item.rowSpan.sm;
       const endRow = rowStart + rowSpan - 1;
       if (endRow > totalRows) totalRows = endRow;
     }
@@ -244,11 +228,11 @@ export function findEmptyGridSpaces(
   );
 
   // Step 3: Mark occupied cells
-  for (const item of gridItems) {
-    const colStart = (item.colStart?.[breakpoint] ?? 1) - 1;
-    const colSpan = item.colSpan?.[breakpoint] ?? 1;
-    const rowStart = (item.rowStart?.[breakpoint] ?? 1) - 1;
-    const rowSpan = item.rowSpan?.[breakpoint] ?? 1;
+  for (const item of layoutItems) {
+    const colStart = item.colStart.sm - 1;
+    const colSpan = item.colSpan.sm;
+    const rowStart = item.rowStart.sm - 1;
+    const rowSpan = item.rowSpan.sm;
 
     for (let r = rowStart; r < rowStart + rowSpan; r++) {
       for (let c = colStart; c < colStart + colSpan; c++) {
@@ -264,9 +248,10 @@ export function findEmptyGridSpaces(
     for (let c = 0; c < cols; c++) {
       if (!grid[r][c]) {
         emptyCells.push({
-          colStart: { [breakpoint]: c + 1 },
-          rowStart: { [breakpoint]: r + 1 },
-          colSpan: { [breakpoint]: 1 },
+          colStart: { sm: c + 1 },
+          rowStart: { sm: r + 1 },
+          colSpan: { sm: 1 },
+          rowSpan: { sm: 1 },
         });
       }
     }
