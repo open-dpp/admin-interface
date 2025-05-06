@@ -77,6 +77,14 @@ export const useModelFormStore = defineStore("model.form", () => {
     const rows = [];
     for (let rowIndex = minRow; rowIndex <= maxRow; rowIndex++) {
       rows.push(...getFormSchema(section, rowIndex));
+      if (rowIndex < maxRow) {
+        rows.push({
+          $el: "div",
+          attrs: {
+            class: `w-full border-t border-gray-300 m-2`,
+          },
+        });
+      }
     }
     return rows;
   };
@@ -123,7 +131,7 @@ export const useModelFormStore = defineStore("model.form", () => {
       {
         $el: "div",
         attrs: {
-          class: `grid ${generateClassesForLayout(section.layout)}`,
+          class: `grid gap-1 items-center ${generateClassesForLayout(section.layout)}`,
         },
         children: children,
       },

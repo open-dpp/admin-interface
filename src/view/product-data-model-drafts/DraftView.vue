@@ -22,15 +22,20 @@
         colSpan: { sm: 1 },
         rowSpan: { sm: 1 },
         colStart: { sm: 1 },
-        rowStart: { sm: rootSections.length + 1 },
+        rowStart: { sm: 1 },
       }"
     />
     <div v-if="draftStore.draft" class="grid grid-cols-1 gap-4">
-      <SectionDraft
+      <div
         v-for="section of rootSections"
         :key="section.id"
-        :section="section"
-      />
+        class="grid grid-cols-1 overflow-hidden bg-white shadow sm:rounded-lg w-full"
+      >
+        <SectionHeader :section="section" :is-draft-view="true" />
+        <div class="p-4">
+          <SectionDraft :section="section" />
+        </div>
+      </div>
     </div>
     <DraftSidebar />
   </div>
@@ -47,6 +52,7 @@ import { useIndexStore } from "../../stores";
 import AddNode from "../../components/product-data-model-drafts/AddNode.vue";
 import DraftSidebar from "../../components/product-data-model-drafts/DraftSidebar.vue";
 import SectionDraft from "../../components/product-data-model-drafts/SectionDraft.vue";
+import SectionHeader from "../../components/SectionHeader.vue";
 
 const route = useRoute();
 

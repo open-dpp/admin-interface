@@ -5,8 +5,12 @@
         (s) => s.parentId === undefined,
       )"
       :key="section.id"
+      class="overflow-hidden bg-white shadow sm:rounded-lg w-full"
     >
-      <SectionForm :section="section" @submit="onSubmit" />
+      <SectionHeader :section="section" :is-draft-view="false" />
+      <div class="p-4">
+        <SectionForm :section="section" @submit="onSubmit" />
+      </div>
     </div>
   </div>
 </template>
@@ -15,6 +19,7 @@
 import { DataValuePatchDto } from "@open-dpp/api-client";
 import { useModelFormStore } from "../../stores/model.form";
 import SectionForm from "./form-components/SectionForm.vue";
+import SectionHeader from "../SectionHeader.vue";
 
 const modelFormStore = useModelFormStore();
 

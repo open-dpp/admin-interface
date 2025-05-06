@@ -316,7 +316,7 @@ describe("ModelFormStore", () => {
       $el: "div",
       attrs: {
         class:
-          "grid sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-3",
+          "grid gap-1 items-center sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-3",
       },
     };
 
@@ -324,7 +324,7 @@ describe("ModelFormStore", () => {
       $el: "div",
       attrs: {
         class:
-          "grid sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-5",
+          "grid gap-1 items-center sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-5",
       },
     };
 
@@ -332,7 +332,7 @@ describe("ModelFormStore", () => {
       $el: "div",
       attrs: {
         class:
-          "grid sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-8",
+          "grid gap-1 items-center sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-8",
       },
     };
 
@@ -383,6 +383,12 @@ describe("ModelFormStore", () => {
           },
           fieldS1F1Exp,
         ],
+      },
+      {
+        $el: "div",
+        attrs: {
+          class: "w-full border-t border-gray-300 m-2",
+        },
       },
       {
         ...grid1Exp,

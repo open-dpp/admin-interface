@@ -58,11 +58,11 @@ describe("<DraftView />", () => {
 
   it("renders draft and creates a section", () => {
     const orgaId = "orgaId";
-    const newSectionName = "Mein neuer Abschnitt";
+    const newSectionName = "Sustainability";
 
     const sectionToCreate = {
       id: "sCreate1",
-      name: "Sustain",
+      name: newSectionName,
       type: SectionType.REPEATABLE,
       dataFields: [],
       subSections: [],
