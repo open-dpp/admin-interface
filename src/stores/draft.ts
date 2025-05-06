@@ -85,6 +85,20 @@ export const useDraftStore = defineStore("draft", () => {
     );
   };
 
+  const findDataFieldWithSectionOrFail = (dataFieldId: string) => {
+    if (draft.value) {
+      for (const section of draft.value.sections) {
+        const foundDataField = section.dataFields.find(
+          (d) => d.id === dataFieldId,
+        );
+        if (foundDataField) {
+          return { section: section, dataField: foundDataField };
+        }
+      }
+    }
+    throw new Error(`Data field ${dataFieldId} not found in draft.`);
+  };
+
   const findDataField = (dataFieldId: string) => {
     if (draft.value) {
       for (const section of draft.value.sections) {
@@ -164,6 +178,7 @@ export const useDraftStore = defineStore("draft", () => {
     findSectionById,
     findSectionOfDataField,
     findDataField,
+    findDataFieldWithSectionOrFail,
     publish,
     findEmptySpacesInSectionGrid: findEmptySpacesInSectionLayout,
   };

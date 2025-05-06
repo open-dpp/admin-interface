@@ -7,7 +7,7 @@
       v-for="(item, itemIdx) in itemsToSelect"
       :key="itemIdx"
       class="flow-root"
-      @click="onSelect(item.type)"
+      @click="onSelect(item.type, item.sidebarType)"
     >
       <div
         :class="[
@@ -72,6 +72,7 @@ type SelectOption = {
   icon: FunctionalComponent<HTMLAttributes & VNodeProps>;
   background: string;
   type: string;
+  sidebarType: SidebarContentType;
 };
 
 const repeater: SelectOption = {
@@ -81,6 +82,7 @@ const repeater: SelectOption = {
   icon: ArrowPathIcon,
   background: "bg-pink-500",
   type: SectionType.REPEATABLE,
+  sidebarType: SidebarContentType.SECTION_FORM,
 };
 const group: SelectOption = {
   title: "Gruppierung",
@@ -88,6 +90,7 @@ const group: SelectOption = {
   icon: TableCellsIcon,
   background: "bg-indigo-500",
   type: SectionType.GROUP,
+  sidebarType: SidebarContentType.SECTION_FORM,
 };
 
 const itemsToSelect = ref<SelectOption[]>([]);
@@ -99,6 +102,7 @@ const dataFields: SelectOption[] = [
     icon: ArrowPathIcon,
     background: "bg-pink-500",
     type: DataFieldType.TEXT_FIELD,
+    sidebarType: SidebarContentType.DATA_FIELD_FORM,
   },
 ];
 
@@ -114,9 +118,9 @@ watch(
   { immediate: true }, // Optional: to run the watcher immediately when the component mounts
 );
 
-const onSelect = (type: string) => {
+const onSelect = (type: string, sidebarType: SidebarContentType) => {
   selectedType.value = type;
-  draftSidebarStore.setContentWithProps(SidebarContentType.ITEM_FORM, {
+  draftSidebarStore.setContentWithProps(sidebarType, {
     type,
     parentId: props.parentId,
     layout: props.layout,

@@ -15,19 +15,21 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { DataFieldType, LayoutDto, SectionType } from "@open-dpp/api-client";
+import { LayoutDto, SectionDto, SectionType } from "@open-dpp/api-client";
 import { useDraftStore } from "../../stores/draft";
 import { z } from "zod";
 import { useDraftSidebarStore } from "../../stores/draftSidebar";
 
 const props = defineProps<{
-  type: string;
+  type: SectionType;
   parentId?: string;
   layout: LayoutDto;
+  id?: string;
 }>();
 
 const formData = ref<Record<string, unknown>>({});
 const formSchema = ref();
+const sectionToModify = ref<SectionDto | undefined>();
 const draftStore = useDraftStore();
 const draftSidebarStore = useDraftSidebarStore();
 
@@ -54,25 +56,22 @@ const formSchemaFromType = (type: string) => {
           "data-cy": "select-col-number",
         },
       ];
-    case DataFieldType.TEXT_FIELD:
-      return [
-        {
-          $formkit: "text",
-          name: "name",
-          label: "Name des Textfeldes",
-          "data-cy": "name",
-        },
-      ];
-
     default:
       throw new Error(`Unsupported node type: ${type}`);
   }
 };
 
 watch(
-  () => props.type, // The store property to watch
-  (newValue) => {
-    formSchema.value = formSchemaFromType(newValue);
+  [() => props.type, () => props.id], // The store property to watch
+  ([newType, newId]) => {
+    formSchema.value = formSchemaFromType(newType);
+    if (newId) {
+      sectionToModify.value = draftStore.findSectionById(newId);
+      formData.value = {
+        name: sectionToModify.value?.name,
+        cols: sectionToModify.value?.layout.cols.sm,
+      };
+    }
   },
   { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
 );
@@ -83,26 +82,20 @@ const numberFromString = z.preprocess(
 );
 
 const onSubmit = async () => {
-  if (
-    props.type === SectionType.GROUP ||
-    props.type === SectionType.REPEATABLE
-  ) {
-    const data = z
-      .object({ name: z.string(), cols: numberFromString })
-      .parse(formData.value);
+  const data = z
+    .object({ name: z.string(), cols: numberFromString })
+    .parse(formData.value);
+  if (sectionToModify.value) {
+    await draftStore.modifySection(sectionToModify.value.id, {
+      name: data.name,
+      layout: { ...sectionToModify.value.layout, cols: { sm: data.cols } },
+    });
+  } else {
     await draftStore.addSection({
       type: props.type,
       name: data.name,
       parentSectionId: props.parentId,
       layout: { cols: { sm: data.cols }, ...props.layout },
-    });
-    draftSidebarStore.close();
-  } else if (props.type === DataFieldType.TEXT_FIELD && props.parentId) {
-    const data = z.object({ name: z.string() }).parse(formData.value);
-    await draftStore.addDataField(props.parentId, {
-      type: props.type,
-      name: data.name,
-      layout: props.layout,
     });
   }
   draftSidebarStore.close();

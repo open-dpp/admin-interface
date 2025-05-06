@@ -2,8 +2,9 @@ import { createPinia, setActivePinia } from "pinia";
 import { expect, it } from "vitest";
 import { SidebarContentType, useDraftSidebarStore } from "./draftSidebar";
 import ItemSelection from "../components/product-data-model-drafts/ItemSelection.vue";
-import { SectionType } from "@open-dpp/api-client";
-import ItemForm from "../components/product-data-model-drafts/ItemForm.vue";
+import { DataFieldType, SectionType } from "@open-dpp/api-client";
+import DataFieldForm from "../components/product-data-model-drafts/DataFieldForm.vue";
+import SectionForm from "../components/product-data-model-drafts/SectionForm.vue";
 
 describe("DraftSidebarStore", () => {
   beforeEach(() => {
@@ -26,17 +27,32 @@ describe("DraftSidebarStore", () => {
     expect(draftSidebarStore.isOpen).toBeFalsy();
   });
 
-  it("should set NodeForm", async () => {
+  it("should set SectionForm", async () => {
     const draftSidebarStore = useDraftSidebarStore();
-    draftSidebarStore.setContentWithProps(SidebarContentType.ITEM_FORM, {
+    draftSidebarStore.setContentWithProps(SidebarContentType.SECTION_FORM, {
       type: SectionType.REPEATABLE,
       parentId: "id",
     });
-    expect(draftSidebarStore.title).toEqual("Knoten hinzufügen");
+    expect(draftSidebarStore.title).toEqual("Abschnitt");
     expect(draftSidebarStore.subTitle).toEqual("Konfiguration");
-    expect(draftSidebarStore.content).toEqual(ItemForm);
+    expect(draftSidebarStore.content).toEqual(SectionForm);
     expect(draftSidebarStore.contentProps).toEqual({
       type: SectionType.REPEATABLE,
+      parentId: "id",
+    });
+  });
+
+  it("should set FieldForm", async () => {
+    const draftSidebarStore = useDraftSidebarStore();
+    draftSidebarStore.setContentWithProps(SidebarContentType.DATA_FIELD_FORM, {
+      type: DataFieldType.TEXT_FIELD,
+      parentId: "id",
+    });
+    expect(draftSidebarStore.title).toEqual("Datenfeld");
+    expect(draftSidebarStore.subTitle).toEqual("Konfiguration");
+    expect(draftSidebarStore.content).toEqual(DataFieldForm);
+    expect(draftSidebarStore.contentProps).toEqual({
+      type: DataFieldType.TEXT_FIELD,
       parentId: "id",
     });
   });

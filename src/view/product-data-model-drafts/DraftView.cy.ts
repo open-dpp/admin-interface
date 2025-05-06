@@ -127,7 +127,7 @@ describe("<DraftView />", () => {
       cy.expectDeepEqualWithDiff(request.body, expected);
     });
 
-    cy.contains(`Knoten hinzufügen`).should("not.be.visible");
+    cy.contains(`Abschnitt`).should("not.be.visible");
   });
 
   it("renders draft and creates a data field", () => {
@@ -206,6 +206,65 @@ describe("<DraftView />", () => {
       .find("input")
       .should("have.attr", "placeholder", dataFieldToCreate.name);
   });
+
+  it("renders draft and modifies a data field", () => {
+    const orgaId = "orgaId";
+    const dataFieldToModify = section.dataFields[0];
+
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+      {
+        statusCode: 200,
+        body: draft,
+      },
+    ).as("getDraft");
+
+    cy.intercept(
+      "PATCH",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}/data-fields/${dataFieldToModify.id}`,
+      {
+        statusCode: 200,
+        body: {
+          ...draft,
+          sections: [
+            {
+              ...section,
+              dataFields: [...section.dataFields],
+            },
+          ],
+        }, // Mock response
+      },
+    ).as("modifyDataField");
+
+    const indexStore = useIndexStore();
+    indexStore.selectOrganization(orgaId);
+
+    cy.wrap(
+      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+    );
+    cy.mountWithPinia(DraftView, { router });
+
+    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+
+    cy.get(`[data-cy="${dataFieldToModify.id}"]`).click();
+    const newFieldName = "New Name";
+    const nameField = cy.get('[data-cy="name"]');
+    nameField.should("have.value", dataFieldToModify.name);
+    nameField.clear();
+    nameField.type(newFieldName);
+
+    cy.get('[data-cy="submit"]').click();
+
+    cy.wait("@modifyDataField").then(({ request }) => {
+      const expected = {
+        name: newFieldName,
+        layout: dataFieldToModify.layout,
+      };
+      cy.expectDeepEqualWithDiff(request.body, expected);
+    });
+  });
+
   //
   // it("renders nested view", () => {
   //   const dataField: DataFieldDto = {
