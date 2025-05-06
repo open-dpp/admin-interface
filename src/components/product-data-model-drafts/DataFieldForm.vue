@@ -8,13 +8,32 @@
       @submit="onSubmit"
     >
       <FormKitSchema v-if="formSchema" :schema="formSchema" />
-      <FormKit
-        v-if="dataFieldToModify"
-        data-cy="submit"
-        label="Ändern"
-        type="submit"
-      />
-      <FormKit v-else data-cy="submit" label="Hinzufügen" type="submit" />
+      <div class="flex gap-2">
+        <!--        "grow": true,-->
+        <!--        "max-w-[20em]": true,-->
+        <!--        "min-w-0": true,-->
+        <!--        "text-base": true,-->
+        <!--        "mb-4": true,-->
+        <!--        "data-disabled:select-none": true,-->
+        <!--        "data-disabled:opacity-50": true,-->
+        <!--        "data-disabled:pointer-events-none": true,-->
+        <button
+          class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          data-cy="submit"
+          type="submit"
+        >
+          {{ dataFieldToModify ? "Ändern" : "Hinzufügen" }}
+        </button>
+        <button
+          v-if="dataFieldToModify"
+          data-cy="delete"
+          class="block rounded-md bg-red-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-red-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-red-600"
+          type="button"
+          @click="onDelete"
+        >
+          Datenfeld löschen
+        </button>
+      </div>
     </FormKit>
   </div>
 </template>
@@ -71,6 +90,13 @@ watch(
   },
   { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
 );
+
+const onDelete = async () => {
+  if (dataFieldToModify.value) {
+    await draftStore.deleteDataField(dataFieldToModify.value.id);
+    draftSidebarStore.close();
+  }
+};
 
 const onSubmit = async () => {
   const data = z.object({ name: z.string() }).parse(formData.value);

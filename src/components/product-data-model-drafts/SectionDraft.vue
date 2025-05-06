@@ -19,7 +19,7 @@
       :section="section"
     />
     <AddNode
-      v-for="(emptySpace, index) in draftStore.findEmptySpacesInSectionGrid(
+      v-for="(emptySpace, index) in draftStore.findEmptySpacesInSectionLayout(
         props.section,
       )"
       :class="generateClassesForLayout(emptySpace)"

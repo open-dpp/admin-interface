@@ -265,6 +265,55 @@ describe("<DraftView />", () => {
     });
   });
 
+  it("renders draft and deletes data field", () => {
+    const orgaId = "orgaId";
+    const dataFieldToDelete = section.dataFields[0];
+
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+      {
+        statusCode: 200,
+        body: draft,
+      },
+    ).as("getDraft");
+
+    cy.intercept(
+      "DELETE",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}/data-fields/${dataFieldToDelete.id}`,
+      {
+        statusCode: 200,
+        body: {
+          ...draft,
+          sections: [
+            {
+              ...section,
+              dataFields: section.dataFields.filter(
+                (df) => df.id !== dataFieldToDelete.id,
+              ),
+            },
+          ],
+        },
+      },
+    ).as("deleteDataField");
+
+    const indexStore = useIndexStore();
+    indexStore.selectOrganization(orgaId);
+
+    cy.wrap(
+      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+    );
+    cy.mountWithPinia(DraftView, { router });
+
+    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+
+    cy.get(`[data-cy="${dataFieldToDelete.id}"]`).click();
+    cy.get('[data-cy="delete"]').click();
+
+    cy.wait("@deleteDataField").its("response.statusCode").should("eq", 200);
+    cy.get(`[data-cy="${dataFieldToDelete.id}"]`).should("not.exist");
+  });
+
   //
   // it("renders nested view", () => {
   //   const dataField: DataFieldDto = {
