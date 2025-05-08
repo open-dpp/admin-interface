@@ -297,6 +297,48 @@ describe("findEmptyGridSpaces", () => {
         colSpan: { sm: 1 },
         rowSpan: { sm: 1 },
       },
+      {
+        colSpan: {
+          sm: 1,
+        },
+        colStart: {
+          sm: 1,
+        },
+        rowSpan: {
+          sm: 1,
+        },
+        rowStart: {
+          sm: 3,
+        },
+      },
+      {
+        colSpan: {
+          sm: 1,
+        },
+        colStart: {
+          sm: 2,
+        },
+        rowSpan: {
+          sm: 1,
+        },
+        rowStart: {
+          sm: 3,
+        },
+      },
+      {
+        colSpan: {
+          sm: 1,
+        },
+        colStart: {
+          sm: 3,
+        },
+        rowSpan: {
+          sm: 1,
+        },
+        rowStart: {
+          sm: 3,
+        },
+      },
     ]);
   });
 });

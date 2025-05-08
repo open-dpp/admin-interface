@@ -144,11 +144,7 @@ export const useDraftStore = defineStore("draft", () => {
         .map((sid) => findSectionById(sid)?.layout)
         .filter((l) => l !== undefined),
     ];
-    return findEmptyGridSpaces(
-      layoutItems,
-      sectionDto.layout.cols.sm,
-      layoutItems.length === 0 ? 1 : undefined,
-    );
+    return findEmptyGridSpaces(layoutItems, sectionDto.layout.cols.sm);
   };
 
   return {
@@ -185,18 +181,10 @@ export function generateClasses(
 export function findEmptyGridSpaces(
   layoutItems: LayoutDto[],
   cols: number,
-  totalRows?: number,
 ): LayoutDto[] {
   const emptyCells: LayoutDto[] = [];
   if (layoutItems.length === 0) {
-    if (!totalRows) {
-      // No data to infer total rows
-      console.warn(
-        "Cannot compute empty grid without totalRows when gridItems is empty.",
-      );
-      return [];
-    }
-
+    const totalRows = 1;
     // Return all cells as empty
     for (let r = 0; r < totalRows; r++) {
       for (let c = 0; c < cols; c++) {
@@ -212,14 +200,12 @@ export function findEmptyGridSpaces(
   }
 
   // Step 1: Calculate number of rows if not provided
-  if (!totalRows) {
-    totalRows = 0;
-    for (const item of layoutItems) {
-      const rowStart = item.rowStart.sm;
-      const rowSpan = item.rowSpan.sm;
-      const endRow = rowStart + rowSpan - 1;
-      if (endRow > totalRows) totalRows = endRow;
-    }
+  let totalRows = 0;
+  for (const item of layoutItems) {
+    const rowStart = item.rowStart.sm;
+    const rowSpan = item.rowSpan.sm;
+    const endRow = rowStart + rowSpan;
+    if (endRow > totalRows) totalRows = endRow;
   }
 
   // Step 2: Initialize grid
