@@ -2,17 +2,19 @@ import { createPinia, setActivePinia } from "pinia";
 import { expect, it, vi } from "vitest";
 import apiClient from "../lib/api-client";
 import { waitFor } from "@testing-library/vue";
-import { useDraftStore } from "./draft";
+import { findEmptyGridSpaces, useDraftStore } from "./draft";
 import {
   DataFieldType,
+  LayoutDto,
   ProductDataModelDraftDto,
   SectionType,
+  VisibilityLevel,
 } from "@open-dpp/api-client";
-import { VisibilityLevel } from "@open-dpp/api-client";
 
 const mocks = vi.hoisted(() => {
   return {
     getDraftId: vi.fn(),
+    create: vi.fn(),
     addSection: vi.fn(),
     deleteSection: vi.fn(),
     addDataField: vi.fn(),
@@ -35,6 +37,7 @@ vi.mock("../lib/api-client", () => ({
       modifySection: mocks.modifySection,
       modifyDataField: mocks.modifyDataField,
       publish: mocks.publish,
+      create: mocks.create,
     },
   },
 }));
@@ -54,8 +57,23 @@ describe("DraftStore", () => {
         id: "d1",
         name: "Processor",
         type: DataFieldType.TEXT_FIELD,
+        options: {},
+        layout: {
+          colStart: { sm: 1 },
+          colSpan: { sm: 1 },
+          rowStart: { sm: 1 },
+          rowSpan: { sm: 1 },
+        },
       },
     ],
+    subSections: [],
+    layout: {
+      cols: { sm: 1, lg: 8 },
+      colStart: { sm: 1, lg: 9 },
+      colSpan: { sm: 2, xl: 3 },
+      rowStart: { sm: 1 },
+      rowSpan: { sm: 1 },
+    },
   };
 
   const draft: ProductDataModelDraftDto = {
@@ -67,6 +85,21 @@ describe("DraftStore", () => {
     createdByUserId: "u1",
     ownedByOrganizationId: "u2",
   };
+
+  it("should create draft", async () => {
+    const draftStore = useDraftStore();
+    mocks.create.mockResolvedValue({ data: draft });
+    const createDto = {
+      name: "My draft",
+    };
+    await draftStore.createDraft(createDto);
+    await waitFor(() =>
+      expect(apiClient.productDataModelDrafts.create).toHaveBeenCalledWith(
+        createDto,
+      ),
+    );
+    expect(draftStore.draft).toEqual(draft);
+  });
 
   it("should fetch draft", async () => {
     const draftStore = useDraftStore();
@@ -84,7 +117,17 @@ describe("DraftStore", () => {
     const draftStore = useDraftStore();
     mocks.addSection.mockResolvedValue({ data: draft });
     draftStore.draft = draft;
-    const newSection = { name: "My new section", type: SectionType.GROUP };
+    const newSection = {
+      name: "My new section",
+      type: SectionType.GROUP,
+      layout: {
+        cols: { sm: 1 },
+        colStart: { sm: 2 },
+        colSpan: { sm: 7 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+    };
     await draftStore.addSection(newSection);
     await waitFor(() =>
       expect(apiClient.productDataModelDrafts.addSection).toHaveBeenCalledWith(
@@ -99,7 +142,16 @@ describe("DraftStore", () => {
     const draftStore = useDraftStore();
     mocks.modifySection.mockResolvedValue({ data: draft });
     draftStore.draft = draft;
-    const modifySection = { name: "My new section name" };
+    const modifySection = {
+      name: "My new section name",
+      layout: {
+        cols: { sm: 1 },
+        colStart: { sm: 2 },
+        colSpan: { sm: 7 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+    };
     await draftStore.modifySection(section.id, modifySection);
     await waitFor(() =>
       expect(
@@ -117,6 +169,12 @@ describe("DraftStore", () => {
     const newDataField = {
       name: "My new data field",
       type: DataFieldType.TEXT_FIELD,
+      layout: {
+        colStart: { sm: 2 },
+        colSpan: { sm: 7 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
     };
     await draftStore.addDataField(sectionId, newDataField);
     await waitFor(() =>
@@ -160,7 +218,16 @@ describe("DraftStore", () => {
     mocks.modifyDataField.mockResolvedValue({ data: draft });
     draftStore.draft = draft;
     const dataFieldId = section.dataFields[0].id;
-    const modification = { name: "new name", options: { min: 2 } };
+    const modification = {
+      name: "new name",
+      options: { min: 2 },
+      layout: {
+        colStart: { sm: 2 },
+        colSpan: { sm: 7 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+    };
     await draftStore.modifyDataField(dataFieldId, modification);
     await waitFor(() =>
       expect(
@@ -183,5 +250,95 @@ describe("DraftStore", () => {
       ),
     );
     expect(draftStore.draft).toEqual(draft);
+  });
+
+  it("should find section by id", async () => {
+    const draftStore = useDraftStore();
+    draftStore.draft = draft;
+    const found = draftStore.findSectionById(section.id);
+    expect(found).toEqual(section);
+  });
+});
+
+describe("findEmptyGridSpaces", () => {
+  it("should find spaces", () => {
+    const items: LayoutDto[] = [
+      {
+        colStart: { sm: 1 },
+        colSpan: { sm: 2 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+      {
+        colStart: { sm: 3 },
+        colSpan: { sm: 1 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+      {
+        colStart: { sm: 1 },
+        colSpan: { sm: 1 },
+        rowStart: { sm: 2 },
+        rowSpan: { sm: 1 },
+      },
+    ];
+
+    const result = findEmptyGridSpaces(items, 3);
+    expect(result).toEqual([
+      {
+        colStart: { sm: 2 },
+        rowStart: { sm: 2 },
+        colSpan: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+      {
+        colStart: { sm: 3 },
+        rowStart: { sm: 2 },
+        colSpan: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+      {
+        colSpan: {
+          sm: 1,
+        },
+        colStart: {
+          sm: 1,
+        },
+        rowSpan: {
+          sm: 1,
+        },
+        rowStart: {
+          sm: 3,
+        },
+      },
+      {
+        colSpan: {
+          sm: 1,
+        },
+        colStart: {
+          sm: 2,
+        },
+        rowSpan: {
+          sm: 1,
+        },
+        rowStart: {
+          sm: 3,
+        },
+      },
+      {
+        colSpan: {
+          sm: 1,
+        },
+        colStart: {
+          sm: 3,
+        },
+        rowSpan: {
+          sm: 1,
+        },
+        rowStart: {
+          sm: 3,
+        },
+      },
+    ]);
   });
 });

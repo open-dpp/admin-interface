@@ -1,7 +1,6 @@
 import { RouteLocationNormalizedGeneric, RouteRecordRaw } from "vue-router";
 import { useLayoutStore } from "../../../stores/layout";
 import { organizationBreadcrumbs } from "../organizations";
-import { SECTIONS_PARENT } from "./sections";
 
 const draftListBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
   ...organizationBreadcrumbs(to),
@@ -64,7 +63,7 @@ export const DRAFT_CREATE: RouteRecordRaw = {
 
 export const DRAFT_PARENT: RouteRecordRaw = {
   path: ":draftId",
-  children: [DRAFT, SECTIONS_PARENT],
+  children: [DRAFT],
 };
 
 export const ORGANIZATION_DRAFTS_PARENT: RouteRecordRaw = {

@@ -18,19 +18,21 @@
 
 <script lang="ts" setup>
 import CreateDraftForm from "../../components/product-data-model-drafts/CreateDraftForm.vue";
-import apiClient from "../../lib/api-client";
 import { useRoute, useRouter } from "vue-router";
+import { useDraftStore } from "../../stores/draft";
 
 const router = useRouter();
 const route = useRoute();
 
+const draftStore = useDraftStore();
+
 const onSubmit = async (draftName: string) => {
-  await apiClient.productDataModelDrafts.create({
+  await draftStore.createDraft({
     name: draftName,
   });
 
   await router.push(
-    `/organizations/${route.params.organizationId}/data-model-drafts`,
+    `/organizations/${route.params.organizationId}/data-model-drafts/${draftStore.draft?.id}`,
   );
 };
 </script>

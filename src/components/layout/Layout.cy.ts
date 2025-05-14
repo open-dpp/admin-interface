@@ -32,9 +32,25 @@ describe("<Layout />", () => {
           id: "d1",
           name: "Processor",
           type: DataFieldType.TEXT_FIELD,
+          options: {},
+          layout: {
+            colStart: { sm: 1 },
+            colSpan: { sm: 1 },
+            rowStart: { sm: 1 },
+            rowSpan: { sm: 1 },
+          },
         },
       ],
+      subSections: [],
+      layout: {
+        cols: { sm: 3 },
+        colSpan: { sm: 1 },
+        colStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+        rowStart: { sm: 1 },
+      },
     };
+
     const draft: ProductDataModelDraftDto = {
       id: "draftId",
       name: "My draft",
@@ -50,7 +66,7 @@ describe("<Layout />", () => {
       `${API_URL}/organizations/${orgaId}/product-data-model-drafts`,
       {
         statusCode: 200,
-        body: [draft], // Mock response
+        body: [{ id: draft.id, name: draft.name }], // Mock response
       },
     ).as("getDrafts");
 
@@ -72,12 +88,6 @@ describe("<Layout />", () => {
     });
     cy.get('[data-cy="openSidebar"]').click();
     cy.get('[data-cy="sidebar"]').within(() => {
-      // cy.contains("Modelle").click();
-      // cy.get("@pushSpy").should(
-      //   "have.been.calledWith",
-      //   `/organizations/${orgaId}/models`,
-      // );
-      // cy.wait("@getModels").its("response.statusCode").should("eq", 200);
       cy.contains("Datenmodell entwerfen").click();
       cy.get("@pushSpy").should(
         "have.been.calledWith",
@@ -88,20 +98,5 @@ describe("<Layout />", () => {
     cy.get('[data-cy="closeSidebar"]').click();
     cy.contains("Editieren").click();
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-    cy.get('[data-cy="editSection"]').click();
-    cy.get('[data-cy="breadcrumb"]').within(() => {
-      cy.get("li:nth-child(2)").should("contain", orgaId);
-      cy.get("li:nth-child(3)").should("contain", "Datenmodellentwürfe");
-      cy.get("li:nth-child(4)").should("contain", draft.id);
-      cy.get("li:nth-child(5)").should("contain", "Abschnitt");
-    });
-    cy.contains(draft.id).click();
-    cy.get('[data-cy="editDataField"]').click();
-    cy.get('[data-cy="breadcrumb"]').within(() => {
-      cy.get("li:nth-child(2)").should("contain", orgaId);
-      cy.get("li:nth-child(3)").should("contain", "Datenmodellentwürfe");
-      cy.get("li:nth-child(4)").should("contain", draft.id);
-      cy.get("li:nth-child(5)").should("contain", "Datenfeld");
-    });
   });
 });
