@@ -1,26 +1,12 @@
 <template>
-  <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-    <div class="px-4 py-6 sm:px-6">
-      <div>
-        <h3 class="text-base/7 font-semibold text-gray-900">
-          {{ `Abschnitt ${props.section.name}` }}
-        </h3>
-      </div>
-      <FormKit
-        v-model="formData"
-        :actions="false"
-        type="form"
-        @submit="onSubmit"
-      >
-        <FormKitSchema
-          v-if="formSchema"
-          :library="{ TextField }"
-          :schema="formSchema"
-        />
-        <FormKit label="Speichern" type="submit" />
-      </FormKit>
-    </div>
-  </div>
+  <FormKit v-model="formData" :actions="false" type="form" @submit="onSubmit">
+    <FormKitSchema
+      v-if="formSchema"
+      :library="{ TextField }"
+      :schema="formSchema"
+    />
+    <FormKit label="Speichern" type="submit" />
+  </FormKit>
 </template>
 
 <script lang="ts" setup>
@@ -41,10 +27,11 @@ const emits = defineEmits<{
 
 const formData = ref<Record<string, unknown>>({});
 const formSchema = ref();
+
 watch(
   () => modelFormStore.model?.dataValues, // The store property to watch
   () => {
-    formSchema.value = modelFormStore.getFormSchema(props.section.id);
+    formSchema.value = modelFormStore.getFormSchema(props.section);
     formData.value = modelFormStore.getFormData(
       props.section.id,
       formData.value,

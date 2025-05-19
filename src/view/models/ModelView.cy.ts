@@ -4,8 +4,10 @@ import { createMemoryHistory, createRouter } from "vue-router";
 import { API_URL } from "../../const";
 import { routes } from "../../router";
 import {
+  DataFieldDto,
   DataFieldType,
   ProductDataModelDto,
+  SectionDto,
   SectionType,
   VisibilityLevel,
 } from "@open-dpp/api-client";
@@ -17,7 +19,83 @@ const router = createRouter({
 });
 
 describe("<Model />", () => {
-  it("renders items and creates a new one", () => {
+  it("renders model form and modify its data", () => {
+    const dataField1: DataFieldDto = {
+      id: "f1",
+      type: DataFieldType.TEXT_FIELD,
+      name: "Prozessor",
+      options: {
+        min: 24,
+      },
+      layout: {
+        colStart: { sm: 1 },
+        colSpan: { sm: 1 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+    };
+    const dataField2: DataFieldDto = {
+      id: "f2",
+      type: DataFieldType.TEXT_FIELD,
+      name: "Neuer Title 2",
+      options: {
+        min: 2,
+      },
+      layout: {
+        colStart: { sm: 2 },
+        colSpan: { sm: 1 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+    };
+
+    const section1: SectionDto = {
+      id: "s1",
+      type: SectionType.GROUP,
+      name: "Technische Spezifikation",
+      parentId: undefined,
+      subSections: ["s1.1"],
+      dataFields: [dataField1, dataField2],
+      layout: {
+        cols: { sm: 3 },
+        colStart: { sm: 1 },
+        colSpan: { sm: 3 },
+        rowSpan: { sm: 1 },
+        rowStart: { sm: 1 },
+      },
+    };
+
+    const dataField21: DataFieldDto = {
+      id: "f1.1",
+      type: DataFieldType.TEXT_FIELD,
+      name: "Größe",
+      options: {
+        min: 24,
+      },
+      layout: {
+        colStart: { sm: 1 },
+        colSpan: { sm: 1 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+    };
+
+    const section2 = {
+      id: "s1.1",
+      type: SectionType.REPEATABLE,
+      name: "Dimensions",
+      parentId: "s1",
+      subSections: [],
+      dataFields: [dataField21],
+      layout: {
+        cols: { sm: 3 },
+        colStart: { sm: 1 },
+        colSpan: { sm: 3 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+    };
+
     // see: https://on.cypress.io/mounting-vue
     const productDataModel: ProductDataModelDto = {
       id: "pdm1",
@@ -26,31 +104,7 @@ describe("<Model />", () => {
       visibility: VisibilityLevel.PRIVATE,
       createdByUserId: "userId",
       ownedByOrganizationId: "ownedByOrganizationId",
-      sections: [
-        {
-          id: "s1",
-          type: SectionType.GROUP,
-          name: "Technische Spezifikation",
-          dataFields: [
-            {
-              id: "f1",
-              type: DataFieldType.TEXT_FIELD,
-              name: "Prozessor",
-              options: {
-                min: 24,
-              },
-            },
-            {
-              id: "f2",
-              type: DataFieldType.TEXT_FIELD,
-              name: "Neuer Title 2",
-              options: {
-                min: 2,
-              },
-            },
-          ],
-        },
-      ],
+      sections: [section1, section2],
     };
     const model = {
       id: "someId",

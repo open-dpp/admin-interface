@@ -32,6 +32,8 @@ import {
   createAutoAnimatePlugin,
   createMultiStepPlugin,
 } from "@formkit/addons";
+import { diff } from "jest-diff";
+import _ from "lodash";
 
 let pinia: Pinia;
 
@@ -55,6 +57,15 @@ Cypress.Commands.add("mountWithPinia", (component, options = {}) => {
       },
     });
   }
+
+  // const RootWithSafelist = defineComponent({
+  //   render() {
+  //     return h("div", {}, [
+  //       h(SafelistTailwindCss, { key: "safelist" }),
+  //       h(component, { key: "component" }),
+  //     ]);
+  //   },
+  // });
 
   return mount(component, {
     ...options,
@@ -82,3 +93,10 @@ Cypress.Commands.add("mountWithPinia", (component, options = {}) => {
   });
 });
 Cypress.Commands.add("mount", mount);
+
+Cypress.Commands.add("expectDeepEqualWithDiff", (actual, expected) => {
+  if (!_.isEqual(actual, expected)) {
+    console.log("🔍 Deep diff:\n", diff(expected, actual));
+  }
+  expect(actual).to.deep.equal(expected);
+});

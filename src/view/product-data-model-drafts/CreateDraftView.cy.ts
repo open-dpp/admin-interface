@@ -11,16 +11,17 @@ const router = createRouter({
 });
 
 describe("<CreateDraftView />", () => {
-  it("creates model with selected product data model", () => {
+  it("creates draft", () => {
     const orgaId = "orgaId";
     const draftName = "My draft";
+    const draftId = "draftId";
 
     cy.intercept(
       "POST",
       `${API_URL}/organizations/${orgaId}/product-data-model-drafts`,
       {
         statusCode: 201,
-        body: { name: draftName }, // Mock response
+        body: { id: draftId, name: draftName }, // Mock response
       },
     ).as("createDraft");
 
@@ -36,9 +37,10 @@ describe("<CreateDraftView />", () => {
     cy.wait("@createDraft")
       .its("request.body")
       .should("deep.equal", { name: draftName });
+
     cy.get("@pushSpy").should(
       "have.been.calledWith",
-      `/organizations/${orgaId}/data-model-drafts`,
+      `/organizations/${orgaId}/data-model-drafts/${draftId}`,
     );
   });
 });
