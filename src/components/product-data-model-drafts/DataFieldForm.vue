@@ -79,7 +79,8 @@ const formSchemaFromType = (type: string) => {
       ];
 
     default:
-      throw new Error(`Unsupported node type: ${type}`);
+      console.warn(`Unsupported node type: ${type}, using generic form`);
+      return [];
   }
 };
 
