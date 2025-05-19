@@ -79,7 +79,10 @@ const formSchemaFromType = (type: string) => {
       ];
 
     default:
-      throw new Error(`Unsupported node type: ${type}`);
+      console.warn(
+        `[DataFieldForm] Unsupported node type: ${type}, using generic form. Please implement a form schema for this type.`,
+      );
+      return [];
   }
 };
 
