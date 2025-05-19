@@ -44,6 +44,10 @@ import { DataFieldDto, DataFieldType, LayoutDto } from "@open-dpp/api-client";
 import { useDraftStore } from "../../stores/draft";
 import { z } from "zod";
 import { useDraftSidebarStore } from "../../stores/draftSidebar";
+import {
+  NotificationType,
+  useNotificationStore,
+} from "../../stores/notification";
 
 const props = defineProps<{
   type: DataFieldType;
@@ -112,8 +116,11 @@ const onSubmit = async () => {
       layout: props.layout,
     });
   } else {
-    console.error("Cannot add data field: No parent ID provided");
-    // Consider showing an error message to the user
+    const notificationStore = useNotificationStore();
+    notificationStore.addNotification(
+      "Datenfeld konnte nicht hinzugefügt werden.",
+      NotificationType.ERROR,
+    );
   }
 
   draftSidebarStore.close();
