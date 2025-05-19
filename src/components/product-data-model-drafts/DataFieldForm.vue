@@ -26,8 +26,8 @@
         </button>
         <button
           v-if="dataFieldToModify"
-          data-cy="delete"
           class="block rounded-md bg-red-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-red-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-red-600"
+          data-cy="delete"
           type="button"
           @click="onDelete"
         >
@@ -38,7 +38,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref, watch } from "vue";
 import { DataFieldDto, DataFieldType, LayoutDto } from "@open-dpp/api-client";
 import { useDraftStore } from "../../stores/draft";
@@ -73,6 +73,27 @@ const formSchemaFromType = (type: string) => {
           "data-cy": "name",
         },
       ];
+    case DataFieldType.NUMERIC_FIELD:
+      return [
+        {
+          $formkit: "text",
+          name: "name",
+          label: "Name des numerischen Feldes",
+          "data-cy": "name",
+        },
+        {
+          $formkit: "number",
+          name: "min",
+          label: "Minimum",
+          "data-cy": "min",
+        },
+        {
+          $formkit: "number",
+          name: "max",
+          label: "Maximum",
+          "data-cy": "max",
+        },
+      ];
 
     default:
       throw new Error(`Unsupported node type: ${type}`);
@@ -84,6 +105,10 @@ watch(
   ([newType, newId]) => {
     formSchema.value = formSchemaFromType(newType);
     if (newId && newType === DataFieldType.TEXT_FIELD) {
+      dataFieldToModify.value = draftStore.findDataField(newId);
+      formData.value = { name: dataFieldToModify.value?.name };
+    }
+    if (newId && newType === DataFieldType.NUMERIC_FIELD) {
       dataFieldToModify.value = draftStore.findDataField(newId);
       formData.value = { name: dataFieldToModify.value?.name };
     }
