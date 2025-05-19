@@ -81,14 +81,12 @@ const onDelete = () => {
 };
 
 const title = computed<string>(() => {
-  if (props.notification.type === NotificationType.SUCCESS) {
-    return "Erfolg";
-  } else if (props.notification.type === NotificationType.ERROR) {
-    return "Fehler";
-  } else if (props.notification.type === NotificationType.WARNING) {
-    return "Warnung";
-  } else {
-    return "Information";
-  }
+  const titleMap = {
+    [NotificationType.SUCCESS]: "Erfolg",
+    [NotificationType.ERROR]: "Fehler",
+    [NotificationType.WARNING]: "Warnung",
+    [NotificationType.INFO]: "Information",
+  };
+  return titleMap[props.notification.type] || "Information";
 });
 </script>

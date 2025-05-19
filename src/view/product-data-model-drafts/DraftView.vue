@@ -31,7 +31,7 @@
         :key="section.id"
         class="grid grid-cols-1 overflow-hidden bg-white shadow sm:rounded-lg w-full"
       >
-        <SectionHeader :section="section" :is-draft-view="true" />
+        <SectionHeader :is-draft-view="true" :section="section" />
         <div class="p-4">
           <SectionDraft :section="section" />
         </div>
@@ -47,7 +47,10 @@ import { useRoute } from "vue-router";
 import { useDraftStore } from "../../stores/draft";
 import { SectionDto, VisibilityLevel } from "@open-dpp/api-client";
 import PublishDraftButton from "../../components/product-data-model-drafts/PublishDraftButton.vue";
-import { useNotificationStore } from "../../stores/notification";
+import {
+  NotificationType,
+  useNotificationStore,
+} from "../../stores/notification";
 import { useIndexStore } from "../../stores";
 import AddNode from "../../components/product-data-model-drafts/AddNode.vue";
 import DraftSidebar from "../../components/product-data-model-drafts/DraftSidebar.vue";
@@ -71,8 +74,9 @@ const fetchData = async () => {
 
 const onPublish = async (visibility: VisibilityLevel) => {
   await draftStore.publish({ visibility });
-  notificationStore.addSuccessNotification(
+  notificationStore.addNotification(
     "Ihr Entwurf wurde erfolgreich veröffentlicht. Sie können nun darauf basierend Modelle anlegen.",
+    NotificationType.SUCCESS,
     {
       label: "Modell anlegen",
       to: `/organizations/${indexStore.selectedOrganization}/models/create`,

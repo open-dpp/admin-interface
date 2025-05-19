@@ -20,23 +20,6 @@ export type Notification = {
 export const useNotificationStore = defineStore("notification", () => {
   const notifications = ref<Notification[]>([]);
 
-  const addSuccessNotification = (
-    message: string,
-    actionLink?: ActionLink,
-    duration: number = 6000,
-  ) => {
-    const id = uuidv4();
-    notifications.value.push({
-      id,
-      type: NotificationType.SUCCESS,
-      message,
-      actionLink,
-    });
-    setTimeout(() => {
-      removeNotification(id);
-    }, duration);
-  };
-
   const addNotification = (
     message: string,
     type: NotificationType,
@@ -60,7 +43,6 @@ export const useNotificationStore = defineStore("notification", () => {
   };
   return {
     notifications,
-    addSuccessNotification,
     removeNotification,
     addNotification,
   };

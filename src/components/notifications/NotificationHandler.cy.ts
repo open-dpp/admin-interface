@@ -1,11 +1,14 @@
-import { useNotificationStore } from "../../stores/notification";
+import {
+  NotificationType,
+  useNotificationStore,
+} from "../../stores/notification";
 import NotificationHandler from "./NotificationHandler.vue";
 
 describe("<NotificationHandler />", () => {
   it("renders notifications and removes them and modifies it", () => {
     const notificationStore = useNotificationStore();
-    notificationStore.addSuccessNotification("Added draft");
-    notificationStore.addSuccessNotification("Added model");
+    notificationStore.addNotification("Added draft", NotificationType.SUCCESS);
+    notificationStore.addNotification("Added model", NotificationType.SUCCESS);
 
     cy.mountWithPinia(NotificationHandler);
 

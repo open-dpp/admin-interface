@@ -444,7 +444,7 @@ describe("<DraftView />", () => {
   //
   //   const notificationStore = useNotificationStore();
   //
-  //   cy.spy(notificationStore, "addSuccessNotification").as("notifySpy");
+  //   cy.spy(notificationStore, "addNotification").as("notifySpy");
   //
   //   cy.wrap(
   //     router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),

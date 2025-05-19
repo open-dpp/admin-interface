@@ -12,7 +12,7 @@ describe("Notification", () => {
   it("should add notification", async () => {
     const notificationStore = useNotificationStore();
     expect(notificationStore.notifications).toEqual([]);
-    notificationStore.addSuccessNotification("Added draft");
+    notificationStore.addNotification("Added draft", NotificationType.SUCCESS);
     expect(notificationStore.notifications).toEqual([
       {
         id: expect.any(String),
