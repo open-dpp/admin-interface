@@ -26,8 +26,8 @@
         </button>
         <button
           v-if="dataFieldToModify"
-          data-cy="delete"
           class="block rounded-md bg-red-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-red-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-red-600"
+          data-cy="delete"
           type="button"
           @click="onDelete"
         >
@@ -38,12 +38,16 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref, watch } from "vue";
 import { DataFieldDto, DataFieldType, LayoutDto } from "@open-dpp/api-client";
 import { useDraftStore } from "../../stores/draft";
 import { z } from "zod";
 import { useDraftSidebarStore } from "../../stores/draftSidebar";
+import {
+  NotificationType,
+  useNotificationStore,
+} from "../../stores/notification";
 
 const props = defineProps<{
   type: DataFieldType;
@@ -111,6 +115,12 @@ const onSubmit = async () => {
       name: data.name,
       layout: props.layout,
     });
+  } else {
+    const notificationStore = useNotificationStore();
+    notificationStore.addNotification(
+      "Datenfeld konnte nicht hinzugefügt werden.",
+      NotificationType.ERROR,
+    );
   }
 
   draftSidebarStore.close();
