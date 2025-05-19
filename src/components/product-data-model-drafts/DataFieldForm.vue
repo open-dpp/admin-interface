@@ -87,9 +87,10 @@ watch(
   [() => props.type, () => props.id], // The store property to watch
   ([newType, newId]) => {
     formSchema.value = formSchemaFromType(newType);
-    if (newId && newType === DataFieldType.TEXT_FIELD) {
+    if (newId) {
       dataFieldToModify.value = draftStore.findDataField(newId);
       formData.value = { name: dataFieldToModify.value?.name };
+      // Add type-specific form data initialization if needed
     }
   },
   { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
