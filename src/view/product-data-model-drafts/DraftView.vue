@@ -6,7 +6,7 @@
       >
         <div>
           <h3 class="text-base/7 font-semibold text-gray-900">
-            Datenmodellentwurf {{ draftStore.draft.name }}
+            Produktpass Design {{ draftStore.draft.name }}
           </h3>
           <p class="mt-1 max-w-2xl text-sm/6 text-gray-500">
             Version {{ draftStore.draft.version }}

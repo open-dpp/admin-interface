@@ -1,9 +1,10 @@
 <template>
   <div>
     <ListHeader
-      entity-name="Artikel"
+      title="Artikelpässe"
+      description="Alle Pässe auf Einzelartikelebene."
       @add="emits('add')"
-      creation-label="Artikel hinzufügen"
+      creation-label="Artikelpass hinzufügen"
     />
     <SimpleTable :headers="['ID']" :rows="rows" :row-actions="actions" />
   </div>

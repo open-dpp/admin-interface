@@ -2,9 +2,9 @@
   <div class="">
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-auto">
-        <h1 class="text-base font-semibold text-gray-900">Modell</h1>
+        <h1 class="text-base font-semibold text-gray-900">Modellpass</h1>
         <p class="mt-2 text-sm text-gray-700">
-          Erstellen Sie eine neues Modell.
+          Erstellen Sie einen neuen Modellpass.
         </p>
       </div>
     </div>
@@ -44,7 +44,10 @@ const onSubmit = async (
     selectedProductDataModelId,
     response.data.id,
   );
-  await router.push("/organizations/" + props.organizationId + "/models");
+
+  await router.push(
+    `/organizations/${props.organizationId}/models/${response.data.id}`,
+  );
 };
 
 onMounted(async () => {

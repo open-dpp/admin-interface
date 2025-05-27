@@ -22,8 +22,8 @@ describe("ItemList.vue", () => {
         plugins: [pinia, router],
       },
     });
-    expect(screen.getByText("Artikel")).toBeTruthy();
-    expect(screen.getByText("Alle erstellten Artikel")).toBeTruthy();
+    expect(screen.getByText("Artikelpässe")).toBeTruthy();
+    expect(screen.getByText("Alle Pässe auf Einzelartikelebene.")).toBeTruthy();
 
     const rows = screen.getAllByRole("row");
     expect(rows).toHaveLength(3);
@@ -47,7 +47,7 @@ describe("ItemList.vue", () => {
       },
     });
     const createButton = screen.getByRole("button", {
-      name: "Artikel hinzufügen",
+      name: "Artikelpass hinzufügen",
     });
     await fireEvent.click(createButton);
 

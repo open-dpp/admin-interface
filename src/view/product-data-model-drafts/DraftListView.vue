@@ -4,7 +4,7 @@
       <DraftsList v-if="drafts.length > 0" :drafts="drafts" />
       <EmptyState
         v-else
-        button-label="Neues Datenmodell entwerfen"
+        button-label="Neuen Produktpass designen"
         :button-link="`/organizations/${indexStore.selectedOrganization}/data-model-drafts/create`"
       />
     </div>

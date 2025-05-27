@@ -2,10 +2,10 @@
   <div class="sm:flex sm:items-center">
     <div class="sm:flex-auto">
       <h1 class="text-base font-semibold text-gray-900">
-        {{ props.entityName }}
+        {{ props.title }}
       </h1>
       <p class="mt-2 text-sm text-gray-700">
-        {{ `Alle erstellten ${props.entityName}` }}
+        {{ props.description }}
       </p>
     </div>
     <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
@@ -24,7 +24,8 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  entityName: string;
+  title: string;
+  description: string;
   creationLink?: string;
   creationLabel: string;
 }>();

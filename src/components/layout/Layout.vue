@@ -218,18 +218,6 @@
             <li class="mt-auto">
               <SelectOrganization />
             </li>
-            <li>
-              <router-link
-                class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-GJDarkGreen"
-                to="/settings"
-              >
-                <Cog6ToothIcon
-                  aria-hidden="true"
-                  class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-GJDarkGreen"
-                />
-                Einstellungen
-              </router-link>
-            </li>
           </ul>
         </nav>
       </div>
@@ -286,11 +274,6 @@
             <Menu as="div" class="relative">
               <MenuButton class="-m-1.5 flex items-center p-1.5">
                 <span class="sr-only">Open user menu</span>
-                <img
-                  :src="logoMaybe"
-                  alt=""
-                  class="h-8 w-8 rounded-full bg-gray-50 object-cover object-top"
-                />
                 <span class="hidden lg:flex lg:items-center">
                   <span
                     aria-hidden="true"
@@ -357,7 +340,6 @@
 
 <script lang="ts" setup>
 import { computed, type FunctionalComponent, ref } from "vue";
-import logoMaybe from "../../assets/logomaybe.png";
 import {
   Dialog,
   DialogPanel,
@@ -372,26 +354,22 @@ import {
   Bars3Icon,
   BellIcon,
   BuildingOfficeIcon,
-  CalendarIcon,
   Cog6ToothIcon,
   CubeIcon,
-  DocumentDuplicateIcon,
-  FolderIcon,
-  HomeIcon,
   Square3Stack3DIcon,
   UsersIcon,
   XMarkIcon,
 } from "@heroicons/vue/24/outline";
 import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
-import logo from "../../assets/Logo-with-text.png";
+import logo from "../../assets/logo-with-text.svg";
 import { useRoute } from "vue-router";
 import Breadcrumbs from "../Breadcrumbs.vue";
 import { useIndexStore } from "../../stores";
 import SelectOrganization from "../organizations/SelectOrganization.vue";
 import RingLoader from "../RingLoader.vue";
 import { useLayoutStore } from "../../stores/layout";
-import { DASHBOARD } from "../../router/routes/base";
 import NotificationHandler from "../notifications/NotificationHandler.vue";
+import { ChartBarIcon, LinkIcon } from "@heroicons/vue/16/solid";
 
 const route = useRoute();
 const indexStore = useIndexStore();
@@ -405,41 +383,28 @@ interface MenuItemInterface {
 }
 
 const unfilteredNavigation = computed<Array<MenuItemInterface>>(() => [
-  { name: "Dashboard", to: DASHBOARD.path, icon: HomeIcon, show: () => true },
   {
-    name: "Modelle",
+    name: "Produktpässe",
     to: `/organizations/${indexStore.selectedOrganization}/models`,
     icon: CubeIcon,
     show: () => indexStore.selectedOrganization !== null,
   },
   {
-    name: "Datenmodell entwerfen",
+    name: "Produktpass Designer",
     to: `/organizations/${indexStore.selectedOrganization}/data-model-drafts`,
     icon: Square3Stack3DIcon,
     show: () => indexStore.selectedOrganization !== null,
   },
   {
-    name: "Statistiken",
-    to: "/stats",
-    icon: FolderIcon,
+    name: "Integrationen",
+    to: `/organizations/${indexStore.selectedOrganization}/integrations`,
+    icon: LinkIcon,
     show: () => indexStore.selectedOrganization !== null,
   },
   {
-    name: "Zugriffe",
-    to: "/calendar",
-    icon: CalendarIcon,
-    show: () => indexStore.selectedOrganization !== null,
-  },
-  {
-    name: "Dateien",
-    to: "/files",
-    icon: DocumentDuplicateIcon,
-    show: () => indexStore.selectedOrganization !== null,
-  },
-  {
-    name: "Benachrichtigungen",
-    to: "/notifications",
-    icon: BellIcon,
+    name: "Auswertungen",
+    to: `/organizations/${indexStore.selectedOrganization}/statistics`,
+    icon: ChartBarIcon,
     show: () => indexStore.selectedOrganization !== null,
   },
   {

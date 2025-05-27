@@ -178,7 +178,7 @@ describe("<Model />", () => {
     cy.wait("@getProductModelData")
       .its("response.statusCode")
       .should("eq", 200);
-    cy.contains("Modell Informationen").should("be.visible");
+    cy.contains("Modellpass Informationen").should("be.visible");
     cy.get('[data-cy="d1"]').should("have.value", "val1");
     cy.get('[data-cy="d2"]').should("have.value", "val2");
     cy.get('[data-cy="d1"]').type("add1");

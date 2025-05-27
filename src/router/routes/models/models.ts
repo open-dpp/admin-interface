@@ -6,7 +6,7 @@ import { organizationBreadcrumbs } from "../organizations";
 const modelListBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
   ...organizationBreadcrumbs(to),
   {
-    name: "Modelle",
+    name: "Modellpässe",
     route: MODEL_LIST,
     params: to.params,
   },
@@ -15,7 +15,7 @@ const modelListBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
 export const modelBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
   ...modelListBreadcrumbs(to),
   {
-    name: to.params.modelId + "" || "Modell",
+    name: to.params.modelId + "" || "Modellpass",
     route: MODEL,
     params: to.params,
   },
