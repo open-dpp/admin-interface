@@ -122,18 +122,6 @@
                         </li>
                       </ul>
                     </li>
-                    <li class="mt-auto">
-                      <router-link
-                        class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700 hover:bg-gray-50 hover:text-GJDarkGreen"
-                        to="/settings"
-                      >
-                        <Cog6ToothIcon
-                          aria-hidden="true"
-                          class="h-6 w-6 shrink-0 text-gray-400 group-hover:text-GJDarkGreen"
-                        />
-                        Settings
-                      </router-link>
-                    </li>
                   </ul>
                 </nav>
               </div>
@@ -354,7 +342,6 @@ import {
   Bars3Icon,
   BellIcon,
   BuildingOfficeIcon,
-  Cog6ToothIcon,
   CubeIcon,
   Square3Stack3DIcon,
   UsersIcon,
