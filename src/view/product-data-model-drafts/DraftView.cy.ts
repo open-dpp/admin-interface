@@ -105,7 +105,7 @@ describe("<DraftView />", () => {
     cy.mountWithPinia(DraftView, { router });
 
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-    cy.contains(`Datenmodellentwurf ${draft.name}`).should("be.visible");
+    cy.contains(`Produktpass Design ${draft.name}`).should("be.visible");
     cy.contains(`Version ${draft.version}`).should("be.visible");
     cy.contains("button", "Hinzufügen").click();
     cy.contains(`Knoten hinzufügen`).should("be.visible");

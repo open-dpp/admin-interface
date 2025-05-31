@@ -21,7 +21,7 @@
           type="button"
           @click="layoutStore.openModal(ModalType.INVITE_USER_MODAL)"
         >
-          User einladen
+          Benutzer einladen
         </button>
       </div>
     </div>
@@ -41,19 +41,7 @@
                   class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
                   scope="col"
                 >
-                  Title
-                </th>
-                <th
-                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                  scope="col"
-                >
-                  Status
-                </th>
-                <th
-                  class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                  scope="col"
-                >
-                  Role
+                  Rolle
                 </th>
                 <th class="relative py-3.5 pl-3 pr-4 sm:pr-0" scope="col">
                   <span class="sr-only">Edit</span>
@@ -76,16 +64,6 @@
                   </div>
                 </td>
                 <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                  <div class="text-gray-900">Title</div>
-                  <div class="mt-1 text-gray-500">Department</div>
-                </td>
-                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
-                  <span
-                    class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20"
-                    >Active</span
-                  >
-                </td>
-                <td class="whitespace-nowrap px-3 py-5 text-sm text-gray-500">
                   <div
                     v-if="organization.ownedByUserId === member.id"
                     class="text-gray-900"
@@ -98,13 +76,6 @@
                   >
                     Ersteller
                   </div>
-                </td>
-                <td
-                  class="relative whitespace-nowrap py-5 pl-3 pr-4 text-right text-sm font-medium sm:pr-0"
-                >
-                  <a class="text-indigo-600 hover:text-indigo-900" href="#"
-                    >Edit<span class="sr-only">, {{ member.id }}</span></a
-                  >
                 </td>
               </tr>
             </tbody>

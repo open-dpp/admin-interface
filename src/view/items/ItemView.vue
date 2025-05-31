@@ -38,7 +38,7 @@ import ItemList from "../../components/items/ItemList.vue";
 import apiClient from "../../lib/api-client";
 
 const route = useRoute();
-const buttonLabel = "Neuen Artikel hinzufügen";
+const buttonLabel = "Neuen Artikelpass hinzufügen";
 
 const items = ref<Item[]>([]);
 

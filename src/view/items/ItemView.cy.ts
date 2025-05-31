@@ -41,9 +41,9 @@ describe("<ItemView />", () => {
 
     cy.mountWithPinia(ItemView, { router });
     cy.wait("@getData").its("response.statusCode").should("eq", 200);
-    cy.contains("Alle erstellten Artikel").should("be.visible");
+    cy.contains("Alle Pässe auf Einzelartikelebene").should("be.visible");
     cy.contains("QR-Code").should("be.visible");
-    cy.contains("button", "Artikel hinzufügen").click();
+    cy.contains("button", "Artikelpass hinzufügen").click();
 
     cy.wait("@createData").its("response.statusCode").should("eq", 201);
     cy.wait("@getData").its("response.statusCode").should("eq", 200);
@@ -74,7 +74,7 @@ describe("<ItemView />", () => {
     cy.wrap(router.push(`/organizations/${orgaId}/models/${modelId}/items`));
     cy.mountWithPinia(ItemView, { router });
     cy.wait("@getData").its("response.statusCode").should("eq", 200);
-    cy.contains("Neuen Artikel hinzufügen").click();
+    cy.contains("Neuen Artikelpass hinzufügen").click();
 
     cy.wait("@createData").its("response.statusCode").should("eq", 201);
     cy.wait("@getData").its("response.statusCode").should("eq", 200);

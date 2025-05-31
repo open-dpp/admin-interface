@@ -5,7 +5,7 @@ import { modelBreadcrumbs } from "./models";
 const itemListBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
   ...modelBreadcrumbs(to),
   {
-    name: "Artikel Liste",
+    name: "Artikelpässe",
     route: ITEM_LIST,
     params: to.params,
   },

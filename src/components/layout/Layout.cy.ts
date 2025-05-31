@@ -88,7 +88,7 @@ describe("<Layout />", () => {
     });
     cy.get('[data-cy="openSidebar"]').click();
     cy.get('[data-cy="sidebar"]').within(() => {
-      cy.contains("Datenmodell entwerfen").click();
+      cy.contains("Produktpass Designer").click();
       cy.get("@pushSpy").should(
         "have.been.calledWith",
         `/organizations/${orgaId}/data-model-drafts`,

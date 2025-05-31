@@ -3,11 +3,8 @@
     <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
       <div class="px-4 py-6 sm:px-6">
         <h3 class="text-base/7 font-semibold text-gray-900">
-          Modell Informationen
+          Modellpass Informationen
         </h3>
-        <p class="mt-1 max-w-2xl text-sm/6 text-gray-500">
-          Modelldetails und Anhänge.
-        </p>
       </div>
       <div v-if="modelFormStore.model" class="border-t border-gray-100">
         <dl class="divide-y divide-gray-100">

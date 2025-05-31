@@ -65,7 +65,7 @@ describe("<CreateModelVew />", () => {
       .should("eq", 200);
     cy.get("@pushSpy").should(
       "have.been.calledWith",
-      `/organizations/${orgaId}/models`,
+      `/organizations/${orgaId}/models/${modelId}`,
     );
   });
 });

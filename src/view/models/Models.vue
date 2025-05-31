@@ -5,7 +5,7 @@
       <EmptyState
         v-else
         :button-link="`/organizations/${indexStore.selectedOrganization}/models/create`"
-        button-label="Neues Modell hinzufügen"
+        button-label="Neuen Modellpass hinzufügen"
       />
     </div>
   </section>

@@ -2,13 +2,13 @@ import { createRouter, createWebHistory } from "vue-router";
 import keycloakIns from "../lib/keycloak";
 import { ADMIN_URL, keycloakDisabled } from "../const";
 import { useLayoutStore } from "../stores/layout";
-import { BASE_ROUTES } from "./routes/base";
+
 import { AUTH_ROUTES } from "./routes/auth";
 import { ORGANIZATION_ROUTES } from "./routes/organizations";
 
 // const MODE = import.meta.env.MODE;
 
-export const routes = [...BASE_ROUTES, ...AUTH_ROUTES, ...ORGANIZATION_ROUTES];
+export const routes = [...AUTH_ROUTES, ...ORGANIZATION_ROUTES];
 
 export const router = createRouter({
   history: createWebHistory(),
