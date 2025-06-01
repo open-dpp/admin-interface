@@ -54,13 +54,6 @@ const startApp = async () => {
   }
 
   app.use(router);
-  if (indexStore.selectedOrganization === null) {
-    await router.push("/organizations");
-  } else {
-    await router.push(
-      `organizations/${indexStore.selectedOrganization}/models`,
-    );
-  }
   app.mount("#app");
 };
 

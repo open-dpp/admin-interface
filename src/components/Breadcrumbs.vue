@@ -1,11 +1,8 @@
 <template>
-  <nav
-    aria-label="Breadcrumb"
-    class="flex border-b border-gray-200 bg-white min-h-12"
-  >
+  <nav aria-label="Breadcrumb" class="flex">
     <ol
       data-cy="breadcrumb"
-      class="ml-3 flex w-full max-w-(--breakpoint-xl) space-x-4 px-4 sm:px-6 lg:px-8"
+      class="flex w-full max-w-(--breakpoint-xl) space-x-4"
       role="list"
     >
       <li class="flex">
@@ -16,11 +13,7 @@
           </router-link>
         </div>
       </li>
-      <li
-        v-for="page in layoutStore.breadcrumbs.slice(-4)"
-        :key="page.name"
-        class="flex"
-      >
+      <li v-for="page in slicedBreadcrumbs" :key="page.name" class="flex">
         <div class="flex items-center">
           <svg
             aria-hidden="true"
@@ -47,6 +40,28 @@
 import { HomeIcon } from "@heroicons/vue/20/solid";
 import { useLayoutStore } from "../stores/layout";
 import { RouteRecordRaw, useRoute } from "vue-router";
+import { ref, computed, onMounted, onUnmounted } from "vue";
+
+const lgBreakpoint = 1300;
+const isLargeScreen = ref(window.innerWidth > lgBreakpoint);
+
+const updateScreenSize = () => {
+  isLargeScreen.value = window.innerWidth > lgBreakpoint;
+};
+
+onMounted(() => {
+  window.addEventListener("resize", updateScreenSize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", updateScreenSize);
+});
+
+const slicedBreadcrumbs = computed(() => {
+  return isLargeScreen.value
+    ? layoutStore.breadcrumbs.slice(-4)
+    : layoutStore.breadcrumbs.slice(-3);
+});
 
 const layoutStore = useLayoutStore();
 

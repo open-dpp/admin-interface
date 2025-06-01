@@ -2,6 +2,7 @@ import Keycloak, { KeycloakInitOptions } from "keycloak-js";
 import { setAxiosAuthHeader } from "./axios";
 import { API_URL, KEYCLOAK_URL } from "../const";
 import apiClient from "./api-client";
+import { useProfileStore } from "../stores/profile";
 
 export const keycloakIns = new Keycloak({
   url: KEYCLOAK_URL,
@@ -31,11 +32,13 @@ export const initializeKeycloak = async (keycloak: Keycloak) => {
   if (keycloak.authenticated && keycloak.token && keycloak.tokenParsed) {
     setAxiosAuthHeader(keycloak.token);
     apiClient.setApiKey(keycloak.token);
-    // const usedForm = keycloak.tokenParsed?.used_form;
-    //keycloakIns.loadUserProfile();
-    // const authStore = useAuthStore();
-    // authStore.authContext = TokenAuthContext.fromParsedKeycloakToken(keycloak.token, keycloak.tokenParsed);
-    // await authStore.login();
+    const profileStore = useProfileStore();
+    profileStore.setProfile({
+      name: keycloak.tokenParsed.name || "",
+      email: keycloak.tokenParsed.email || "",
+      firstName: keycloak.tokenParsed.given_name || "",
+      lastName: keycloak.tokenParsed.family_name || "",
+    });
   }
 
   setInterval(() => updateKeycloakToken(keycloak, 70), 60000);
