@@ -228,51 +228,22 @@
         <!-- Separator -->
         <div aria-hidden="true" class="h-6 w-px bg-gray-200 lg:hidden" />
 
-        <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-          <form action="#" class="relative flex flex-1" method="GET">
-            <label class="sr-only" for="search-field">Suche</label>
-            <MagnifyingGlassIcon
+        <div class="flex w-full md:justify-between gap-x-2 justify-end">
+          <Breadcrumbs class="hidden md:flex" />
+          <div class="flex items-center gap-x-2">
+            <span
               aria-hidden="true"
-              class="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400"
-            />
-            <input
-              id="search-field"
-              class="block h-full w-full border-0 py-0 pl-8 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm"
-              name="search"
-              placeholder="Suche..."
-              type="search"
-            />
-          </form>
-          <div class="flex items-center gap-x-4 lg:gap-x-6">
-            <button
-              class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
-              type="button"
+              class="hidden xl:inline-block ml-4 text-sm font-semibold leading-6 text-gray-900"
+              >{{ profileStore.profile?.name }}</span
             >
-              <span class="sr-only">View notifications</span>
-              <BellIcon aria-hidden="true" class="h-6 w-6" />
-            </button>
-
-            <!-- Separator -->
-            <div
-              aria-hidden="true"
-              class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200"
-            />
-
             <!-- Profile dropdown -->
             <Menu as="div" class="relative">
               <MenuButton class="-m-1.5 flex items-center p-1.5">
-                <span class="sr-only">Open user menu</span>
-                <span class="hidden lg:flex lg:items-center">
-                  <span
-                    aria-hidden="true"
-                    class="ml-4 text-sm font-semibold leading-6 text-gray-900"
-                    >Florian Bieck</span
-                  >
-                  <ChevronDownIcon
-                    aria-hidden="true"
-                    class="ml-2 h-5 w-5 text-gray-400"
-                  />
-                </span>
+                <div
+                  class="hover:bg-indigo-700 cursor-pointer inline-flex items-center justify-center w-10 h-10 rounded-full bg-indigo-600 text-white text-sm font-medium"
+                >
+                  {{ initials }}
+                </div>
               </MenuButton>
               <transition
                 enter-active-class="transition ease-out duration-100"
@@ -307,7 +278,6 @@
       </div>
 
       <main class="h-[calc(100vh-64px)]">
-        <Breadcrumbs class="mb-10" />
         <div class="h-[calc(100%-88px)] px-4 sm:px-6 lg:px-8">
           <router-view v-slot="{ Component }">
             <transition :duration="75" appear mode="out-in" name="fade">
@@ -340,14 +310,12 @@ import {
 } from "@headlessui/vue";
 import {
   Bars3Icon,
-  BellIcon,
   BuildingOfficeIcon,
   CubeIcon,
   Square3Stack3DIcon,
   UsersIcon,
   XMarkIcon,
 } from "@heroicons/vue/24/outline";
-import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/vue/20/solid";
 import logo from "../../assets/logo-with-text.svg";
 import { useRoute } from "vue-router";
 import Breadcrumbs from "../Breadcrumbs.vue";
@@ -357,10 +325,12 @@ import RingLoader from "../RingLoader.vue";
 import { useLayoutStore } from "../../stores/layout";
 import NotificationHandler from "../notifications/NotificationHandler.vue";
 import { ChartBarIcon, LinkIcon } from "@heroicons/vue/16/solid";
+import { useProfileStore } from "../../stores/profile";
 
 const route = useRoute();
 const indexStore = useIndexStore();
 const layoutStore = useLayoutStore();
+const profileStore = useProfileStore();
 
 interface MenuItemInterface {
   name: string;
@@ -368,6 +338,13 @@ interface MenuItemInterface {
   icon: FunctionalComponent;
   show: () => boolean;
 }
+
+const initials = computed(() => {
+  if (!profileStore.profile) return "AN";
+  const first = profileStore.profile.firstName.substring(0, 1);
+  const last = profileStore.profile.lastName.substring(0, 1);
+  return (first + last).toUpperCase();
+});
 
 const unfilteredNavigation = computed<Array<MenuItemInterface>>(() => [
   {
