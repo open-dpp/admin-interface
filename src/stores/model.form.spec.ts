@@ -5,6 +5,7 @@ import {
   DataFieldDto,
   DataFieldType,
   DataValueDto,
+  GranularityLevel,
   ProductDataModelDto,
   SectionDto,
   SectionType,
@@ -85,6 +86,7 @@ describe("ModelFormStore", () => {
                 rowStart: { sm: 1 },
                 rowSpan: { sm: 1 },
               },
+              granularityLevel: GranularityLevel.MODEL,
             },
             {
               id: "field2",
@@ -97,6 +99,7 @@ describe("ModelFormStore", () => {
                 rowStart: { sm: 1 },
                 rowSpan: { sm: 1 },
               },
+              granularityLevel: GranularityLevel.MODEL,
             },
           ],
           subSections: ["s1-1"],
@@ -124,6 +127,7 @@ describe("ModelFormStore", () => {
                 rowStart: { sm: 1 },
                 rowSpan: { sm: 1 },
               },
+              granularityLevel: GranularityLevel.MODEL,
             },
             {
               id: "field4",
@@ -136,6 +140,7 @@ describe("ModelFormStore", () => {
                 rowStart: { sm: 1 },
                 rowSpan: { sm: 1 },
               },
+              granularityLevel: GranularityLevel.MODEL,
             },
           ],
           subSections: [],
@@ -171,6 +176,7 @@ describe("ModelFormStore", () => {
       rowStart: { sm: 1 },
       rowSpan: { sm: 1 },
     },
+    granularityLevel: GranularityLevel.MODEL,
   };
 
   const section11Id = "s1-1";
@@ -219,6 +225,7 @@ describe("ModelFormStore", () => {
       rowStart: { sm: 1 },
       rowSpan: { sm: 1 },
     },
+    granularityLevel: GranularityLevel.MODEL,
   };
 
   const dataFieldS111F2: DataFieldDto = {
@@ -232,6 +239,7 @@ describe("ModelFormStore", () => {
       rowStart: { sm: 1 },
       rowSpan: { sm: 1 },
     },
+    granularityLevel: GranularityLevel.MODEL,
   };
 
   const section111: SectionDto = {

@@ -15,7 +15,12 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { LayoutDto, SectionDto, SectionType } from "@open-dpp/api-client";
+import {
+  LayoutDto,
+  SectionDto,
+  SectionType,
+  GranularityLevel,
+} from "@open-dpp/api-client";
 import { useDraftStore } from "../../stores/draft";
 import { z } from "zod";
 import { useDraftSidebarStore } from "../../stores/draftSidebar";
@@ -23,6 +28,7 @@ import { useDraftSidebarStore } from "../../stores/draftSidebar";
 const props = defineProps<{
   type: SectionType;
   parentId?: string;
+  parentGranularityLevel?: GranularityLevel;
   layout: LayoutDto;
   id?: string;
 }>();
@@ -33,29 +39,51 @@ const sectionToModify = ref<SectionDto | undefined>();
 const draftStore = useDraftStore();
 const draftSidebarStore = useDraftSidebarStore();
 
-const formSchemaFromType = (type: string) => {
+const formSchemaFromType = (
+  type: string,
+  existingGranularityLevel: GranularityLevel | undefined,
+) => {
   const colOptions = Object.fromEntries(
     Array.from({ length: 12 }, (_, i) => [i + 1, (i + 1).toString()]),
   );
 
+  const granularityOptions = {
+    [GranularityLevel.MODEL]: "Produktmodellebene",
+    [GranularityLevel.ITEM]: "Artikelebene",
+  };
+
+  const commonFields = [
+    {
+      $formkit: "text",
+      name: "name",
+      label: "Name des Abschnitts",
+      "data-cy": "name",
+    },
+    {
+      $formkit: "select",
+      name: "cols",
+      label: "Spaltenanzahl",
+      options: colOptions,
+      "data-cy": "select-col-number",
+    },
+  ];
+
   switch (type) {
     case SectionType.GROUP:
+      return commonFields;
     case SectionType.REPEATABLE:
       return [
-        {
-          $formkit: "text",
-          name: "name",
-          label: "Name des Abschnitts",
-          "data-cy": "name",
-        },
-        {
-          $formkit: "select",
-          name: "cols",
-          label: "Spaltenanzahl",
-          options: colOptions,
-          "data-cy": "select-col-number",
-        },
-      ];
+        ...commonFields,
+        !existingGranularityLevel
+          ? {
+              $formkit: "select",
+              name: "granularityLevel",
+              label: "Granularitätsebene",
+              options: granularityOptions,
+              "data-cy": "select-granularity-level",
+            }
+          : undefined,
+      ].filter((d) => d !== undefined);
     default:
       throw new Error(`Unsupported node type: ${type}`);
   }
@@ -64,12 +92,17 @@ const formSchemaFromType = (type: string) => {
 watch(
   [() => props.type, () => props.id], // The store property to watch
   ([newType, newId]) => {
-    formSchema.value = formSchemaFromType(newType);
-    if (newId) {
-      sectionToModify.value = draftStore.findSectionById(newId);
+    const dataSection = newId ? draftStore.findSectionById(newId) : undefined;
+    formSchema.value = formSchemaFromType(
+      newType,
+      dataSection?.granularityLevel ?? props.parentGranularityLevel,
+    );
+    if (dataSection) {
+      sectionToModify.value = dataSection;
       formData.value = {
-        name: sectionToModify.value?.name,
-        cols: sectionToModify.value?.layout.cols.sm,
+        name: sectionToModify.value.name,
+        cols: sectionToModify.value.layout.cols.sm,
+        granularityLevel: sectionToModify.value.granularityLevel,
       };
     }
   },
@@ -83,8 +116,15 @@ const numberFromString = z.preprocess(
 
 const onSubmit = async () => {
   const data = z
-    .object({ name: z.string(), cols: numberFromString })
-    .parse(formData.value);
+    .object({
+      name: z.string(),
+      cols: numberFromString,
+      granularityLevel: z.nativeEnum(GranularityLevel).optional(),
+    })
+    .parse({
+      granularityLevel: props.parentGranularityLevel,
+      ...formData.value,
+    });
   if (sectionToModify.value) {
     await draftStore.modifySection(sectionToModify.value.id, {
       name: data.name,
@@ -96,6 +136,7 @@ const onSubmit = async () => {
       name: data.name,
       parentSectionId: props.parentId,
       layout: { cols: { sm: data.cols }, ...props.layout },
+      granularityLevel: data.granularityLevel,
     });
   }
   draftSidebarStore.close();

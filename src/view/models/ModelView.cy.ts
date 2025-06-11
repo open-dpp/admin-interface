@@ -6,6 +6,7 @@ import { routes } from "../../router";
 import {
   DataFieldDto,
   DataFieldType,
+  GranularityLevel,
   ProductDataModelDto,
   SectionDto,
   SectionType,
@@ -33,6 +34,7 @@ describe("<Model />", () => {
         rowStart: { sm: 1 },
         rowSpan: { sm: 1 },
       },
+      granularityLevel: GranularityLevel.MODEL,
     };
     const dataField2: DataFieldDto = {
       id: "f2",
@@ -47,6 +49,7 @@ describe("<Model />", () => {
         rowStart: { sm: 1 },
         rowSpan: { sm: 1 },
       },
+      granularityLevel: GranularityLevel.MODEL,
     };
 
     const section1: SectionDto = {
@@ -78,6 +81,7 @@ describe("<Model />", () => {
         rowStart: { sm: 1 },
         rowSpan: { sm: 1 },
       },
+      granularityLevel: GranularityLevel.MODEL,
     };
 
     const section2 = {
