@@ -4,7 +4,7 @@ import { useModelFormStore } from "./model.form";
 import {
   DataFieldDto,
   DataFieldType,
-  DataValueCreateDto,
+  DataValueDto,
   ProductDataModelDto,
   SectionDto,
   SectionType,
@@ -42,15 +42,15 @@ describe("ModelFormStore", () => {
       owner: "oId",
       name: "my model",
       dataValues: [
-        { id: "id1", value: 2, dataSectionId: "s1", dataFieldId: "field1" },
+        { value: 2, dataSectionId: "s1", dataFieldId: "field1", row: 0 },
         {
-          id: "id2",
           value: undefined,
           dataSectionId: "s1",
           dataFieldId: "field2",
+          row: 0,
         },
-        { id: "id3", value: 7, dataSectionId: "s1.1", dataFieldId: "field3" },
-        { id: "id4", value: 9, dataSectionId: "s1.1", dataFieldId: "field4" },
+        { value: 7, dataSectionId: "s1-1", dataFieldId: "field3", row: 0 },
+        { value: 9, dataSectionId: "s1-1", dataFieldId: "field4", row: 0 },
       ],
     };
 
@@ -99,10 +99,10 @@ describe("ModelFormStore", () => {
               },
             },
           ],
-          subSections: ["s1.1"],
+          subSections: ["s1-1"],
         },
         {
-          id: "s1.1",
+          id: "s1-1",
           name: "Sub Tech Specs",
           type: SectionType.GROUP,
           layout: {
@@ -143,11 +143,21 @@ describe("ModelFormStore", () => {
       ],
     };
 
-    let result = modelFormStore.getFormData("s1", { id1: 8 });
-    expect(result).toEqual({ id1: 8, id2: undefined, id3: 7, id4: 9 });
+    let result = modelFormStore.getFormData("s1", { "s1.field1.0": 8 });
+    expect(result).toEqual({
+      "s1.field1.0": 8,
+      "s1.field2.0": undefined,
+      "s1-1.field3.0": 7,
+      "s1-1.field4.0": 9,
+    });
 
-    result = modelFormStore.getFormData("s1", { id3: 9 });
-    expect(result).toEqual({ id1: 2, id2: undefined, id3: 9, id4: 9 });
+    result = modelFormStore.getFormData("s1", { "s1-1.field3.0": 9 });
+    expect(result).toEqual({
+      "s1.field1.0": 2,
+      "s1.field2.0": undefined,
+      "s1-1.field3.0": 9,
+      "s1-1.field4.0": 9,
+    });
   });
 
   const dataFieldS1F1: DataFieldDto = {
@@ -163,8 +173,8 @@ describe("ModelFormStore", () => {
     },
   };
 
-  const section11Id = "s1.1";
-  const section111Id = "s1.1.1";
+  const section11Id = "s1-1";
+  const section111Id = "s1-1-1";
 
   const section1: SectionDto = {
     id: "s1",
@@ -188,7 +198,7 @@ describe("ModelFormStore", () => {
     parentId: section1.id,
     name: "Dimensions",
     dataFields: [],
-    subSections: ["s1.1.1"],
+    subSections: ["s1-1-1"],
     layout: {
       cols: { sm: 5 },
       colStart: { sm: 1 },
@@ -199,7 +209,7 @@ describe("ModelFormStore", () => {
   };
 
   const dataFieldS111F1: DataFieldDto = {
-    id: "s1.1.1-f1",
+    id: "s1-1-1-f1",
     type: DataFieldType.TEXT_FIELD,
     name: "Amount",
     options: {},
@@ -212,7 +222,7 @@ describe("ModelFormStore", () => {
   };
 
   const dataFieldS111F2: DataFieldDto = {
-    id: "s1.1.1-f2",
+    id: "s1-1-1-f2",
     type: DataFieldType.TEXT_FIELD,
     name: "Unit",
     options: {},
@@ -259,42 +269,36 @@ describe("ModelFormStore", () => {
     name: "my model",
     dataValues: [
       {
-        id: "dvS1F1_row0",
         value: 2,
         dataSectionId: section1.id,
         dataFieldId: dataFieldS1F1.id,
         row: 0,
       },
       {
-        id: "dvS111F1_row0",
         value: 7,
         dataSectionId: section111.id,
         dataFieldId: dataFieldS111F1.id,
         row: 0,
       },
       {
-        id: "dvS111F2_row0",
         value: 9,
         dataSectionId: section111.id,
         dataFieldId: dataFieldS111F2.id,
         row: 0,
       },
       {
-        id: "dvS1F1_row1",
         value: 2,
         dataSectionId: section1.id,
         dataFieldId: dataFieldS1F1.id,
         row: 1,
       },
       {
-        id: "dvS111F1_row1",
         value: 7,
         dataSectionId: section111.id,
         dataFieldId: dataFieldS111F1.id,
         row: 1,
       },
       {
-        id: "dvS111F2_row1",
         value: 9,
         dataSectionId: section111.id,
         dataFieldId: dataFieldS111F2.id,
@@ -303,14 +307,14 @@ describe("ModelFormStore", () => {
     ],
   };
 
-  it("should getFormSchema", () => {
+  it("should getFormSchemaRepeatable", () => {
     const modelFormStore = useModelFormStore();
 
     modelFormStore.productDataModel = productDataModel;
 
     modelFormStore.model = model;
 
-    const actual = modelFormStore.getFormSchema(section1);
+    const actual = modelFormStore.getFormSchemaRepeatable(section1);
 
     const grid1Exp = {
       $el: "div",
@@ -339,8 +343,8 @@ describe("ModelFormStore", () => {
     const fieldS111F1Exp = {
       $cmp: "TextField",
       props: {
-        id: "dvS111F1_row0",
-        name: "dvS111F1_row0",
+        id: "s1-1-1.s1-1-1-f1.0",
+        name: "s1-1-1.s1-1-1-f1.0",
         label: dataFieldS111F1.name,
         validation: "required",
         className: "sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1",
@@ -349,8 +353,8 @@ describe("ModelFormStore", () => {
     const fieldS111F2Exp = {
       $cmp: "TextField",
       props: {
-        id: "dvS111F2_row0",
-        name: "dvS111F2_row0",
+        id: "s1-1-1.s1-1-1-f2.0",
+        name: "s1-1-1.s1-1-1-f2.0",
         label: dataFieldS111F2.name,
         validation: "required",
         className: "sm:col-span-1 sm:col-start-2 sm:row-span-1 sm:row-start-1",
@@ -360,8 +364,8 @@ describe("ModelFormStore", () => {
     const fieldS1F1Exp = {
       $cmp: "TextField",
       props: {
-        id: "dvS1F1_row0",
-        name: "dvS1F1_row0",
+        id: "s1.s1-f1.0",
+        name: "s1.s1-f1.0",
         label: dataFieldS1F1.name,
         validation: "required",
         className: "sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1",
@@ -403,16 +407,16 @@ describe("ModelFormStore", () => {
                     ...fieldS111F1Exp,
                     props: {
                       ...fieldS111F1Exp.props,
-                      id: "dvS111F1_row1",
-                      name: "dvS111F1_row1",
+                      id: "s1-1-1.s1-1-1-f1.1",
+                      name: "s1-1-1.s1-1-1-f1.1",
                     },
                   },
                   {
                     ...fieldS111F2Exp,
                     props: {
                       ...fieldS111F2Exp.props,
-                      id: "dvS111F2_row1",
-                      name: "dvS111F2_row1",
+                      id: "s1-1-1.s1-1-1-f2.1",
+                      name: "s1-1-1.s1-1-1-f2.1",
                     },
                   },
                 ],
@@ -423,8 +427,8 @@ describe("ModelFormStore", () => {
             ...fieldS1F1Exp,
             props: {
               ...fieldS1F1Exp.props,
-              id: "dvS1F1_row1",
-              name: "dvS1F1_row1",
+              id: "s1.s1-f1.1",
+              name: "s1.s1-f1.1",
             },
           },
         ],
@@ -440,7 +444,7 @@ describe("ModelFormStore", () => {
 
     modelFormStore.model = model;
 
-    const expected: DataValueCreateDto[] = [
+    const expected: DataValueDto[] = [
       {
         value: undefined,
         dataSectionId: section111.id,

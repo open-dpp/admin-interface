@@ -1,13 +1,10 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import {
-  DataValueCreateDto,
   DataValueDto,
-  DataValuePatchDto,
   ModelDto,
   ProductDataModelDto,
   SectionDto,
-  SectionType,
 } from "@open-dpp/api-client";
 import apiClient from "../lib/api-client";
 import { assign, keys, maxBy, minBy, pick } from "lodash";
@@ -27,6 +24,27 @@ interface FormKitSchemaObject {
   props?: Record<string, unknown>; // Props passed to the element/component
   attrs?: Record<string, unknown>;
   children?: FormKitSchemaNode; // Child nodes (can be a node, string, or array)
+}
+
+function dataValueId(dataValue: DataValueDto) {
+  return [
+    dataValue.dataSectionId,
+    dataValue.dataFieldId,
+    dataValue.row ?? 0,
+  ].join(".");
+}
+
+function dataValueIdToDataValue(
+  dataValueId: string,
+  value: unknown,
+): DataValueDto {
+  const [dataSectionId, dataFieldId, row] = dataValueId.split(".");
+  return {
+    value,
+    dataSectionId,
+    dataFieldId,
+    row: parseInt(row),
+  };
 }
 
 export const useModelFormStore = defineStore("model.form", () => {
@@ -58,7 +76,7 @@ export const useModelFormStore = defineStore("model.form", () => {
     existingFormData: Record<string, unknown>,
   ) => {
     const dataValues = Object.fromEntries(
-      getDataOfSection(sectionId)?.map((d) => [d.id, d.value]) ?? [],
+      getDataOfSection(sectionId)?.map((d) => [dataValueId(d), d.value]) ?? [],
     );
     return assign({}, dataValues, pick(existingFormData, keys(dataValues)));
   };
@@ -91,11 +109,8 @@ export const useModelFormStore = defineStore("model.form", () => {
 
   const getFormSchema = (
     section: SectionDto,
-    row?: number,
+    row: number = 0,
   ): FormKitSchemaObject[] => {
-    if (section.type === SectionType.REPEATABLE && row === undefined) {
-      return getFormSchemaRepeatable(section);
-    }
     const dataValuesOfSection = getDataOfSection(section.id).filter(
       (d) => d.row === row,
     );
@@ -109,16 +124,16 @@ export const useModelFormStore = defineStore("model.form", () => {
       }
     }
     for (const dataField of section.dataFields) {
-      const dataValueId = dataValuesOfSection.find(
-        (d) => d.dataFieldId === dataField?.id,
-      )?.id;
+      const dataValue = dataValuesOfSection.find(
+        (d) => d.dataFieldId === dataField.id,
+      );
 
-      if (dataValueId) {
+      if (dataValue) {
         children.push({
           $cmp: dataField.type,
           props: {
-            id: dataValueId,
-            name: dataValueId,
+            id: dataValueId(dataValue),
+            name: dataValueId(dataValue),
             label: dataField!.name,
             validation: "required",
             className: generateClassesForLayout(dataField.layout),
@@ -138,7 +153,7 @@ export const useModelFormStore = defineStore("model.form", () => {
     ];
   };
 
-  const generateDataValues = (sectionId: string): DataValueCreateDto[] => {
+  const generateDataValues = (sectionId: string): DataValueDto[] => {
     const dataValuesOfSection = getDataOfSection(sectionId);
 
     const maxRow = maxBy(dataValuesOfSection, "row")?.row;
@@ -189,11 +204,13 @@ export const useModelFormStore = defineStore("model.form", () => {
     fetchInFlight.value = false;
   };
 
-  const updateModelData = async (dataValues: DataValuePatchDto[]) => {
+  const updateModelData = async (
+    dataValues: { id: string; value: unknown }[],
+  ) => {
     if (model.value) {
       const response = await apiClient.models.updateModelData(
         model.value.id,
-        dataValues,
+        dataValues.map((d) => dataValueIdToDataValue(d.id, d.value)),
       );
       model.value = response.data;
     }
@@ -209,5 +226,6 @@ export const useModelFormStore = defineStore("model.form", () => {
     addRowToSection,
     getFormData,
     getFormSchema,
+    getFormSchemaRepeatable,
   };
 });

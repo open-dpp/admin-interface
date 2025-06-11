@@ -54,7 +54,7 @@ describe("<Model />", () => {
       type: SectionType.GROUP,
       name: "Technische Spezifikation",
       parentId: undefined,
-      subSections: ["s1.1"],
+      subSections: ["s1-1"],
       dataFields: [dataField1, dataField2],
       layout: {
         cols: { sm: 3 },
@@ -66,7 +66,7 @@ describe("<Model />", () => {
     };
 
     const dataField21: DataFieldDto = {
-      id: "f1.1",
+      id: "f1-1",
       type: DataFieldType.TEXT_FIELD,
       name: "Größe",
       options: {
@@ -81,7 +81,7 @@ describe("<Model />", () => {
     };
 
     const section2 = {
-      id: "s1.1",
+      id: "s1-1",
       type: SectionType.REPEATABLE,
       name: "Dimensions",
       parentId: "s1",
@@ -110,8 +110,8 @@ describe("<Model />", () => {
       id: "someId",
       name: "My model",
       dataValues: [
-        { id: "d1", value: "val1", dataFieldId: "f1", dataSectionId: "s1" },
-        { id: "d2", value: "val2", dataFieldId: "f2", dataSectionId: "s1" },
+        { value: "val1", dataFieldId: "f1", dataSectionId: "s1", row: 0 },
+        { value: "val2", dataFieldId: "f2", dataSectionId: "s1", row: 0 },
       ],
       productDataModelId: productDataModel.id,
     };
@@ -121,16 +121,16 @@ describe("<Model />", () => {
       name: "My other model",
       dataValues: [
         {
-          id: "otherD1",
           value: "otherVal1",
           dataFieldId: "f1",
           dataSectionId: "s1",
+          row: 0,
         },
         {
-          id: "otherD2",
           value: "otherVal2",
           dataFieldId: "f2",
           dataSectionId: "s1",
+          row: 0,
         },
       ],
       productDataModelId: productDataModel.id,
@@ -179,18 +179,20 @@ describe("<Model />", () => {
       .its("response.statusCode")
       .should("eq", 200);
     cy.contains("Modellpass Informationen").should("be.visible");
-    cy.get('[data-cy="d1"]').should("have.value", "val1");
-    cy.get('[data-cy="d2"]').should("have.value", "val2");
-    cy.get('[data-cy="d1"]').type("add1");
-    cy.get('[data-cy="d2"]').type("add2");
+    cy.get('[data-cy="s1.f1.0"]').should("have.value", "val1");
+    cy.get('[data-cy="s1.f2.0"]').should("have.value", "val2");
+    cy.get('[data-cy="s1.f1.0"]').type("add1");
+    cy.get('[data-cy="s1.f2.0"]').type("add2");
     cy.contains("button", "Speichern").click();
     cy.wait("@updateData").then((interceptor) => {
       expect(interceptor.request.body).to.deep.equal([
         {
-          id: "d1",
+          dataSectionId: "s1",
+          dataFieldId: "f1",
           value: "val1add1",
+          row: 0,
         },
-        { id: "d2", value: "val2add2" },
+        { dataSectionId: "s1", dataFieldId: "f2", value: "val2add2", row: 0 },
       ]);
       expect(interceptor.response?.statusCode).to.equal(200);
       cy.wrap(
@@ -200,8 +202,8 @@ describe("<Model />", () => {
         cy.wait("@getProductModelData")
           .its("response.statusCode")
           .should("eq", 200);
-        cy.get('[data-cy="otherD1"]').should("have.value", "otherVal1");
-        cy.get('[data-cy="otherD2"]').should("have.value", "otherVal2");
+        cy.get('[data-cy="s1.f1.0"]').should("have.value", "otherVal1");
+        cy.get('[data-cy="s1.f2.0"]').should("have.value", "otherVal2");
       });
     });
   });

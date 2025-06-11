@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts" setup>
-import { DataValuePatchDto, SectionDto } from "@open-dpp/api-client";
+import { SectionDto, SectionType } from "@open-dpp/api-client";
 import { ref, watch } from "vue";
 import TextField from "./TextField.vue";
 import { useModelFormStore } from "../../../stores/model.form";
@@ -22,7 +22,7 @@ const props = defineProps<{
 const modelFormStore = useModelFormStore();
 
 const emits = defineEmits<{
-  (e: "submit", dataValues: DataValuePatchDto[]): void;
+  (e: "submit", dataValues: { id: string; value: unknown }[]): void;
 }>();
 
 const formData = ref<Record<string, unknown>>({});
@@ -31,7 +31,10 @@ const formSchema = ref();
 watch(
   () => modelFormStore.model?.dataValues, // The store property to watch
   () => {
-    formSchema.value = modelFormStore.getFormSchema(props.section);
+    formSchema.value =
+      props.section.type === SectionType.REPEATABLE
+        ? modelFormStore.getFormSchemaRepeatable(props.section)
+        : modelFormStore.getFormSchema(props.section);
     formData.value = modelFormStore.getFormData(
       props.section.id,
       formData.value,

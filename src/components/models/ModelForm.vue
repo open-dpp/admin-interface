@@ -16,14 +16,13 @@
 </template>
 
 <script setup lang="ts">
-import { DataValuePatchDto } from "@open-dpp/api-client";
 import { useModelFormStore } from "../../stores/model.form";
 import SectionForm from "./form-components/SectionForm.vue";
 import SectionHeader from "../SectionHeader.vue";
 
 const modelFormStore = useModelFormStore();
 
-const onSubmit = async (dataValues: DataValuePatchDto[]) => {
+const onSubmit = async (dataValues: { id: string; value: unknown }[]) => {
   await modelFormStore.updateModelData(dataValues);
 };
 </script>
