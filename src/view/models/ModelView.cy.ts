@@ -19,7 +19,7 @@ const router = createRouter({
   routes: routes,
 });
 
-describe("<Model />", () => {
+describe("<ModelView />", () => {
   it("renders model form and modify its data", () => {
     const dataField1: DataFieldDto = {
       id: "f1",

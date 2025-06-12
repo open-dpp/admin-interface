@@ -19,7 +19,7 @@ const props = defineProps<{
   section: SectionDto;
 }>();
 
-const modelFormStore = usePassportFormStore();
+const passportFormStore = usePassportFormStore();
 
 const emits = defineEmits<{
   (e: "submit", dataValues: { id: string; value: unknown }[]): void;
@@ -29,13 +29,13 @@ const formData = ref<Record<string, unknown>>({});
 const formSchema = ref();
 
 watch(
-  () => modelFormStore.passport?.dataValues, // The store property to watch
+  () => passportFormStore.passport?.dataValues, // The store property to watch
   () => {
     formSchema.value =
       props.section.type === SectionType.REPEATABLE
-        ? modelFormStore.getFormSchemaRepeatable(props.section)
-        : modelFormStore.getFormSchema(props.section);
-    formData.value = modelFormStore.getFormData(
+        ? passportFormStore.getFormSchemaRepeatable(props.section)
+        : passportFormStore.getFormSchema(props.section);
+    formData.value = passportFormStore.getFormData(
       props.section.id,
       formData.value,
     );

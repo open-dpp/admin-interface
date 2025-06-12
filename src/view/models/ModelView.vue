@@ -23,7 +23,7 @@
         </dl>
       </div>
     </div>
-    <ModelForm
+    <PassportForm
       v-if="
         modelFormStore.passport &&
         modelFormStore.productDataModel &&
@@ -36,7 +36,7 @@
 <script lang="ts" setup>
 import { useRoute } from "vue-router";
 import { watch } from "vue";
-import ModelForm from "../../components/models/ModelForm.vue";
+import PassportForm from "../../components/passport/PassportForm.vue";
 import { usePassportFormStore } from "../../stores/passport.form";
 
 const route = useRoute();

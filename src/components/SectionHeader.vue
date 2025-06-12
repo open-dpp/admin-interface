@@ -27,7 +27,7 @@
     </div>
     <button
       v-if="
-        !props.disabled &&
+        !disabledMessage &&
         props.section.type === SectionType.REPEATABLE &&
         !props.isDraftView
       "
@@ -37,7 +37,9 @@
     >
       Datenreihe hinzufügen
     </button>
-    <div v-if="props.disabled">Wird auf Artikelebene gesetzt</div>
+    <div class="m-2 text-sm/6 font-medium text-gray-900" v-if="disabledMessage">
+      {{ disabledMessage }}
+    </div>
   </div>
 </template>
 
@@ -45,16 +47,26 @@
 import { ArrowPathIcon, TableCellsIcon } from "@heroicons/vue/24/outline";
 import { SectionDto, SectionType } from "@open-dpp/api-client";
 import { usePassportFormStore } from "../stores/passport.form";
+import { computed } from "vue";
 
 const props = defineProps<{
   section: SectionDto;
   isDraftView: boolean;
-  disabled: boolean;
 }>();
 
-const modelFormStore = usePassportFormStore();
+const passportFormStore = usePassportFormStore();
+
+const disabledMessage = computed(() => {
+  if (
+    props.section.granularityLevel &&
+    props.section.granularityLevel !== passportFormStore.granularityLevel
+  ) {
+    return passportFormStore.getValueForOtherGranularityLevel();
+  }
+  return undefined;
+});
 
 const onAddRow = async () => {
-  await modelFormStore.addRowToSection(props.section.id);
+  await passportFormStore.addRowToSection(props.section.id);
 };
 </script>
