@@ -12,6 +12,7 @@
 <script lang="ts" setup>
 import { SectionDto, SectionType } from "@open-dpp/api-client";
 import { ref, watch } from "vue";
+import TextField from "./TextField.vue";
 import { usePassportFormStore } from "../../../stores/passport.form";
 
 const props = defineProps<{
