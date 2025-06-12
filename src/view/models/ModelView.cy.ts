@@ -101,7 +101,7 @@ describe("<Model />", () => {
     };
 
     const section2 = {
-      id: "s1-1",
+      id: "s2",
       type: SectionType.REPEATABLE,
       name: "Dimensions",
       parentId: "s1",
@@ -114,6 +114,23 @@ describe("<Model />", () => {
         rowStart: { sm: 1 },
         rowSpan: { sm: 1 },
       },
+      granularityLevel: GranularityLevel.MODEL,
+    };
+
+    const section3: SectionDto = {
+      id: "s3",
+      type: SectionType.REPEATABLE,
+      name: "Footprints",
+      subSections: [],
+      dataFields: [dataField21],
+      layout: {
+        cols: { sm: 3 },
+        colStart: { sm: 1 },
+        colSpan: { sm: 3 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+      granularityLevel: GranularityLevel.ITEM,
     };
 
     // see: https://on.cypress.io/mounting-vue
@@ -124,7 +141,7 @@ describe("<Model />", () => {
       visibility: VisibilityLevel.PRIVATE,
       createdByUserId: "userId",
       ownedByOrganizationId: "ownedByOrganizationId",
-      sections: [section1, section2],
+      sections: [section1, section2, section3],
     };
     const model = {
       id: "someId",
@@ -199,6 +216,10 @@ describe("<Model />", () => {
       .its("response.statusCode")
       .should("eq", 200);
     cy.contains("Modellpass Informationen").should("be.visible");
+    cy.get('[data-cy="section-card-s3"]').within(() => {
+      cy.contains("Wird auf Artikelebene gesetzt").should("be.visible");
+      cy.contains("Speichern").should("not.exist");
+    });
     cy.get('[data-cy="s1.f1.0"]').should("have.value", "val1");
     cy.get('[data-cy="s1.f2.0"]').should("have.value", "val2");
     cy.get('[data-cy="s1.f3.0"]').should("be.disabled");

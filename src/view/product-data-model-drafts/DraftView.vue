@@ -31,7 +31,11 @@
         :key="section.id"
         class="grid grid-cols-1 overflow-hidden bg-white shadow sm:rounded-lg w-full"
       >
-        <SectionHeader :is-draft-view="true" :section="section" />
+        <SectionHeader
+          :is-draft-view="true"
+          :section="section"
+          :disabled="false"
+        />
         <div class="p-4">
           <SectionDraft :section="section" />
         </div>
