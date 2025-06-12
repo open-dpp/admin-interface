@@ -27,14 +27,14 @@
 </template>
 
 <script setup lang="ts">
-import { useModelFormStore } from "../../stores/model.form";
+import { usePassportFormStore } from "../../stores/passport.form";
 import SectionForm from "./form-components/SectionForm.vue";
 import SectionHeader from "../SectionHeader.vue";
 import { GranularityLevel } from "../../../../open-dpp-api-client/src";
 
-const modelFormStore = useModelFormStore();
+const modelFormStore = usePassportFormStore();
 
 const onSubmit = async (dataValues: { id: string; value: unknown }[]) => {
-  await modelFormStore.updateModelData(dataValues);
+  await modelFormStore.updateDataValues(dataValues);
 };
 </script>

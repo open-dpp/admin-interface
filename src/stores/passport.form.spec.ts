@@ -1,11 +1,12 @@
 import { createPinia, setActivePinia } from "pinia";
 import { expect, it, vi } from "vitest";
-import { useModelFormStore } from "./model.form";
+import { usePassportFormStore } from "./passport.form";
 import {
   DataFieldDto,
   DataFieldType,
   DataValueDto,
   GranularityLevel,
+  ModelDto,
   ProductDataModelDto,
   SectionDto,
   SectionType,
@@ -15,6 +16,8 @@ import {
 const mocks = vi.hoisted(() => {
   return {
     addModelData: vi.fn(),
+    getModelById: vi.fn(),
+    getProductDataModelById: vi.fn(),
   };
 });
 
@@ -23,25 +26,27 @@ vi.mock("../lib/api-client", () => ({
     setActiveOrganizationId: vi.fn(),
     models: {
       addModelData: mocks.addModelData,
+      getModelById: mocks.getModelById,
+    },
+    productDataModels: {
+      getProductDataModelById: mocks.getProductDataModelById,
     },
   },
 }));
 
-describe("ModelFormStore", () => {
+describe("PassportFormStore", () => {
   beforeEach(() => {
     // Create a fresh pinia instance and make it active
     setActivePinia(createPinia());
   });
 
   it("should merge data values with form data", async () => {
-    const modelFormStore = useModelFormStore();
-    modelFormStore.model = {
+    const passportFormStore = usePassportFormStore();
+    passportFormStore.passport = {
       id: "id1",
-      description: "desc",
+      name: "my model",
       uniqueProductIdentifiers: [],
       productDataModelId: "pid",
-      owner: "oId",
-      name: "my model",
       dataValues: [
         { value: 2, dataSectionId: "s1", dataFieldId: "field1", row: 0 },
         {
@@ -55,7 +60,7 @@ describe("ModelFormStore", () => {
       ],
     };
 
-    modelFormStore.productDataModel = {
+    passportFormStore.productDataModel = {
       id: "pid",
       name: "Handy",
       version: "1.0.0",
@@ -148,7 +153,7 @@ describe("ModelFormStore", () => {
       ],
     };
 
-    let result = modelFormStore.getFormData("s1", { "s1.field1.0": 8 });
+    let result = passportFormStore.getFormData("s1", { "s1.field1.0": 8 });
     expect(result).toEqual({
       "s1.field1.0": 8,
       "s1.field2.0": undefined,
@@ -156,7 +161,7 @@ describe("ModelFormStore", () => {
       "s1-1.field4.0": 9,
     });
 
-    result = modelFormStore.getFormData("s1", { "s1-1.field3.0": 9 });
+    result = passportFormStore.getFormData("s1", { "s1-1.field3.0": 9 });
     expect(result).toEqual({
       "s1.field1.0": 2,
       "s1.field2.0": undefined,
@@ -268,7 +273,7 @@ describe("ModelFormStore", () => {
     sections: [section1, section11, section111],
   };
 
-  const model = {
+  const model: ModelDto = {
     id: "id1",
     description: "desc",
     uniqueProductIdentifiers: [],
@@ -315,14 +320,14 @@ describe("ModelFormStore", () => {
     ],
   };
 
-  it("should getFormSchemaRepeatable", () => {
-    const modelFormStore = useModelFormStore();
+  it("should getFormSchemaRepeatable", async () => {
+    const passportFormStore = usePassportFormStore();
 
-    modelFormStore.productDataModel = productDataModel;
+    mocks.getProductDataModelById.mockResolvedValue({ data: productDataModel });
+    mocks.getModelById.mockResolvedValue({ data: model });
+    await passportFormStore.fetchModel(model.id);
 
-    modelFormStore.model = model;
-
-    const actual = modelFormStore.getFormSchemaRepeatable(section1);
+    const actual = passportFormStore.getFormSchemaRepeatable(section1);
 
     const grid1Exp = {
       $el: "div",
@@ -443,9 +448,10 @@ describe("ModelFormStore", () => {
       },
     ];
     expect(actual).toEqual(expected);
+    expect(passportFormStore.passport?.name).toEqual(model.name);
   });
 
-  it("should getFormSchema", () => {
+  it("should getFormSchema", async () => {
     const dataFieldS1Model: DataFieldDto = {
       id: "f1",
       type: DataFieldType.TEXT_FIELD,
@@ -514,12 +520,12 @@ describe("ModelFormStore", () => {
       ],
     };
 
-    const modelFormStore = useModelFormStore();
+    const passportFormStore = usePassportFormStore();
+    mocks.getProductDataModelById.mockResolvedValue({ data: productDataModel });
+    mocks.getModelById.mockResolvedValue({ data: model });
+    await passportFormStore.fetchModel(model.id);
 
-    modelFormStore.productDataModel = productDataModel;
-    modelFormStore.model = model;
-
-    const result = modelFormStore.getFormSchema(section1Group);
+    const result = passportFormStore.getFormSchema(section1Group);
     expect(result).toEqual([
       {
         $el: "div",
@@ -556,12 +562,11 @@ describe("ModelFormStore", () => {
     ]);
   });
 
-  it("should add row to section", () => {
-    const modelFormStore = useModelFormStore();
-
-    modelFormStore.productDataModel = productDataModel;
-
-    modelFormStore.model = model;
+  it("should add row to section", async () => {
+    const passportFormStore = usePassportFormStore();
+    mocks.getProductDataModelById.mockResolvedValue({ data: productDataModel });
+    mocks.getModelById.mockResolvedValue({ data: model });
+    await passportFormStore.fetchModel(model.id);
 
     const expected: DataValueDto[] = [
       {
@@ -586,7 +591,7 @@ describe("ModelFormStore", () => {
     mocks.addModelData.mockResolvedValue({
       data: { ...model, dataValues: [...model.dataValues, expected] },
     });
-    modelFormStore.addRowToSection(section1.id);
+    await passportFormStore.addRowToSection(section1.id);
 
     expect(mocks.addModelData).toHaveBeenCalledWith(model.id, expected);
   });

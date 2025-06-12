@@ -12,14 +12,13 @@
 <script lang="ts" setup>
 import { SectionDto, SectionType } from "@open-dpp/api-client";
 import { ref, watch } from "vue";
-import TextField from "./TextField.vue";
-import { useModelFormStore } from "../../../stores/model.form";
+import { usePassportFormStore } from "../../../stores/passport.form";
 
 const props = defineProps<{
   section: SectionDto;
 }>();
 
-const modelFormStore = useModelFormStore();
+const modelFormStore = usePassportFormStore();
 
 const emits = defineEmits<{
   (e: "submit", dataValues: { id: string; value: unknown }[]): void;
@@ -29,7 +28,7 @@ const formData = ref<Record<string, unknown>>({});
 const formSchema = ref();
 
 watch(
-  () => modelFormStore.model?.dataValues, // The store property to watch
+  () => modelFormStore.passport?.dataValues, // The store property to watch
   () => {
     formSchema.value =
       props.section.type === SectionType.REPEATABLE

@@ -44,7 +44,7 @@
 <script setup lang="ts">
 import { ArrowPathIcon, TableCellsIcon } from "@heroicons/vue/24/outline";
 import { SectionDto, SectionType } from "@open-dpp/api-client";
-import { useModelFormStore } from "../stores/model.form";
+import { usePassportFormStore } from "../stores/passport.form";
 
 const props = defineProps<{
   section: SectionDto;
@@ -52,7 +52,7 @@ const props = defineProps<{
   disabled: boolean;
 }>();
 
-const modelFormStore = useModelFormStore();
+const modelFormStore = usePassportFormStore();
 
 const onAddRow = async () => {
   await modelFormStore.addRowToSection(props.section.id);
