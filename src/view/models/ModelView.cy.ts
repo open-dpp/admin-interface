@@ -52,13 +52,29 @@ describe("<Model />", () => {
       granularityLevel: GranularityLevel.MODEL,
     };
 
+    const dataField3: DataFieldDto = {
+      id: "f3",
+      type: DataFieldType.TEXT_FIELD,
+      name: "Neuer Title 3 auf Itemebene",
+      options: {
+        min: 2,
+      },
+      layout: {
+        colStart: { sm: 2 },
+        colSpan: { sm: 1 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+      granularityLevel: GranularityLevel.ITEM,
+    };
+
     const section1: SectionDto = {
       id: "s1",
       type: SectionType.GROUP,
       name: "Technische Spezifikation",
       parentId: undefined,
       subSections: ["s1-1"],
-      dataFields: [dataField1, dataField2],
+      dataFields: [dataField1, dataField2, dataField3],
       layout: {
         cols: { sm: 3 },
         colStart: { sm: 1 },
@@ -185,6 +201,11 @@ describe("<Model />", () => {
     cy.contains("Modellpass Informationen").should("be.visible");
     cy.get('[data-cy="s1.f1.0"]').should("have.value", "val1");
     cy.get('[data-cy="s1.f2.0"]').should("have.value", "val2");
+    cy.get('[data-cy="s1.f3.0"]').should("be.disabled");
+    cy.get('[data-cy="s1.f3.0"]').should(
+      "have.value",
+      "Wird auf Artikelebene gesetzt",
+    );
     cy.get('[data-cy="s1.f1.0"]').type("add1");
     cy.get('[data-cy="s1.f2.0"]').type("add2");
     cy.contains("button", "Speichern").click();

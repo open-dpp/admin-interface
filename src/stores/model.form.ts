@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import {
   DataValueDto,
+  GranularityLevel,
   ModelDto,
   ProductDataModelDto,
   SectionDto,
@@ -26,13 +27,18 @@ interface FormKitSchemaObject {
   children?: FormKitSchemaNode; // Child nodes (can be a node, string, or array)
 }
 
-function dataValueId(dataValue: DataValueDto) {
-  return [
+function dataValueId(sectionId: string, dataFieldId: string, row: number) {
+  return [sectionId, dataFieldId, row].join(".");
+}
+function dataValueIdFromDataValue(dataValue: DataValueDto) {
+  return dataValueId(
     dataValue.dataSectionId,
     dataValue.dataFieldId,
-    dataValue.row ?? 0,
-  ].join(".");
+    dataValue.row,
+  );
 }
+
+const VALUE_FOR_ITEM_LEVEL = "Wird auf Artikelebene gesetzt";
 
 function dataValueIdToDataValue(
   dataValueId: string,
@@ -76,7 +82,10 @@ export const useModelFormStore = defineStore("model.form", () => {
     existingFormData: Record<string, unknown>,
   ) => {
     const dataValues = Object.fromEntries(
-      getDataOfSection(sectionId)?.map((d) => [dataValueId(d), d.value]) ?? [],
+      getDataOfSection(sectionId)?.map((d) => [
+        dataValueIdFromDataValue(d),
+        d.value,
+      ]) ?? [],
     );
     return assign({}, dataValues, pick(existingFormData, keys(dataValues)));
   };
@@ -124,6 +133,20 @@ export const useModelFormStore = defineStore("model.form", () => {
       }
     }
     for (const dataField of section.dataFields) {
+      if (dataField.granularityLevel === GranularityLevel.ITEM) {
+        children.push({
+          $cmp: dataField.type,
+          props: {
+            id: dataValueId(section.id, dataField.id, row),
+            readonly: true,
+            disabled: true,
+            label: dataField!.name,
+            value: VALUE_FOR_ITEM_LEVEL,
+            className: generateClassesForLayout(dataField.layout),
+          },
+        });
+      }
+
       const dataValue = dataValuesOfSection.find(
         (d) => d.dataFieldId === dataField.id,
       );
@@ -132,8 +155,8 @@ export const useModelFormStore = defineStore("model.form", () => {
         children.push({
           $cmp: dataField.type,
           props: {
-            id: dataValueId(dataValue),
-            name: dataValueId(dataValue),
+            id: dataValueIdFromDataValue(dataValue),
+            name: dataValueIdFromDataValue(dataValue),
             label: dataField!.name,
             validation: "required",
             className: generateClassesForLayout(dataField.layout),
@@ -208,9 +231,13 @@ export const useModelFormStore = defineStore("model.form", () => {
     dataValues: { id: string; value: unknown }[],
   ) => {
     if (model.value) {
+      const filteredDataValues = dataValues.filter(
+        (d) => d.value !== VALUE_FOR_ITEM_LEVEL,
+      );
       const response = await apiClient.models.updateModelData(
         model.value.id,
-        dataValues.map((d) => dataValueIdToDataValue(d.id, d.value)),
+
+        filteredDataValues.map((d) => dataValueIdToDataValue(d.id, d.value)),
       );
       model.value = response.data;
     }

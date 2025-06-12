@@ -445,6 +445,117 @@ describe("ModelFormStore", () => {
     expect(actual).toEqual(expected);
   });
 
+  it("should getFormSchema", () => {
+    const dataFieldS1Model: DataFieldDto = {
+      id: "f1",
+      type: DataFieldType.TEXT_FIELD,
+      name: "Amount",
+      options: {},
+      layout: {
+        colStart: { sm: 1 },
+        colSpan: { sm: 1 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+      granularityLevel: GranularityLevel.MODEL,
+    };
+    const dataFieldS1Item: DataFieldDto = {
+      id: "f2",
+      type: DataFieldType.TEXT_FIELD,
+      name: "PCF",
+      options: {},
+      layout: {
+        colStart: { sm: 2 },
+        colSpan: { sm: 1 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+      granularityLevel: GranularityLevel.ITEM,
+    };
+    const section1Group: SectionDto = {
+      id: "s1",
+      type: SectionType.GROUP,
+      parentId: undefined,
+      name: "Tech Specs",
+      dataFields: [dataFieldS1Model, dataFieldS1Item],
+      subSections: [],
+      layout: {
+        cols: { sm: 3 },
+        colStart: { sm: 1 },
+        colSpan: { sm: 1 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+    };
+    const productDataModel: ProductDataModelDto = {
+      id: "pid",
+      name: "Handy",
+      version: "1.0.0",
+      visibility: VisibilityLevel.PUBLIC,
+      ownedByOrganizationId: "oId",
+      createdByUserId: "uId",
+      sections: [section1Group],
+    };
+
+    const model = {
+      id: "id1",
+      description: "desc",
+      uniqueProductIdentifiers: [],
+      productDataModelId: "pid",
+      owner: "oId",
+      name: "my model",
+      dataValues: [
+        {
+          value: 2,
+          dataSectionId: section1Group.id,
+          dataFieldId: dataFieldS1Model.id,
+          row: 0,
+        },
+      ],
+    };
+
+    const modelFormStore = useModelFormStore();
+
+    modelFormStore.productDataModel = productDataModel;
+    modelFormStore.model = model;
+
+    const result = modelFormStore.getFormSchema(section1Group);
+    expect(result).toEqual([
+      {
+        $el: "div",
+        attrs: {
+          class:
+            "grid gap-1 items-center sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-3",
+        },
+        children: [
+          {
+            $cmp: "TextField",
+            props: {
+              className:
+                "sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1",
+              id: "s1.f1.0",
+              label: "Amount",
+              name: "s1.f1.0",
+              validation: "required",
+            },
+          },
+          {
+            $cmp: "TextField",
+            props: {
+              className:
+                "sm:col-span-1 sm:col-start-2 sm:row-span-1 sm:row-start-1",
+              disabled: true,
+              readonly: true,
+              id: "s1.f2.0",
+              label: "PCF",
+              value: "Wird auf Artikelebene gesetzt",
+            },
+          },
+        ],
+      },
+    ]);
+  });
+
   it("should add row to section", () => {
     const modelFormStore = useModelFormStore();
 
