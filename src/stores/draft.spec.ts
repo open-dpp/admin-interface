@@ -5,6 +5,7 @@ import { waitFor } from "@testing-library/vue";
 import { findEmptyGridSpaces, useDraftStore } from "./draft";
 import {
   DataFieldType,
+  GranularityLevel,
   LayoutDto,
   ProductDataModelDraftDto,
   SectionType,
@@ -64,6 +65,7 @@ describe("DraftStore", () => {
           rowStart: { sm: 1 },
           rowSpan: { sm: 1 },
         },
+        granularityLevel: GranularityLevel.MODEL,
       },
     ],
     subSections: [],
@@ -175,6 +177,7 @@ describe("DraftStore", () => {
         rowStart: { sm: 1 },
         rowSpan: { sm: 1 },
       },
+      granularityLevel: GranularityLevel.MODEL,
     };
     await draftStore.addDataField(sectionId, newDataField);
     await waitFor(() =>

@@ -36,6 +36,11 @@ const rows = computed(() => {
 
 const actions = [
   {
+    name: "Editieren",
+    actionLinkBuilder: (row: Record<string, string>) =>
+      `/organizations/${indexStore.selectedOrganization}/models/${route.params.modelId}/items/${row.id}`,
+  },
+  {
     name: "QR-Code",
     actionLinkBuilder: (row: Record<string, string>) =>
       `/organizations/${indexStore.selectedOrganization}/models/${route.params.modelId}/items/${row.id}/qr-code`,

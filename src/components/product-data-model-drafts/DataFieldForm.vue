@@ -40,7 +40,12 @@
 
 <script lang="ts" setup>
 import { ref, watch } from "vue";
-import { DataFieldDto, DataFieldType, LayoutDto } from "@open-dpp/api-client";
+import {
+  DataFieldDto,
+  DataFieldType,
+  GranularityLevel,
+  LayoutDto,
+} from "@open-dpp/api-client";
 import { useDraftStore } from "../../stores/draft";
 import { z } from "zod";
 import { useDraftSidebarStore } from "../../stores/draftSidebar";
@@ -52,6 +57,7 @@ import {
 const props = defineProps<{
   type: DataFieldType;
   parentId?: string;
+  parentGranularityLevel?: GranularityLevel;
   layout: LayoutDto;
   id?: string;
 }>();
@@ -62,13 +68,17 @@ const dataFieldToModify = ref<DataFieldDto | undefined>();
 const draftStore = useDraftStore();
 const draftSidebarStore = useDraftSidebarStore();
 
-const formSchemaFromType = (type: string) => {
-  // const colOptions = Object.fromEntries(
-  //   Array.from({ length: 12 }, (_, i) => [i + 1, (i + 1).toString()]),
-  // );
+const formSchemaFromType = (
+  type: string,
+  existingGranularityLevel: GranularityLevel | undefined,
+) => {
+  const granularityOptions = {
+    [GranularityLevel.MODEL]: "Produktmodellebene",
+    [GranularityLevel.ITEM]: "Artikelebene",
+  };
 
   switch (type) {
-    case DataFieldType.TEXT_FIELD:
+    case DataFieldType.TEXT_FIELD: {
       return [
         {
           $formkit: "text",
@@ -76,7 +86,17 @@ const formSchemaFromType = (type: string) => {
           label: "Name des Textfeldes",
           "data-cy": "name",
         },
-      ];
+        !existingGranularityLevel
+          ? {
+              $formkit: "select",
+              name: "granularityLevel",
+              label: "Granularitätsebene",
+              options: granularityOptions,
+              "data-cy": "select-granularity-level",
+            }
+          : undefined,
+      ].filter((d) => d !== undefined);
+    }
 
     default:
       console.warn(
@@ -89,11 +109,17 @@ const formSchemaFromType = (type: string) => {
 watch(
   [() => props.type, () => props.id], // The store property to watch
   ([newType, newId]) => {
-    formSchema.value = formSchemaFromType(newType);
-    if (newId) {
-      dataFieldToModify.value = draftStore.findDataField(newId);
-      formData.value = { name: dataFieldToModify.value?.name };
-      // Add type-specific form data initialization if needed
+    const dataField = newId ? draftStore.findDataField(newId) : undefined;
+    formSchema.value = formSchemaFromType(
+      newType,
+      dataField?.granularityLevel ?? props.parentGranularityLevel,
+    );
+    if (dataField) {
+      dataFieldToModify.value = dataField;
+      formData.value = {
+        name: dataFieldToModify.value.name,
+        granularityLevel: dataFieldToModify.value.granularityLevel,
+      };
     }
   },
   { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
@@ -107,7 +133,15 @@ const onDelete = async () => {
 };
 
 const onSubmit = async () => {
-  const data = z.object({ name: z.string() }).parse(formData.value);
+  const data = z
+    .object({
+      name: z.string(),
+      granularityLevel: z.nativeEnum(GranularityLevel),
+    })
+    .parse({
+      granularityLevel: props.parentGranularityLevel,
+      ...formData.value,
+    });
   if (dataFieldToModify.value) {
     await draftStore.modifyDataField(dataFieldToModify.value.id, {
       name: data.name,
@@ -118,6 +152,7 @@ const onSubmit = async () => {
       type: props.type,
       name: data.name,
       layout: props.layout,
+      granularityLevel: data.granularityLevel,
     });
   } else {
     const notificationStore = useNotificationStore();

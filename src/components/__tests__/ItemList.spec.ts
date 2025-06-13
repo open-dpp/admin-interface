@@ -33,7 +33,7 @@ describe("ItemList.vue", () => {
     rows.slice(1).forEach((row, index) => {
       const cells = within(row).getAllByRole("cell");
       expect(cells[0].textContent).toEqual(items[index].id);
-      expect(cells[1].textContent).toEqual("QR-Code");
+      expect(cells[1].textContent).toEqual("EditierenQR-Code");
     });
   });
   test("should create item", async () => {

@@ -6,26 +6,26 @@
           Modellpass Informationen
         </h3>
       </div>
-      <div v-if="modelFormStore.model" class="border-t border-gray-100">
+      <div v-if="modelFormStore.passport" class="border-t border-gray-100">
         <dl class="divide-y divide-gray-100">
           <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-sm font-medium text-gray-900">ID</dt>
             <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-              {{ modelFormStore.model.id }}
+              {{ modelFormStore.passport.id }}
             </dd>
           </div>
           <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-sm font-medium text-gray-900">Name</dt>
             <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-              {{ modelFormStore.model.name }}
+              {{ modelFormStore.passport.name }}
             </dd>
           </div>
         </dl>
       </div>
     </div>
-    <ModelForm
+    <PassportForm
       v-if="
-        modelFormStore.model &&
+        modelFormStore.passport &&
         modelFormStore.productDataModel &&
         !modelFormStore.fetchInFlight
       "
@@ -36,11 +36,11 @@
 <script lang="ts" setup>
 import { useRoute } from "vue-router";
 import { watch } from "vue";
-import ModelForm from "../../components/models/ModelForm.vue";
-import { useModelFormStore } from "../../stores/model.form";
+import PassportForm from "../../components/passport/PassportForm.vue";
+import { usePassportFormStore } from "../../stores/passport.form";
 
 const route = useRoute();
-const modelFormStore = useModelFormStore();
+const modelFormStore = usePassportFormStore();
 
 watch(
   () => route.params.modelId, // The store property to watch

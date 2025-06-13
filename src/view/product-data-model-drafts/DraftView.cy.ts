@@ -8,6 +8,7 @@ import {
   ProductDataModelDraftDto,
   SectionDto,
   SectionType,
+  GranularityLevel,
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 import DraftView from "./DraftView.vue";
@@ -41,9 +42,26 @@ describe("<DraftView />", () => {
           rowStart: { sm: 1 },
           rowSpan: { sm: 1 },
         },
+        granularityLevel: GranularityLevel.MODEL,
       },
     ],
     subSections: [],
+  };
+
+  const repeatableSection: SectionDto = {
+    id: "s2",
+    name: "Materials",
+    type: SectionType.REPEATABLE,
+    layout: {
+      cols: { sm: 3 },
+      colStart: { sm: 1 },
+      colSpan: { sm: 1 },
+      rowStart: { sm: 1 },
+      rowSpan: { sm: 1 },
+    },
+    dataFields: [],
+    subSections: [],
+    granularityLevel: GranularityLevel.ITEM,
   };
 
   const draft: ProductDataModelDraftDto = {
@@ -51,7 +69,7 @@ describe("<DraftView />", () => {
     name: "My draft",
     version: "1.0.0",
     publications: [],
-    sections: [section],
+    sections: [section, repeatableSection],
     createdByUserId: "u1",
     ownedByOrganizationId: "o1",
   };
@@ -73,6 +91,7 @@ describe("<DraftView />", () => {
         rowStart: { sm: 1 },
         rowSpan: { sm: 1 },
       },
+      granularityLevel: GranularityLevel.MODEL,
     };
 
     cy.intercept(
@@ -117,12 +136,16 @@ describe("<DraftView />", () => {
     cy.get('[data-cy="select-col-number"]').select(
       sectionToCreate.layout.cols.sm.toFixed(),
     );
+    cy.get('[data-cy="select-granularity-level"]').select(
+      sectionToCreate.granularityLevel,
+    );
     cy.get('[data-cy="submit"]').click();
     cy.wait("@createSection").then(({ request }) => {
       const expected = {
         name: newSectionName,
         type: SectionType.REPEATABLE,
         layout: sectionToCreate.layout,
+        granularityLevel: GranularityLevel.MODEL,
       };
       cy.expectDeepEqualWithDiff(request.body, expected);
     });
@@ -144,6 +167,7 @@ describe("<DraftView />", () => {
         colSpan: { sm: 1 },
         rowSpan: { sm: 1 },
       },
+      granularityLevel: GranularityLevel.ITEM,
     };
 
     cy.intercept(
@@ -167,6 +191,7 @@ describe("<DraftView />", () => {
               ...section,
               dataFields: [...section.dataFields, dataFieldToCreate],
             },
+            repeatableSection,
           ],
         }, // Mock response
       },
@@ -186,6 +211,10 @@ describe("<DraftView />", () => {
     cy.get(`[data-cy="${section.id}-1"]`).click();
     cy.contains("li", "Textfeld").click();
     cy.get('[data-cy="name"]').type(dataFieldToCreate.name);
+    cy.get('[data-cy="select-granularity-level"]').select(
+      dataFieldToCreate.granularityLevel,
+    );
+
     cy.get('[data-cy="submit"]').click();
 
     cy.wait("@createDataField").then(({ request }) => {
@@ -198,6 +227,7 @@ describe("<DraftView />", () => {
           rowStart: { sm: 1 },
           rowSpan: { sm: 1 },
         },
+        granularityLevel: GranularityLevel.ITEM,
       };
       cy.expectDeepEqualWithDiff(request.body, expected);
     });
@@ -205,6 +235,125 @@ describe("<DraftView />", () => {
     cy.get(`[data-cy="${dataFieldToCreate.id}"]`)
       .find("input")
       .should("have.attr", "placeholder", dataFieldToCreate.name);
+  });
+
+  it("creates a sub section and data field of repeatable", () => {
+    const orgaId = "orgaId";
+    const newSectionName = "Sustainability";
+
+    const sectionToCreate = {
+      parentId: repeatableSection.id,
+      id: "sCreate1",
+      name: newSectionName,
+      type: SectionType.GROUP,
+      dataFields: [],
+      subSections: [],
+      layout: {
+        cols: { sm: 3 },
+        colStart: { sm: 1 },
+        colSpan: { sm: 1 },
+        rowStart: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+      granularityLevel: GranularityLevel.ITEM,
+    };
+    const newDataFieldName = "New Data Field";
+
+    const dataFieldToCreate: DataFieldDto = {
+      id: "dCreate1",
+      type: DataFieldType.TEXT_FIELD,
+      name: newDataFieldName,
+      options: {},
+      layout: {
+        colStart: { sm: 2 },
+        rowStart: { sm: 1 },
+        colSpan: { sm: 1 },
+        rowSpan: { sm: 1 },
+      },
+      granularityLevel: GranularityLevel.ITEM,
+    };
+
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+      {
+        statusCode: 200,
+        body: draft, // Mock response
+      },
+    ).as("getDraft");
+
+    cy.intercept(
+      "POST",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections`,
+      {
+        statusCode: 200,
+        body: {
+          ...draft,
+          sections: [...draft.sections, sectionToCreate],
+        },
+      },
+    ).as("createSection");
+
+    cy.intercept(
+      "POST",
+      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${repeatableSection.id}/data-fields`,
+      {
+        statusCode: 200,
+        body: {
+          ...draft,
+          sections: [
+            section,
+            {
+              ...repeatableSection,
+              dataFields: [...repeatableSection.dataFields, dataFieldToCreate],
+            },
+          ],
+        }, // Mock response
+      },
+    ).as("createDataField");
+
+    const indexStore = useIndexStore();
+    indexStore.selectOrganization(orgaId);
+
+    cy.wrap(
+      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+    );
+    cy.mountWithPinia(DraftView, { router });
+
+    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+    cy.get('[data-cy="s2-0"]').click();
+    cy.contains("li", "Gruppierung").click();
+    cy.get('[data-cy="name"]').type(newSectionName);
+    cy.get('[data-cy="select-col-number"]').select(
+      sectionToCreate.layout.cols.sm.toFixed(),
+    );
+    cy.get('[data-cy="select-granularity-level"]').should("not.exist");
+    cy.get('[data-cy="submit"]').click();
+    cy.wait("@createSection").then(({ request }) => {
+      const expected = {
+        name: newSectionName,
+        type: sectionToCreate.type,
+        layout: sectionToCreate.layout,
+        granularityLevel: GranularityLevel.ITEM,
+        parentSectionId: sectionToCreate.parentId,
+      };
+      cy.expectDeepEqualWithDiff(request.body, expected);
+    });
+
+    cy.get('[data-cy="s2-1"]').click();
+    cy.contains("li", "Textfeld").click();
+    cy.get('[data-cy="name"]').type(newDataFieldName);
+    cy.get('[data-cy="select-granularity-level"]').should("not.exist");
+    cy.get('[data-cy="submit"]').click();
+    cy.wait("@createDataField").then(({ request }) => {
+      const expected = {
+        name: newDataFieldName,
+        type: DataFieldType.TEXT_FIELD,
+        layout: dataFieldToCreate.layout,
+        granularityLevel: GranularityLevel.ITEM,
+      };
+      cy.expectDeepEqualWithDiff(request.body, expected);
+    });
   });
 
   it("renders draft and modifies a data field", () => {
@@ -248,6 +397,7 @@ describe("<DraftView />", () => {
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
 
     cy.get(`[data-cy="${dataFieldToModify.id}"]`).click();
+    cy.get('[data-cy="select-granularity-level"]').should("not.exist");
     const newFieldName = "New Name";
     const nameField = cy.get('[data-cy="name"]');
     nameField.should("have.value", dataFieldToModify.name);

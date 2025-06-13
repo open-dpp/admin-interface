@@ -5,6 +5,7 @@ import Layout from "./Layout.vue";
 import { API_URL } from "../../const";
 import {
   DataFieldType,
+  GranularityLevel,
   ProductDataModelDraftDto,
   SectionType,
 } from "@open-dpp/api-client";
@@ -39,6 +40,7 @@ describe("<Layout />", () => {
             rowStart: { sm: 1 },
             rowSpan: { sm: 1 },
           },
+          granularityLevel: GranularityLevel.MODEL,
         },
       ],
       subSections: [],
