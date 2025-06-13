@@ -21,7 +21,7 @@
         >{{ props.label }}</label
       >
       <div
-        class="text-base w-full py-2 px-3 rounded-none border border-neutral-900 flex items-center focus-within:ring-2 group-data-disabled:cursor-not-allowed! dark:border-neutral-100 formkit-inner block rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300"
+        class="text-base w-full py-2 px-3 rounded-none border-neutral-900 items-center focus-within:ring-2 group-data-disabled:cursor-not-allowed! dark:border-neutral-100 formkit-inner block border-0 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300"
       >
         {{ props.placeholder }}
       </div>
