@@ -222,9 +222,8 @@ describe("<ModelView />", () => {
     });
     cy.get('[data-cy="s1.f1.0"]').should("have.value", "val1");
     cy.get('[data-cy="s1.f2.0"]').should("have.value", "val2");
-    cy.get('[data-cy="s1.f3.0"]').should("be.disabled");
     cy.get('[data-cy="s1.f3.0"]').should(
-      "have.value",
+      "contain.text",
       "Wird auf Artikelebene gesetzt",
     );
     cy.get('[data-cy="s1.f1.0"]').type("add1");

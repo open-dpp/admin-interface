@@ -146,14 +146,12 @@ export const usePassportFormStore = defineStore("passport.form", () => {
     for (const dataField of section.dataFields) {
       if (dataField.granularityLevel !== granularityLevel.value) {
         children.push({
-          $cmp: dataField.type,
+          $cmp: "FakeField",
           props: {
-            id: dataValueId(section.id, dataField.id, row),
-            readonly: true,
-            disabled: true,
-            label: dataField!.name,
-            value: getValueForOtherGranularityLevel(),
             className: generateClassesForLayout(dataField.layout),
+            dataCy: dataValueId(section.id, dataField.id, row),
+            placeholder: getValueForOtherGranularityLevel(),
+            label: dataField!.name,
           },
         });
       }
@@ -264,9 +262,9 @@ export const usePassportFormStore = defineStore("passport.form", () => {
     dataValues: { id: string; value: unknown }[],
   ) => {
     if (modelId.value && passport.value) {
-      const dataValueModifications = dataValues
-        .filter((d) => d.value !== getValueForOtherGranularityLevel())
-        .map((d) => dataValueIdToDataValue(d.id, d.value));
+      const dataValueModifications = dataValues.map((d) =>
+        dataValueIdToDataValue(d.id, d.value),
+      );
       const response =
         granularityLevel.value === GranularityLevel.MODEL
           ? await apiClient.models.updateModelData(

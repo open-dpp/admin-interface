@@ -550,15 +550,13 @@ describe("PassportFormStore", () => {
             },
           },
           {
-            $cmp: "TextField",
+            $cmp: "FakeField",
             props: {
               className:
                 "sm:col-span-1 sm:col-start-2 sm:row-span-1 sm:row-start-1",
-              disabled: true,
-              readonly: true,
-              id: "s1.f2.0",
+              dataCy: "s1.f2.0",
               label: "PCF",
-              value: "Wird auf Artikelebene gesetzt",
+              placeholder: "Wird auf Artikelebene gesetzt",
             },
           },
         ],
@@ -648,15 +646,13 @@ describe("PassportFormStore", () => {
         },
         children: [
           {
-            $cmp: "TextField",
+            $cmp: "FakeField",
             props: {
               className:
                 "sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1",
-              id: "s1.f1.0",
-              disabled: true,
-              readonly: true,
+              dataCy: "s1.f1.0",
               label: "Amount",
-              value: "Wird auf Modelebene gesetzt",
+              placeholder: "Wird auf Modelebene gesetzt",
             },
           },
           {
