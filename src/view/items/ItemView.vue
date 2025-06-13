@@ -43,13 +43,13 @@ const route = useRoute();
 const itemFormStore = usePassportFormStore();
 
 watch(
-  () => route.params.itemId, // The store property to watch
+  () => [route.params.modelId, route.params.itemId], // The store property to watch
   async () => {
     await itemFormStore.fetchItem(
       String(route.params.modelId),
       String(route.params.itemId),
     );
   },
-  { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
+  { immediate: true }, // Optional: to run the watcher immediately when the component mounts
 );
 </script>
