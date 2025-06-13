@@ -224,7 +224,7 @@ export const usePassportFormStore = defineStore("passport.form", () => {
               passport.value.id,
               dataValuesToCreate,
             );
-      passport.value = response.data;
+      passport.value = { ...response.data, name: passport.value.name };
     }
   };
 
@@ -276,7 +276,10 @@ export const usePassportFormStore = defineStore("passport.form", () => {
               passport.value.id,
               dataValueModifications,
             );
-      passport.value = response.data;
+      passport.value = {
+        ...response.data,
+        name: passport.value.name,
+      };
     }
   };
 
