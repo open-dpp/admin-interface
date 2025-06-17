@@ -5,7 +5,7 @@ import { modelBreadcrumbs } from "./models";
 const itemListBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
   ...modelBreadcrumbs(to),
   {
-    name: "Artikel Liste",
+    name: "Artikelpässe",
     route: ITEM_LIST,
     params: to.params,
   },
@@ -14,6 +14,16 @@ const itemListBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
 export const ITEM_LIST: RouteRecordRaw = {
   path: "",
   name: "OrganizationModelsItems",
+  component: () => import("../../../view/items/ItemListView.vue"),
+  beforeEnter: (to: RouteLocationNormalizedGeneric) => {
+    const layoutStore = useLayoutStore();
+    layoutStore.breadcrumbs = itemListBreadcrumbs(to);
+  },
+};
+
+export const ITEM: RouteRecordRaw = {
+  path: "",
+  name: "Item",
   component: () => import("../../../view/items/ItemView.vue"),
   beforeEnter: (to: RouteLocationNormalizedGeneric) => {
     const layoutStore = useLayoutStore();
@@ -40,7 +50,7 @@ export const ITEM_QRCODE: RouteRecordRaw = {
 
 export const ITEM_PARENT: RouteRecordRaw = {
   path: ":itemId",
-  children: [ITEM_QRCODE],
+  children: [ITEM, ITEM_QRCODE],
 };
 
 export const ITEMS_PARENT: RouteRecordRaw = {

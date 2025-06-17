@@ -1,9 +1,10 @@
 <template>
   <div>
     <ListHeader
-      entity-name="Artikel"
+      title="Artikelpässe"
+      description="Alle Pässe auf Einzelartikelebene."
       @add="emits('add')"
-      creation-label="Artikel hinzufügen"
+      creation-label="Artikelpass hinzufügen"
     />
     <SimpleTable :headers="['ID']" :rows="rows" :row-actions="actions" />
   </div>
@@ -34,6 +35,11 @@ const rows = computed(() => {
 });
 
 const actions = [
+  {
+    name: "Editieren",
+    actionLinkBuilder: (row: Record<string, string>) =>
+      `/organizations/${indexStore.selectedOrganization}/models/${route.params.modelId}/items/${row.id}`,
+  },
   {
     name: "QR-Code",
     actionLinkBuilder: (row: Record<string, string>) =>

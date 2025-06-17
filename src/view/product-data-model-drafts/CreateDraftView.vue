@@ -3,10 +3,10 @@
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-auto">
         <h1 class="text-base font-semibold text-gray-900">
-          Datenmodellentwurf
+          Produktpass Design
         </h1>
         <p class="mt-2 text-sm text-gray-700">
-          Entwerfen Sie ein neues Datenmodell.
+          Designen Sie einen neuen Produktpass.
         </p>
       </div>
     </div>

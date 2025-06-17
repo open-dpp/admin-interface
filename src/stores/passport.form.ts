@@ -1,13 +1,11 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import {
-  DataValueCreateDto,
   DataValueDto,
-  DataValuePatchDto,
-  ModelDto,
+  GranularityLevel,
+  PassportDto,
   ProductDataModelDto,
   SectionDto,
-  SectionType,
 } from "@open-dpp/api-client";
 import apiClient from "../lib/api-client";
 import { assign, keys, maxBy, minBy, pick } from "lodash";
@@ -29,10 +27,45 @@ interface FormKitSchemaObject {
   children?: FormKitSchemaNode; // Child nodes (can be a node, string, or array)
 }
 
-export const useModelFormStore = defineStore("model.form", () => {
-  const model = ref<ModelDto>();
+function dataValueId(sectionId: string, dataFieldId: string, row: number) {
+  return [sectionId, dataFieldId, row].join(".");
+}
+function dataValueIdFromDataValue(dataValue: DataValueDto) {
+  return dataValueId(
+    dataValue.dataSectionId,
+    dataValue.dataFieldId,
+    dataValue.row,
+  );
+}
+
+function dataValueIdToDataValue(
+  dataValueId: string,
+  value: unknown,
+): DataValueDto {
+  const [dataSectionId, dataFieldId, row] = dataValueId.split(".");
+  return {
+    value,
+    dataSectionId,
+    dataFieldId,
+    row: parseInt(row),
+  };
+}
+
+export const usePassportFormStore = defineStore("passport.form", () => {
+  const granularityLevel = ref<GranularityLevel>(GranularityLevel.MODEL);
+  const modelId = ref<string>();
+  const passport = ref<PassportDto & { name: string }>();
   const productDataModel = ref<ProductDataModelDto>();
   const fetchInFlight = ref<boolean>(false);
+
+  const VALUE_FOR_OTHER_GRANULARITY_LEVEL = {
+    [GranularityLevel.MODEL]: "Wird auf Artikelebene gesetzt",
+    [GranularityLevel.ITEM]: "Wird auf Modelebene gesetzt",
+  };
+
+  const getValueForOtherGranularityLevel = () => {
+    return VALUE_FOR_OTHER_GRANULARITY_LEVEL[granularityLevel.value];
+  };
 
   const getDataOfSection = (sectionId: string): DataValueDto[] => {
     const section = productDataModel.value?.sections.find(
@@ -45,9 +78,11 @@ export const useModelFormStore = defineStore("model.form", () => {
     for (const subSection of section.subSections) {
       dataValues.push(...getDataOfSection(subSection));
     }
-    if (model.value) {
+    if (passport.value) {
       dataValues.push(
-        ...model.value.dataValues.filter((d) => d.dataSectionId === sectionId),
+        ...passport.value.dataValues.filter(
+          (d) => d.dataSectionId === sectionId,
+        ),
       );
     }
     return dataValues;
@@ -58,7 +93,10 @@ export const useModelFormStore = defineStore("model.form", () => {
     existingFormData: Record<string, unknown>,
   ) => {
     const dataValues = Object.fromEntries(
-      getDataOfSection(sectionId)?.map((d) => [d.id, d.value]) ?? [],
+      getDataOfSection(sectionId)?.map((d) => [
+        dataValueIdFromDataValue(d),
+        d.value,
+      ]) ?? [],
     );
     return assign({}, dataValues, pick(existingFormData, keys(dataValues)));
   };
@@ -91,11 +129,8 @@ export const useModelFormStore = defineStore("model.form", () => {
 
   const getFormSchema = (
     section: SectionDto,
-    row?: number,
+    row: number = 0,
   ): FormKitSchemaObject[] => {
-    if (section.type === SectionType.REPEATABLE && row === undefined) {
-      return getFormSchemaRepeatable(section);
-    }
     const dataValuesOfSection = getDataOfSection(section.id).filter(
       (d) => d.row === row,
     );
@@ -109,16 +144,28 @@ export const useModelFormStore = defineStore("model.form", () => {
       }
     }
     for (const dataField of section.dataFields) {
-      const dataValueId = dataValuesOfSection.find(
-        (d) => d.dataFieldId === dataField?.id,
-      )?.id;
+      if (dataField.granularityLevel !== granularityLevel.value) {
+        children.push({
+          $cmp: "FakeField",
+          props: {
+            className: generateClassesForLayout(dataField.layout),
+            dataCy: dataValueId(section.id, dataField.id, row),
+            placeholder: getValueForOtherGranularityLevel(),
+            label: dataField!.name,
+          },
+        });
+      }
 
-      if (dataValueId) {
+      const dataValue = dataValuesOfSection.find(
+        (d) => d.dataFieldId === dataField.id,
+      );
+
+      if (dataValue) {
         children.push({
           $cmp: dataField.type,
           props: {
-            id: dataValueId,
-            name: dataValueId,
+            id: dataValueIdFromDataValue(dataValue),
+            name: dataValueIdFromDataValue(dataValue),
             label: dataField!.name,
             validation: "required",
             className: generateClassesForLayout(dataField.layout),
@@ -138,7 +185,7 @@ export const useModelFormStore = defineStore("model.form", () => {
     ];
   };
 
-  const generateDataValues = (sectionId: string): DataValueCreateDto[] => {
+  const generateDataValues = (sectionId: string): DataValueDto[] => {
     const dataValuesOfSection = getDataOfSection(sectionId);
 
     const maxRow = maxBy(dataValuesOfSection, "row")?.row;
@@ -164,50 +211,91 @@ export const useModelFormStore = defineStore("model.form", () => {
   };
 
   const addRowToSection = async (sectionId: string) => {
-    if (model.value) {
+    if (modelId.value && passport.value) {
       const dataValuesToCreate = generateDataValues(sectionId);
-      const response = await apiClient.models.addModelData(
-        model.value.id,
-        dataValuesToCreate,
-      );
-      model.value = response.data;
+      const response =
+        granularityLevel.value === GranularityLevel.MODEL
+          ? await apiClient.models.addModelData(
+              passport.value.id,
+              dataValuesToCreate,
+            )
+          : await apiClient.items.addItemData(
+              modelId.value,
+              passport.value.id,
+              dataValuesToCreate,
+            );
+      passport.value = { ...response.data, name: passport.value.name };
+    }
+  };
+
+  const fetchProductDataModel = async () => {
+    if (passport.value?.productDataModelId) {
+      const response =
+        await apiClient.productDataModels.getProductDataModelById(
+          passport.value.productDataModelId,
+        );
+      productDataModel.value = response.data;
     }
   };
 
   const fetchModel = async (id: string) => {
     fetchInFlight.value = true;
     const response = await apiClient.models.getModelById(id);
-
-    model.value = response.data;
-    if (model.value.productDataModelId) {
-      const response =
-        await apiClient.productDataModels.getProductDataModelById(
-          model.value.productDataModelId,
-        );
-      productDataModel.value = response.data;
-    }
+    granularityLevel.value = GranularityLevel.MODEL;
+    passport.value = response.data;
+    modelId.value = id;
+    await fetchProductDataModel();
     fetchInFlight.value = false;
   };
 
-  const updateModelData = async (dataValues: DataValuePatchDto[]) => {
-    if (model.value) {
-      const response = await apiClient.models.updateModelData(
-        model.value.id,
-        dataValues,
+  const fetchItem = async (modelIdToFetch: string, id: string) => {
+    fetchInFlight.value = true;
+    const response = await apiClient.items.getItem(modelIdToFetch, id);
+    granularityLevel.value = GranularityLevel.ITEM;
+    passport.value = { ...response.data, name: `Artikel mit ID ${id}` };
+    modelId.value = modelIdToFetch;
+    await fetchProductDataModel();
+    fetchInFlight.value = false;
+  };
+
+  const updateDataValues = async (
+    dataValues: { id: string; value: unknown }[],
+  ) => {
+    if (modelId.value && passport.value) {
+      const dataValueModifications = dataValues.map((d) =>
+        dataValueIdToDataValue(d.id, d.value),
       );
-      model.value = response.data;
+      const response =
+        granularityLevel.value === GranularityLevel.MODEL
+          ? await apiClient.models.updateModelData(
+              passport.value.id,
+              dataValueModifications,
+            )
+          : await apiClient.items.updateItemData(
+              modelId.value,
+              passport.value.id,
+              dataValueModifications,
+            );
+      passport.value = {
+        ...response.data,
+        name: passport.value.name,
+      };
     }
   };
 
   return {
-    model,
+    granularityLevel,
+    passport,
     productDataModel,
     fetchInFlight,
+    getValueForOtherGranularityLevel,
     fetchModel,
+    fetchItem,
     findSectionById,
-    updateModelData,
+    updateDataValues,
     addRowToSection,
     getFormData,
     getFormSchema,
+    getFormSchemaRepeatable,
   };
 });

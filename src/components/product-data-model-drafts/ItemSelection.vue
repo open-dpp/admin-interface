@@ -50,7 +50,12 @@ import {
   type VNodeProps,
   watch,
 } from "vue";
-import { DataFieldType, LayoutDto, SectionType } from "@open-dpp/api-client";
+import {
+  DataFieldType,
+  GranularityLevel,
+  LayoutDto,
+  SectionType,
+} from "@open-dpp/api-client";
 import { ArrowPathIcon, TableCellsIcon } from "@heroicons/vue/24/outline";
 import {
   SidebarContentType,
@@ -61,6 +66,7 @@ const selectedType = ref<string>(SectionType.GROUP);
 
 const props = defineProps<{
   parentId?: string;
+  parentGranularityLevel?: GranularityLevel;
   layout: LayoutDto;
 }>();
 
@@ -132,6 +138,7 @@ const onSelect = (type: string, sidebarType: SidebarContentType) => {
     type,
     parentId: props.parentId,
     layout: props.layout,
+    parentGranularityLevel: props.parentGranularityLevel,
   });
 };
 </script>

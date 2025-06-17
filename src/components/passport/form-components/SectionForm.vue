@@ -2,7 +2,7 @@
   <FormKit v-model="formData" :actions="false" type="form" @submit="onSubmit">
     <FormKitSchema
       v-if="formSchema"
-      :library="{ TextField }"
+      :library="{ TextField, FakeField }"
       :schema="formSchema"
     />
     <FormKit label="Speichern" type="submit" />
@@ -10,29 +10,33 @@
 </template>
 
 <script lang="ts" setup>
-import { DataValuePatchDto, SectionDto } from "@open-dpp/api-client";
+import { SectionDto, SectionType } from "@open-dpp/api-client";
 import { ref, watch } from "vue";
 import TextField from "./TextField.vue";
-import { useModelFormStore } from "../../../stores/model.form";
+import FakeField from "./FakeField.vue";
+import { usePassportFormStore } from "../../../stores/passport.form";
 
 const props = defineProps<{
   section: SectionDto;
 }>();
 
-const modelFormStore = useModelFormStore();
+const passportFormStore = usePassportFormStore();
 
 const emits = defineEmits<{
-  (e: "submit", dataValues: DataValuePatchDto[]): void;
+  (e: "submit", dataValues: { id: string; value: unknown }[]): void;
 }>();
 
 const formData = ref<Record<string, unknown>>({});
 const formSchema = ref();
 
 watch(
-  () => modelFormStore.model?.dataValues, // The store property to watch
+  () => passportFormStore.passport?.dataValues, // The store property to watch
   () => {
-    formSchema.value = modelFormStore.getFormSchema(props.section);
-    formData.value = modelFormStore.getFormData(
+    formSchema.value =
+      props.section.type === SectionType.REPEATABLE
+        ? passportFormStore.getFormSchemaRepeatable(props.section)
+        : passportFormStore.getFormSchema(props.section);
+    formData.value = passportFormStore.getFormData(
       props.section.id,
       formData.value,
     );

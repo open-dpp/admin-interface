@@ -26,6 +26,7 @@
       :key="index"
       :data-cy="`${props.section.id}-${index}`"
       :parent-id="props.section.id"
+      :parent-granularity-level="props.section.granularityLevel"
       :layout="emptySpace"
     />
   </div>

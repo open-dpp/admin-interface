@@ -5,6 +5,7 @@ import Layout from "./Layout.vue";
 import { API_URL } from "../../const";
 import {
   DataFieldType,
+  GranularityLevel,
   ProductDataModelDraftDto,
   SectionType,
 } from "@open-dpp/api-client";
@@ -39,6 +40,7 @@ describe("<Layout />", () => {
             rowStart: { sm: 1 },
             rowSpan: { sm: 1 },
           },
+          granularityLevel: GranularityLevel.MODEL,
         },
       ],
       subSections: [],
@@ -88,7 +90,7 @@ describe("<Layout />", () => {
     });
     cy.get('[data-cy="openSidebar"]').click();
     cy.get('[data-cy="sidebar"]').within(() => {
-      cy.contains("Datenmodell entwerfen").click();
+      cy.contains("Produktpass Designer").click();
       cy.get("@pushSpy").should(
         "have.been.calledWith",
         `/organizations/${orgaId}/data-model-drafts`,

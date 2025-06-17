@@ -1,9 +1,10 @@
 <template>
   <div class="">
     <ListHeader
-      entity-name="Modelle"
+      title="Modellpässe"
+      description="Alle Pässe auf der Produktmodellebene. Ein Produktmodell ist zum Beispiel das Galaxy S22 Ultra."
       :creation-link="`/organizations/${indexStore.selectedOrganization}/models/create`"
-      creation-label="Modell hinzufügen"
+      creation-label="Modellpass hinzufügen"
     />
     <SimpleTable
       :headers="['ID', 'Name']"
@@ -29,7 +30,7 @@ const rows = computed(() => {
 
 const actions = [
   {
-    name: "Artikel",
+    name: "Artikelpässe",
     actionLinkBuilder: (row: Record<string, string>) =>
       `/organizations/${indexStore.selectedOrganization}/models/${row.id}/items`,
   },

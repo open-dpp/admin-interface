@@ -20,7 +20,7 @@
       >
         <form-kit
           data-cy="name"
-          help="Geben Sie Ihrem Modell einen Namen"
+          help="Geben Sie Ihrem Modellpass einen Namen"
           label="Name"
           name="name"
           type="text"
@@ -29,8 +29,8 @@
         <form-kit
           :options="selectableDataModels"
           data-cy="productDataModelId"
-          help="Wählen Sie das Datenmodell aus"
-          label="Datenmodell"
+          help="Wählen Sie die passende Passvorlage aus"
+          label="Passvorlage"
           name="productDataModelId"
           type="select"
           validation="required"

@@ -1,9 +1,10 @@
 <template>
   <div class="">
     <ListHeader
-      entity-name="Datenmodellentwürfe"
+      title="Produktpass Designs"
+      description="Alle Produktpass Designs."
       :creation-link="`/organizations/${indexStore.selectedOrganization}/data-model-drafts/create`"
-      creation-label="Datenmodell entwerfen"
+      creation-label="Produktpass designen"
     />
     <SimpleTable
       :headers="['Name']"

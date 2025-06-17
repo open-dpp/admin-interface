@@ -5,7 +5,7 @@ import { organizationBreadcrumbs } from "../organizations";
 const draftListBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
   ...organizationBreadcrumbs(to),
   {
-    name: "Datenmodellentwürfe",
+    name: "Produktpass Designs",
     route: DRAFT_LIST,
     params: to.params,
   },

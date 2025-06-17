@@ -2,7 +2,7 @@
   <form-kit id="createDraftForm" :actions="false" type="form" @submit="create">
     <form-kit
       data-cy="name"
-      help="Geben Sie Ihrem Datenmodellentwurf einen Namen"
+      help="Geben Sie Ihrem Produktpass Design einen Namen"
       label="Name"
       name="name"
       type="text"
