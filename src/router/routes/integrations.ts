@@ -14,8 +14,7 @@ export const integrationBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
 export const INTEGRATIONS: RouteRecordRaw = {
   path: "",
   name: "Integrationen",
-  props: true,
-  component: () => import("../../view/underConstruction/IntegrationDummy.vue"),
+  component: () => import("../../view/integrations/IntegrationView.vue"),
   beforeEnter: (to: RouteLocationNormalizedGeneric) => {
     const layoutStore = useLayoutStore();
     layoutStore.breadcrumbs = integrationBreadcrumbs(to);
