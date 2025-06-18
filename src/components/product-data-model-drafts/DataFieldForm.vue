@@ -41,10 +41,7 @@ import {
 import { useDraftStore } from "../../stores/draft";
 import { z } from "zod";
 import { useDraftSidebarStore } from "../../stores/draftSidebar";
-import {
-  NotificationType,
-  useNotificationStore,
-} from "../../stores/notification";
+import { useNotificationStore } from "../../stores/notification";
 
 const props = defineProps<{
   type: DataFieldType;
@@ -154,9 +151,8 @@ const onSubmit = async () => {
     });
   } else {
     const notificationStore = useNotificationStore();
-    notificationStore.addNotification(
+    notificationStore.addErrorNotification(
       "Datenfeld konnte nicht hinzugefügt werden.",
-      NotificationType.ERROR,
     );
   }
 

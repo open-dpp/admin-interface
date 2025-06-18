@@ -269,8 +269,8 @@ describe("<ModelView />", () => {
           .should("eq", 200);
         cy.get('[data-cy="s1.f1.0"]').should("have.value", "otherVal1");
         cy.get('[data-cy="s1.f2.0"]').should("have.value", uuid);
-        cy.get('[data-cy="Visit s1.f2.0"]').click();
         cy.spy(router, "push").as("pushSpy");
+        cy.get('[data-cy="Visit s1.f2.0"]').click();
         cy.wait("@getUniqueProductIdentifierReference")
           .its("response.statusCode")
           .should("eq", 200);

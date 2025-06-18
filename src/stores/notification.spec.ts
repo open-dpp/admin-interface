@@ -9,15 +9,53 @@ describe("Notification", () => {
     setActivePinia(createPinia());
   });
 
-  it("should add notification", async () => {
+  it("should add success notification", async () => {
     const notificationStore = useNotificationStore();
     expect(notificationStore.notifications).toEqual([]);
-    notificationStore.addNotification("Added draft", NotificationType.SUCCESS);
+    notificationStore.addSuccessNotification("Added draft");
     expect(notificationStore.notifications).toEqual([
       {
         id: expect.any(String),
         message: "Added draft",
         type: NotificationType.SUCCESS,
+      },
+    ]);
+  });
+  it("should add error notification", async () => {
+    const notificationStore = useNotificationStore();
+    expect(notificationStore.notifications).toEqual([]);
+    notificationStore.addErrorNotification("Added draft");
+    expect(notificationStore.notifications).toEqual([
+      {
+        id: expect.any(String),
+        message: "Added draft",
+        type: NotificationType.ERROR,
+      },
+    ]);
+  });
+
+  it("should add warning notification", async () => {
+    const notificationStore = useNotificationStore();
+    expect(notificationStore.notifications).toEqual([]);
+    notificationStore.addWarningNotification("Added draft");
+    expect(notificationStore.notifications).toEqual([
+      {
+        id: expect.any(String),
+        message: "Added draft",
+        type: NotificationType.WARNING,
+      },
+    ]);
+  });
+
+  it("should add info notification", async () => {
+    const notificationStore = useNotificationStore();
+    expect(notificationStore.notifications).toEqual([]);
+    notificationStore.addInfoNotification("Added draft");
+    expect(notificationStore.notifications).toEqual([
+      {
+        id: expect.any(String),
+        message: "Added draft",
+        type: NotificationType.INFO,
       },
     ]);
   });

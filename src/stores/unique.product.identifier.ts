@@ -13,9 +13,13 @@ export const useUniqueProductIdentifierStore = defineStore(
       const reference = response.data;
       if (reference.granularityLevel === GranularityLevel.ITEM) {
         return `/organizations/${reference.organizationId}/models/${reference.modelId}/items/${reference.id}`;
-      } else {
+      }
+      if (reference.granularityLevel === GranularityLevel.MODEL) {
         return `/organizations/${reference.organizationId}/models/${reference.id}`;
       }
+      throw new Error(
+        `Unsupported granularity level: ${reference.granularityLevel}`,
+      );
     };
 
     return { buildLinkToReferencedProduct };

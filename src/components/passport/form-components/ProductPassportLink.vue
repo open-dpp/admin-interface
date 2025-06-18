@@ -25,23 +25,31 @@
 import { computed, ref, useAttrs } from "vue";
 import { ArrowRightStartOnRectangleIcon } from "@heroicons/vue/16/solid";
 import { useRouter } from "vue-router";
-import { useUniqueProductIdentifierStore } from "../../../stores/unique.product.identifier"; // or any other icon you prefer
+import { useUniqueProductIdentifierStore } from "../../../stores/unique.product.identifier";
+import { useNotificationStore } from "../../../stores/notification";
+import { logError } from "../../logging/logging"; // or any other icon you prefer
 const router = useRouter();
 
-const inputValue = ref<string | undefined>();
+const inputValue = ref<string>("");
 
 const uniqueProductIdentifierStore = useUniqueProductIdentifierStore();
 
 const props = defineProps<{ id: string; className: string }>();
-
+const notificationStore = useNotificationStore();
 const attrs = useAttrs() as Record<string, unknown>;
 const onLinkClick = async () => {
   if (inputValue.value) {
-    const link =
-      await uniqueProductIdentifierStore.buildLinkToReferencedProduct(
-        inputValue.value,
-      );
-    await router.push(link);
+    try {
+      const link =
+        await uniqueProductIdentifierStore.buildLinkToReferencedProduct(
+          inputValue.value,
+        );
+      await router.push(link);
+    } catch (e) {
+      const message = "Navigation zu Produktpass fehlgeschlagen";
+      notificationStore.addErrorNotification(message);
+      logError(message, e);
+    }
   }
 };
 
