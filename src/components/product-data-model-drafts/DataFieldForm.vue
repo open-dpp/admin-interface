@@ -175,11 +175,10 @@ const onSubmit = async () => {
   let options: Record<string, unknown> | undefined;
   if (props.type === DataFieldType.NUMERIC_FIELD) {
     options = {
-      min: formData.value.min,
-      max: formData.value.max,
+      min: Number(formData.value.min),
+      max: Number(formData.value.max),
     };
   }
-  console.log(JSON.stringify(formData.value));
   const data = z
     .object({
       name: z.string(),
