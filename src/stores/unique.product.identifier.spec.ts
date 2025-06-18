@@ -4,7 +4,7 @@ import { useUniqueProductIdentifierStore } from "./unique.product.identifier";
 import {
   GranularityLevel,
   UniqueProductIdentifierReferenceDto,
-} from "../../../open-dpp-api-client";
+} from "@open-dpp/api-client";
 import { waitFor } from "@testing-library/vue";
 import apiClient from "../lib/api-client";
 
