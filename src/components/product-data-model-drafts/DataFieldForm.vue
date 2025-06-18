@@ -9,14 +9,6 @@
     >
       <FormKitSchema v-if="formSchema" :schema="formSchema" />
       <div class="flex gap-2">
-        <!--        "grow": true,-->
-        <!--        "max-w-[20em]": true,-->
-        <!--        "min-w-0": true,-->
-        <!--        "text-base": true,-->
-        <!--        "mb-4": true,-->
-        <!--        "data-disabled:select-none": true,-->
-        <!--        "data-disabled:opacity-50": true,-->
-        <!--        "data-disabled:pointer-events-none": true,-->
         <button
           class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           data-cy="submit"
@@ -49,10 +41,7 @@ import {
 import { useDraftStore } from "../../stores/draft";
 import { z } from "zod";
 import { useDraftSidebarStore } from "../../stores/draftSidebar";
-import {
-  NotificationType,
-  useNotificationStore,
-} from "../../stores/notification";
+import { useNotificationStore } from "../../stores/notification";
 
 const props = defineProps<{
   type: DataFieldType;
@@ -76,34 +65,40 @@ const formSchemaFromType = (
     [GranularityLevel.MODEL]: "Produktmodellebene",
     [GranularityLevel.ITEM]: "Artikelebene",
   };
+  const dataFieldFormkitSchema = [];
 
   switch (type) {
-    case DataFieldType.TEXT_FIELD: {
-      return [
-        {
-          $formkit: "text",
-          name: "name",
-          label: "Name des Textfeldes",
-          "data-cy": "name",
-        },
-        !existingGranularityLevel
-          ? {
-              $formkit: "select",
-              name: "granularityLevel",
-              label: "Granularitätsebene",
-              options: granularityOptions,
-              "data-cy": "select-granularity-level",
-            }
-          : undefined,
-      ].filter((d) => d !== undefined);
-    }
-
+    case DataFieldType.TEXT_FIELD:
+      dataFieldFormkitSchema.push({
+        $formkit: "text",
+        name: "name",
+        label: "Name des Textfeldes",
+        "data-cy": "name",
+      });
+      break;
+    case DataFieldType.PRODUCT_PASSPORT_LINK:
+      dataFieldFormkitSchema.push({
+        $formkit: "text",
+        name: "name",
+        label: "Name der Produktpass Verlinkung",
+        "data-cy": "name",
+      });
+      break;
     default:
       console.warn(
         `[DataFieldForm] Unsupported node type: ${type}, using generic form. Please implement a form schema for this type.`,
       );
-      return [];
   }
+  if (!existingGranularityLevel) {
+    dataFieldFormkitSchema.push({
+      $formkit: "select",
+      name: "granularityLevel",
+      label: "Granularitätsebene",
+      options: granularityOptions,
+      "data-cy": "select-granularity-level",
+    });
+  }
+  return dataFieldFormkitSchema;
 };
 
 watch(
@@ -156,9 +151,8 @@ const onSubmit = async () => {
     });
   } else {
     const notificationStore = useNotificationStore();
-    notificationStore.addNotification(
+    notificationStore.addErrorNotification(
       "Datenfeld konnte nicht hinzugefügt werden.",
-      NotificationType.ERROR,
     );
   }
 
