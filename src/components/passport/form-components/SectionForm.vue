@@ -2,7 +2,7 @@
   <FormKit v-model="formData" :actions="false" type="form" @submit="onSubmit">
     <FormKitSchema
       v-if="formSchema"
-      :library="{ TextField, FakeField }"
+      :library="{ TextField, FakeField, NumericField }"
       :schema="formSchema"
     />
     <FormKit label="Speichern" type="submit" />
@@ -15,6 +15,7 @@ import { ref, watch } from "vue";
 import TextField from "./TextField.vue";
 import FakeField from "./FakeField.vue";
 import { usePassportFormStore } from "../../../stores/passport.form";
+import NumericField from "./NumericField.vue";
 
 const props = defineProps<{
   section: SectionDto;

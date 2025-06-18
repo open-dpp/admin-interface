@@ -30,6 +30,7 @@ interface FormKitSchemaObject {
 function dataValueId(sectionId: string, dataFieldId: string, row: number) {
   return [sectionId, dataFieldId, row].join(".");
 }
+
 function dataValueIdFromDataValue(dataValue: DataValueDto) {
   return dataValueId(
     dataValue.dataSectionId,
@@ -152,6 +153,7 @@ export const usePassportFormStore = defineStore("passport.form", () => {
             dataCy: dataValueId(section.id, dataField.id, row),
             placeholder: getValueForOtherGranularityLevel(),
             label: dataField!.name,
+            options: dataField.options,
           },
         });
       }
@@ -169,6 +171,7 @@ export const usePassportFormStore = defineStore("passport.form", () => {
             label: dataField!.name,
             validation: "required",
             className: generateClassesForLayout(dataField.layout),
+            options: dataField.options,
           },
         });
       }

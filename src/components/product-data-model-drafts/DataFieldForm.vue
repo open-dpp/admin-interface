@@ -86,7 +86,17 @@ const formSchemaFromType = (
           label: "Name des Textfeldes",
           "data-cy": "name",
         },
-      ];
+        !existingGranularityLevel
+          ? {
+              $formkit: "select",
+              name: "granularityLevel",
+              label: "Granularitätsebene",
+              options: granularityOptions,
+              "data-cy": "select-granularity-level",
+            }
+          : undefined,
+      ].filter((d) => d !== undefined);
+    }
     case DataFieldType.NUMERIC_FIELD:
       return [
         {
@@ -107,7 +117,6 @@ const formSchemaFromType = (
           label: "Maximum",
           "data-cy": "max",
         },
-      ];
         !existingGranularityLevel
           ? {
               $formkit: "select",
@@ -118,7 +127,6 @@ const formSchemaFromType = (
             }
           : undefined,
       ].filter((d) => d !== undefined);
-    }
 
     default:
       console.warn(
@@ -145,7 +153,12 @@ watch(
     }
     if (newId && newType === DataFieldType.NUMERIC_FIELD) {
       dataFieldToModify.value = draftStore.findDataField(newId);
-      formData.value = { name: dataFieldToModify.value?.name };
+      formData.value = {
+        name: dataFieldToModify.value?.name,
+        granularityLevel: dataFieldToModify.value?.granularityLevel,
+        min: dataFieldToModify.value?.options?.min,
+        max: dataFieldToModify.value?.options?.max,
+      };
     }
   },
   { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
@@ -159,19 +172,30 @@ const onDelete = async () => {
 };
 
 const onSubmit = async () => {
+  let options: Record<string, unknown> | undefined;
+  if (props.type === DataFieldType.NUMERIC_FIELD) {
+    options = {
+      min: formData.value.min,
+      max: formData.value.max,
+    };
+  }
+  console.log(JSON.stringify(formData.value));
   const data = z
     .object({
       name: z.string(),
       granularityLevel: z.nativeEnum(GranularityLevel),
+      options: z.any().optional(),
     })
     .parse({
-      granularityLevel: props.parentGranularityLevel,
-      ...formData.value,
+      granularityLevel: formData.value.granularityLevel,
+      name: formData.value.name,
+      options: options,
     });
   if (dataFieldToModify.value) {
     await draftStore.modifyDataField(dataFieldToModify.value.id, {
       name: data.name,
       layout: dataFieldToModify.value.layout,
+      options: data.options ?? undefined,
     });
   } else if (props.parentId) {
     await draftStore.addDataField(props.parentId, {
@@ -179,6 +203,7 @@ const onSubmit = async () => {
       name: data.name,
       layout: props.layout,
       granularityLevel: data.granularityLevel,
+      options: data.options ?? undefined,
     });
   } else {
     const notificationStore = useNotificationStore();
