@@ -187,7 +187,10 @@ const onSubmit = async () => {
       options: z.any().optional(),
     })
     .parse({
-      granularityLevel: formData.value.granularityLevel,
+      granularityLevel:
+        formData.value.granularityLevel ||
+        dataFieldToModify.value?.granularityLevel ||
+        props.parentGranularityLevel,
       name: formData.value.name,
       options: options,
     });
