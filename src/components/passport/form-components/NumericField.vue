@@ -2,8 +2,8 @@
   <div :class="props.className">
     <FormKit
       :data-cy="props.id"
-      :max="(computedOptions?.max as number) || undefined"
-      :min="(computedOptions?.min as number) || undefined"
+      :max="(computedOptions?.max as number) ?? undefined"
+      :min="(computedOptions?.min as number) ?? undefined"
       inner-class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300"
       number
       type="number"
