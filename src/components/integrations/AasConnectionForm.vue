@@ -7,14 +7,14 @@
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { useIntegrationFormStore } from "../../stores/integration.form";
+import { useAasConnectionFormStore } from "../../stores/aas.connection.form";
 
-const integrationStore = useIntegrationFormStore();
+const integrationStore = useAasConnectionFormStore();
 const formData = ref<Record<string, unknown>>({});
 const formSchema = ref();
 
 watch(
-  () => integrationStore.aasMapping?.fieldMappings, // The store property to watch
+  () => integrationStore.aasConnection?.fieldAssignments, // The store property to watch
   () => {
     formSchema.value = integrationStore.getFormSchema();
     formData.value = integrationStore.getFormData();

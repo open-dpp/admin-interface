@@ -48,7 +48,7 @@ export const MODEL_QRCODE: RouteRecordRaw = {
   },
 };
 
-export const ORGANIZATION_MODEL_PARENT: RouteRecordRaw = {
+const MODEL_PARENT: RouteRecordRaw = {
   path: ":modelId",
   children: [MODEL, MODEL_QRCODE, ITEMS_PARENT],
 };
@@ -85,5 +85,5 @@ export const MODEL_CREATE: RouteRecordRaw = {
 
 export const ORGANIZATION_MODELS_PARENT: RouteRecordRaw = {
   path: "models",
-  children: [MODEL_LIST, MODEL_CREATE, ORGANIZATION_MODEL_PARENT],
+  children: [MODEL_LIST, MODEL_CREATE, MODEL_PARENT],
 };

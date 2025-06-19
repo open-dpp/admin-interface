@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div>
     <ListHeader
       title="Modellpässe"
       description="Alle Pässe auf der Produktmodellebene. Ein Produktmodell ist zum Beispiel das Galaxy S22 Ultra."
