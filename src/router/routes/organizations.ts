@@ -10,12 +10,12 @@ const organizationListBreadCrumbs = (to: RouteLocationNormalizedGeneric) => [
 ];
 
 export const organizationBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
-  ...organizationListBreadCrumbs(to),
+  /* ...organizationListBreadCrumbs(to),
   {
     name: to.params.organizationId + "" || "Organisation",
     route: ORGANIZATION,
     params: to.params,
-  },
+  }, */
 ];
 
 export const ORGANIZATION_LIST: RouteRecordRaw = {

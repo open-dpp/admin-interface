@@ -40,8 +40,8 @@
                 >
                   <button
                     class="-m-2.5 p-2.5"
-                    type="button"
                     data-cy="closeSidebar"
+                    type="button"
                     @click="sidebarOpen = false"
                   >
                     <span class="sr-only">Close sidebar</span>
@@ -51,11 +51,11 @@
               </TransitionChild>
               <!-- Sidebar component, swap this element with another sidebar if you like -->
               <div
-                data-cy="sidebar"
                 class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4"
+                data-cy="sidebar"
               >
                 <div class="flex h-16 shrink-0 items-center">
-                  <img :src="logo" alt="GJ Logo" class="h-8 w-auto" />
+                  <img :src="logo" alt="open-dpp GmbH" class="h-8 w-auto" />
                 </div>
                 <nav class="flex flex-1 flex-col">
                   <ul class="flex flex-1 flex-col gap-y-7" role="list">
@@ -140,7 +140,12 @@
         class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4"
       >
         <div class="flex h-16 shrink-0 items-center">
-          <img :src="logo" alt="GJ Logo" class="h-8 w-auto" />
+          <img
+            :src="logo"
+            alt="open-dpp GmbH"
+            class="h-8 w-auto hover:cursor-pointer"
+            @click="router.push('/')"
+          />
         </div>
         <nav class="flex flex-1 flex-col">
           <ul class="flex flex-1 flex-col gap-y-7" role="list">
@@ -217,8 +222,8 @@
       >
         <button
           class="-m-2.5 p-2.5 text-gray-700 lg:hidden"
-          type="button"
           data-cy="openSidebar"
+          type="button"
           @click="sidebarOpen = true"
         >
           <span class="sr-only">Open sidebar</span>
@@ -317,7 +322,7 @@ import {
   XMarkIcon,
 } from "@heroicons/vue/24/outline";
 import logo from "../../assets/logo-with-text.svg";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import Breadcrumbs from "../Breadcrumbs.vue";
 import { useIndexStore } from "../../stores";
 import SelectOrganization from "../organizations/SelectOrganization.vue";
@@ -328,6 +333,8 @@ import { ChartBarIcon, LinkIcon } from "@heroicons/vue/16/solid";
 import { useProfileStore } from "../../stores/profile";
 
 const route = useRoute();
+const router = useRouter();
+
 const indexStore = useIndexStore();
 const layoutStore = useLayoutStore();
 const profileStore = useProfileStore();

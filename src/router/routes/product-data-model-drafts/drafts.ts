@@ -1,6 +1,7 @@
 import { RouteLocationNormalizedGeneric, RouteRecordRaw } from "vue-router";
 import { useLayoutStore } from "../../../stores/layout";
 import { organizationBreadcrumbs } from "../organizations";
+import { useDraftStore } from "../../../stores/draft";
 
 const draftListBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
   ...organizationBreadcrumbs(to),
@@ -11,23 +12,32 @@ const draftListBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
   },
 ];
 
-export const draftBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
-  ...draftListBreadcrumbs(to),
-  {
-    name: to.params.draftId + "" || "Datenmodellentwurf",
-    route: DRAFT,
-    params: to.params,
-  },
-];
+export const draftBreadcrumbs = async (to: RouteLocationNormalizedGeneric) => {
+  const draftId = String(to.params.draftId);
+  const draftStore = useDraftStore();
+  let draftName = draftStore.draft?.name;
+  if (draftName === undefined) {
+    await draftStore.fetchDraft(draftId);
+    draftName = draftStore.draft?.name;
+  }
+  return [
+    ...draftListBreadcrumbs(to),
+    {
+      name: draftName || draftId || "Datenmodellentwurf",
+      route: DRAFT,
+      params: to.params,
+    },
+  ];
+};
 
 export const DRAFT: RouteRecordRaw = {
   path: "",
   name: "Draft",
   component: () =>
     import("../../../view/product-data-model-drafts/DraftView.vue"),
-  beforeEnter: (to: RouteLocationNormalizedGeneric) => {
+  beforeEnter: async (to: RouteLocationNormalizedGeneric) => {
     const layoutStore = useLayoutStore();
-    layoutStore.breadcrumbs = draftBreadcrumbs(to);
+    layoutStore.breadcrumbs = await draftBreadcrumbs(to);
   },
 };
 

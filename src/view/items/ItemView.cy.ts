@@ -203,6 +203,14 @@ describe("<ItemView />", () => {
         body: item, // Mock response
       },
     ).as("updateData");
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/models/${modelId}`,
+      {
+        statusCode: 200,
+        body: { id: modelId },
+      },
+    );
 
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);

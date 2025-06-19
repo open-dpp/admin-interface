@@ -2,9 +2,9 @@ import ItemListView from "./ItemListView.vue";
 import { createMemoryHistory, createRouter } from "vue-router";
 
 import { API_URL } from "../../const";
-import Item from "../../types/Item";
 import { routes } from "../../router";
 import { useIndexStore } from "../../stores";
+import { ItemDto } from "@open-dpp/api-client";
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -34,6 +34,14 @@ describe("<ItemListView />", () => {
         body: data, // Mock response
       },
     ).as("createData");
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/models/${modelId}`,
+      {
+        statusCode: 200,
+        body: { id: modelId },
+      },
+    );
 
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);
@@ -50,7 +58,7 @@ describe("<ItemListView />", () => {
   });
 
   it("should fetch empty items on render and create first item", async () => {
-    const data: Item[] = [];
+    const data: ItemDto[] = [];
     const modelId = "someId";
     const orgaId = "orgaId";
     cy.intercept(

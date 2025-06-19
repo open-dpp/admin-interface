@@ -1,5 +1,5 @@
 <template>
-  <div v-if="draftStore.draft" class="flex flex-col gap-4">
+  <div v-if="draftStore.draft" class="flex flex-col gap-4 pt-5">
     <div class="flex-1 flex flex-col gap-4 transition-all duration-300">
       <div
         class="flex px-4 py-6 sm:px-6 justify-between items-center bg-white shadow-sm sm:rounded-lg"
@@ -32,9 +32,9 @@
         class="grid grid-cols-1 overflow-hidden bg-white shadow sm:rounded-lg w-full"
       >
         <SectionHeader
+          :disabled="false"
           :is-draft-view="true"
           :section="section"
-          :disabled="false"
         />
         <div class="p-4">
           <SectionDraft :section="section" />
