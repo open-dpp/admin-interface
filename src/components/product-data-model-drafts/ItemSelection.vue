@@ -61,6 +61,7 @@ import {
   SidebarContentType,
   useDraftSidebarStore,
 } from "../../stores/draftSidebar";
+import { LinkIcon } from "@heroicons/vue/16/solid";
 
 const selectedType = ref<string>(SectionType.GROUP);
 
@@ -108,6 +109,14 @@ const dataFields: SelectOption[] = [
     icon: ArrowPathIcon,
     background: "bg-pink-500",
     type: DataFieldType.TEXT_FIELD,
+    sidebarType: SidebarContentType.DATA_FIELD_FORM,
+  },
+  {
+    title: "Produktpass Verlinkung",
+    description: "Fügen Sie eine Verlinkung zu einem Produktpass hinzu",
+    icon: LinkIcon,
+    background: "bg-green-500",
+    type: DataFieldType.PRODUCT_PASSPORT_LINK,
     sidebarType: SidebarContentType.DATA_FIELD_FORM,
   },
   {

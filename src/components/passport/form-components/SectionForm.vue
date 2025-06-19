@@ -2,7 +2,12 @@
   <FormKit v-model="formData" :actions="false" type="form" @submit="onSubmit">
     <FormKitSchema
       v-if="formSchema"
-      :library="{ TextField, FakeField, NumericField }"
+      :library="{
+        TextField,
+        ProductPassportLink,
+        FakeField,
+        NumericField,
+      }"
       :schema="formSchema"
     />
     <FormKit label="Speichern" type="submit" />
@@ -14,6 +19,7 @@ import { SectionDto, SectionType } from "@open-dpp/api-client";
 import { ref, watch } from "vue";
 import TextField from "./TextField.vue";
 import FakeField from "./FakeField.vue";
+import ProductPassportLink from "./ProductPassportLink.vue";
 import { usePassportFormStore } from "../../../stores/passport.form";
 import NumericField from "./NumericField.vue";
 

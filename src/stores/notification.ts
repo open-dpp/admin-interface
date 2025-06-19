@@ -38,12 +38,39 @@ export const useNotificationStore = defineStore("notification", () => {
     }, duration);
   };
 
+  const addSuccessNotification = (
+    message: string,
+    actionLink?: ActionLink,
+    duration: number = 6000,
+  ) => addNotification(message, NotificationType.SUCCESS, actionLink, duration);
+
+  const addErrorNotification = (
+    message: string,
+    actionLink?: ActionLink,
+    duration: number = 6000,
+  ) => addNotification(message, NotificationType.ERROR, actionLink, duration);
+
+  const addInfoNotification = (
+    message: string,
+    actionLink?: ActionLink,
+    duration: number = 6000,
+  ) => addNotification(message, NotificationType.INFO, actionLink, duration);
+
+  const addWarningNotification = (
+    message: string,
+    actionLink?: ActionLink,
+    duration: number = 6000,
+  ) => addNotification(message, NotificationType.WARNING, actionLink, duration);
+
   const removeNotification = (id: string) => {
     notifications.value = notifications.value.filter((n) => n.id !== id);
   };
   return {
     notifications,
     removeNotification,
-    addNotification,
+    addErrorNotification,
+    addSuccessNotification,
+    addInfoNotification,
+    addWarningNotification,
   };
 });
