@@ -6,6 +6,7 @@
         TextField,
         ProductPassportLink,
         FakeField,
+        NumericField,
       }"
       :schema="formSchema"
     />
@@ -20,6 +21,7 @@ import TextField from "./TextField.vue";
 import FakeField from "./FakeField.vue";
 import ProductPassportLink from "./ProductPassportLink.vue";
 import { usePassportFormStore } from "../../../stores/passport.form";
+import NumericField from "./NumericField.vue";
 
 const props = defineProps<{
   section: SectionDto;

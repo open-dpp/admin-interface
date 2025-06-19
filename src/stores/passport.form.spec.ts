@@ -366,6 +366,7 @@ describe("PassportFormStore", () => {
         label: dataFieldS111F1.name,
         validation: "required",
         className: "sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1",
+        options: {},
       },
     };
     const fieldS111F2Exp = {
@@ -376,6 +377,7 @@ describe("PassportFormStore", () => {
         label: dataFieldS111F2.name,
         validation: "required",
         className: "sm:col-span-1 sm:col-start-2 sm:row-span-1 sm:row-start-1",
+        options: {},
       },
     };
 
@@ -387,6 +389,7 @@ describe("PassportFormStore", () => {
         label: dataFieldS1F1.name,
         validation: "required",
         className: "sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1",
+        options: {},
       },
     };
 
@@ -546,6 +549,7 @@ describe("PassportFormStore", () => {
               id: "s1.f1.0",
               label: "Amount",
               name: "s1.f1.0",
+              options: {},
               validation: "required",
             },
           },
@@ -556,6 +560,7 @@ describe("PassportFormStore", () => {
                 "sm:col-span-1 sm:col-start-2 sm:row-span-1 sm:row-start-1",
               dataCy: "s1.f2.0",
               label: "PCF",
+              options: {},
               placeholder: "Wird auf Artikelebene gesetzt",
             },
           },
@@ -652,6 +657,7 @@ describe("PassportFormStore", () => {
                 "sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1",
               dataCy: "s1.f1.0",
               label: "Amount",
+              options: {},
               placeholder: "Wird auf Modelebene gesetzt",
             },
           },
@@ -662,8 +668,9 @@ describe("PassportFormStore", () => {
                 "sm:col-span-1 sm:col-start-2 sm:row-span-1 sm:row-start-1",
               id: "s1.f2.0",
               label: "PCF",
-              validation: "required",
               name: "s1.f2.0",
+              options: {},
+              validation: "required",
             },
           },
         ],

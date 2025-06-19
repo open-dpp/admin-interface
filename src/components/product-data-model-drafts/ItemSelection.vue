@@ -1,7 +1,7 @@
 <template>
   <ul
-    role="list"
     class="flex flex-col gap-6 border-b border-t border-gray-200 p-6"
+    role="list"
   >
     <li
       v-for="(item, itemIdx) in itemsToSelect"
@@ -23,14 +23,14 @@
         >
           <component
             :is="item.icon"
-            class="size-6 text-white"
             aria-hidden="true"
+            class="size-6 text-white"
           />
         </div>
         <div>
           <h3 class="text-sm font-medium text-gray-900">
-            <a href="#" class="focus:outline-none">
-              <span class="absolute inset-0" aria-hidden="true" />
+            <a class="focus:outline-none" href="#">
+              <span aria-hidden="true" class="absolute inset-0" />
               <span>{{ item.title }}</span>
               <span aria-hidden="true"> &rarr;</span>
             </a>
@@ -42,7 +42,7 @@
   </ul>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {
   type FunctionalComponent,
   type HTMLAttributes,
@@ -56,7 +56,11 @@ import {
   LayoutDto,
   SectionType,
 } from "@open-dpp/api-client";
-import { ArrowPathIcon, TableCellsIcon } from "@heroicons/vue/24/outline";
+import {
+  ArrowPathIcon,
+  ChartBarSquareIcon,
+  TableCellsIcon,
+} from "@heroicons/vue/24/outline";
 import {
   SidebarContentType,
   useDraftSidebarStore,
@@ -117,6 +121,14 @@ const dataFields: SelectOption[] = [
     icon: LinkIcon,
     background: "bg-green-500",
     type: DataFieldType.PRODUCT_PASSPORT_LINK,
+    sidebarType: SidebarContentType.DATA_FIELD_FORM,
+  },
+  {
+    title: "Numerisches Feld",
+    description: "Fügen Sie ein numerisches Feld hinzu",
+    icon: ChartBarSquareIcon,
+    background: "bg-teal-500",
+    type: DataFieldType.NUMERIC_FIELD,
     sidebarType: SidebarContentType.DATA_FIELD_FORM,
   },
 ];

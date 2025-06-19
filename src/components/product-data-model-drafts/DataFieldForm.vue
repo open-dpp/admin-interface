@@ -84,6 +84,26 @@ const formSchemaFromType = (
         "data-cy": "name",
       });
       break;
+    case DataFieldType.NUMERIC_FIELD:
+      dataFieldFormkitSchema.push({
+        $formkit: "text",
+        name: "name",
+        label: "Name des numerischen Feldes",
+        "data-cy": "name",
+      });
+      dataFieldFormkitSchema.push({
+        $formkit: "number",
+        name: "min",
+        label: "Minimum",
+        "data-cy": "min",
+      });
+      dataFieldFormkitSchema.push({
+        $formkit: "number",
+        name: "max",
+        label: "Maximum",
+        "data-cy": "max",
+      });
+      break;
     default:
       console.warn(
         `[DataFieldForm] Unsupported node type: ${type}, using generic form. Please implement a form schema for this type.`,
@@ -111,10 +131,19 @@ watch(
     );
     if (dataField) {
       dataFieldToModify.value = dataField;
-      formData.value = {
-        name: dataFieldToModify.value.name,
-        granularityLevel: dataFieldToModify.value.granularityLevel,
-      };
+      if (dataField.type === DataFieldType.NUMERIC_FIELD) {
+        formData.value = {
+          name: dataField.name,
+          granularityLevel: dataField.granularityLevel,
+          min: dataField.options?.min,
+          max: dataField.options?.max,
+        };
+      } else {
+        formData.value = {
+          name: dataFieldToModify.value.name,
+          granularityLevel: dataFieldToModify.value.granularityLevel,
+        };
+      }
     }
   },
   { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
@@ -128,19 +157,32 @@ const onDelete = async () => {
 };
 
 const onSubmit = async () => {
+  let options: Record<string, unknown> | undefined;
+  if (props.type === DataFieldType.NUMERIC_FIELD) {
+    options = {
+      min: Number(formData.value.min),
+      max: Number(formData.value.max),
+    };
+  }
   const data = z
     .object({
       name: z.string(),
       granularityLevel: z.nativeEnum(GranularityLevel),
+      options: z.any().optional(),
     })
     .parse({
-      granularityLevel: props.parentGranularityLevel,
-      ...formData.value,
+      granularityLevel:
+        formData.value.granularityLevel ||
+        dataFieldToModify.value?.granularityLevel ||
+        props.parentGranularityLevel,
+      name: formData.value.name,
+      options: options,
     });
   if (dataFieldToModify.value) {
     await draftStore.modifyDataField(dataFieldToModify.value.id, {
       name: data.name,
       layout: dataFieldToModify.value.layout,
+      options: data.options ?? undefined,
     });
   } else if (props.parentId) {
     await draftStore.addDataField(props.parentId, {
@@ -148,6 +190,7 @@ const onSubmit = async () => {
       name: data.name,
       layout: props.layout,
       granularityLevel: data.granularityLevel,
+      options: data.options ?? undefined,
     });
   } else {
     const notificationStore = useNotificationStore();
