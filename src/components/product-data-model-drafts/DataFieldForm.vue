@@ -106,12 +106,12 @@ const formSchemaFromType = (
         },
         !existingGranularityLevel
           ? {
-            $formkit: "select",
-            name: "granularityLevel",
-            label: "Granularitätsebene",
-            options: granularityOptions,
-            "data-cy": "select-granularity-level",
-          }
+              $formkit: "select",
+              name: "granularityLevel",
+              label: "Granularitätsebene",
+              options: granularityOptions,
+              "data-cy": "select-granularity-level",
+            }
           : undefined,
       ].filter((d) => d !== undefined);
     default:
