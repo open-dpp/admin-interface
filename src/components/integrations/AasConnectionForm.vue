@@ -9,22 +9,24 @@
 import { ref, watch } from "vue";
 import { useAasConnectionFormStore } from "../../stores/aas.connection.form";
 
-const integrationStore = useAasConnectionFormStore();
-const formData = ref<Record<string, unknown>>({});
+const aasConnectionFormStore = useAasConnectionFormStore();
+const formData = ref<Record<string, string>>({});
 const formSchema = ref();
 
 watch(
-  () => integrationStore.aasConnection?.fieldAssignments, // The store property to watch
+  () => aasConnectionFormStore.aasConnection?.id, // The store property to watch
   () => {
-    formSchema.value = integrationStore.getFormSchema();
-    formData.value = integrationStore.getFormData();
-    // formData.value = passportFormStore.getFormData(
-    //   props.section.id,
-    //   formData.value,
-    // );
+    formSchema.value = aasConnectionFormStore.getFormSchema();
+    formData.value = aasConnectionFormStore.getFormData();
   },
-  { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
+  { immediate: true },
 );
 
-const onSubmit = async () => {};
+const onSubmit = async () => {
+  if (formData.value) {
+    await aasConnectionFormStore.modifyConnection({
+      fieldAssignments: formData.value,
+    });
+  }
+};
 </script>

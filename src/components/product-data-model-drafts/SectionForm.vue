@@ -22,7 +22,7 @@ import {
   GranularityLevel,
 } from "@open-dpp/api-client";
 import { useDraftStore } from "../../stores/draft";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { useDraftSidebarStore } from "../../stores/draftSidebar";
 
 const props = defineProps<{

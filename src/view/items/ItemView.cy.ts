@@ -20,7 +20,7 @@ const router = createRouter({
 });
 
 describe("<ItemView />", () => {
-  it("renders model form and modify its data", () => {
+  it("renders model form and modify its data", async () => {
     const dataField1: DataFieldDto = {
       id: "f1",
       type: DataFieldType.TEXT_FIELD,

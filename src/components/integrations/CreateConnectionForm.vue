@@ -38,7 +38,7 @@ import { useNotificationStore } from "../../stores/notification";
 import { AssetAdministrationShellType } from "@open-dpp/api-client";
 import { useRouter } from "vue-router";
 import { useIndexStore } from "../../stores";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const modelsStore = useModelsStore();
 const aasConnectionStore = useAasConnectionStore();
@@ -69,7 +69,7 @@ const create = async (formFields: unknown) => {
     .object({
       name: z.string(),
       modelId: z.string(),
-      aasType: z.nativeEnum(AssetAdministrationShellType),
+      aasType: z.enum(AssetAdministrationShellType),
     })
     .parse(formFields);
   const model = modelsStore.models.find((m) => m.id === fields.modelId);

@@ -32,7 +32,7 @@
     "uuid": "^11.1.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0",
-    "zod": "^3.24.3"
+    "zod": "^3.25.55"
   },
   "devDependencies": {
     "@cypress/vue": "^6.0.2",

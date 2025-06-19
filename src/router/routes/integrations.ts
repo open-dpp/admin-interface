@@ -12,11 +12,22 @@ export const integrationBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
   },
 ];
 
-const aasConnectionsBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
+const aasConnectionListBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
   ...integrationBreadcrumbs(to),
   {
     name: "Proalpha",
-    route: AAS_CONNECTIONS,
+    route: AAS_CONNECTION_LIST,
+    params: to.params,
+  },
+];
+
+export const aasConnectionBreadcrumbs = (
+  to: RouteLocationNormalizedGeneric,
+) => [
+  ...aasConnectionListBreadcrumbs(to),
+  {
+    name: to.params.connectionId + "" || "Verbindung",
+    route: AAS_CONNECTION,
     params: to.params,
   },
 ];
@@ -31,13 +42,23 @@ export const INTEGRATIONS: RouteRecordRaw = {
   },
 };
 
-export const AAS_CONNECTIONS: RouteRecordRaw = {
+export const AAS_CONNECTION_LIST: RouteRecordRaw = {
   path: "",
   name: "Verbindungen",
   component: () => import("../../view/integrations/ConnectionListView.vue"),
   beforeEnter: (to: RouteLocationNormalizedGeneric) => {
     const layoutStore = useLayoutStore();
-    layoutStore.breadcrumbs = aasConnectionsBreadcrumbs(to);
+    layoutStore.breadcrumbs = aasConnectionListBreadcrumbs(to);
+  },
+};
+
+export const AAS_CONNECTION: RouteRecordRaw = {
+  path: ":connectionId",
+  name: "Verbindung",
+  component: () => import("../../view/integrations/ConnectionView.vue"),
+  beforeEnter: (to: RouteLocationNormalizedGeneric) => {
+    const layoutStore = useLayoutStore();
+    layoutStore.breadcrumbs = aasConnectionBreadcrumbs(to);
   },
 };
 
@@ -48,7 +69,7 @@ export const AAS_CONNECTION_CREATE: RouteRecordRaw = {
   beforeEnter: (to: RouteLocationNormalizedGeneric) => {
     const layoutStore = useLayoutStore();
     layoutStore.breadcrumbs = [
-      ...aasConnectionsBreadcrumbs(to),
+      ...aasConnectionListBreadcrumbs(to),
       {
         name: "Erstellen",
         route: AAS_CONNECTION_CREATE,
@@ -60,7 +81,7 @@ export const AAS_CONNECTION_CREATE: RouteRecordRaw = {
 
 const PRO_ALPHA_INTEGRATION_PARENT: RouteRecordRaw = {
   path: `${PRO_ALPHA_INTEGRATION_ID}/connections`,
-  children: [AAS_CONNECTIONS, AAS_CONNECTION_CREATE],
+  children: [AAS_CONNECTION_LIST, AAS_CONNECTION_CREATE, AAS_CONNECTION],
 };
 
 export const ORGANIZATION_INTEGRATIONS_PARENT: RouteRecordRaw = {
