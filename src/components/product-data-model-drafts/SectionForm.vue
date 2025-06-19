@@ -13,13 +13,13 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { ref, watch } from "vue";
 import {
+  GranularityLevel,
   LayoutDto,
   SectionDto,
   SectionType,
-  GranularityLevel,
 } from "@open-dpp/api-client";
 import { useDraftStore } from "../../stores/draft";
 import { z } from "zod/v4";
