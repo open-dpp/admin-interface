@@ -3,7 +3,7 @@
     title="Verbindungen"
     description="Alle Ihre Verbindungen"
     creation-label="Verbindung erstellen"
-    :creation-link="`/organizations/${indexStore.selectedOrganization}/integration/${PRO_ALPHA_INTEGRATION_ID}/connections/create`"
+    :creation-link="`/organizations/${indexStore.selectedOrganization}/integrations/${PRO_ALPHA_INTEGRATION_ID}/connections/create`"
   />
   <SimpleTable :headers="['ID', 'Name']" :rows="rows" :row-actions="actions" />
 </template>
@@ -12,11 +12,11 @@
 import ListHeader from "../../components/lists/ListHeader.vue";
 import SimpleTable from "../../components/lists/SimpleTable.vue";
 import { computed, onMounted } from "vue";
-import { useAasIntegrationStore } from "../../stores/aas.integration";
+import { useAasConnectionStore } from "../../stores/aas.connection";
 import { useIndexStore } from "../../stores";
 import { PRO_ALPHA_INTEGRATION_ID } from "../../const";
 
-const aasIntegrationStore = useAasIntegrationStore();
+const aasIntegrationStore = useAasConnectionStore();
 const indexStore = useIndexStore();
 const rows = computed(() => {
   return aasIntegrationStore.aasConnections.map((c) => ({
@@ -29,7 +29,7 @@ const actions = [
   {
     name: "Editieren",
     actionLinkBuilder: (row: Record<string, string>) =>
-      `/organizations/${indexStore.selectedOrganization}/integration/pro-alpha/connections/${row.id}`,
+      `/organizations/${indexStore.selectedOrganization}/integrations/pro-alpha/connections/${row.id}`,
   },
 ];
 

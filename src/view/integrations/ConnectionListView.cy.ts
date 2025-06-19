@@ -56,13 +56,13 @@ describe("<ConnectionListView />", () => {
       row.within(() => cy.contains("Editieren").click());
       cy.get("@pushSpy").should(
         "have.been.calledWith",
-        `/organizations/${orgaId}/integration/pro-alpha/connections/${d.id}`,
+        `/organizations/${orgaId}/integrations/pro-alpha/connections/${d.id}`,
       );
     });
     cy.contains("Verbindung erstellen").click();
     cy.get("@pushSpy").should(
       "have.been.calledWith",
-      `/organizations/${orgaId}/integration/pro-alpha/connections/create`,
+      `/organizations/${orgaId}/integrations/pro-alpha/connections/create`,
     );
   });
 
@@ -83,7 +83,7 @@ describe("<ConnectionListView />", () => {
     cy.spy(router, "push").as("pushSpy");
     cy.wrap(
       router.push(
-        `/organizations/${orgaId}/integration/${PRO_ALPHA_INTEGRATION_ID}`,
+        `/organizations/${orgaId}/integrations/${PRO_ALPHA_INTEGRATION_ID}`,
       ),
     );
     cy.mountWithPinia(ConnectionListView, { router });
@@ -92,7 +92,7 @@ describe("<ConnectionListView />", () => {
     cy.contains("Neue Verbindung hinzufügen").click();
     cy.get("@pushSpy").should(
       "have.been.calledWith",
-      `/organizations/${orgaId}/integration/pro-alpha/connections/create`,
+      `/organizations/${orgaId}/integrations/pro-alpha/connections/create`,
     );
   });
 });

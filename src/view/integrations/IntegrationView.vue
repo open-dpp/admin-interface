@@ -32,7 +32,7 @@ const actions = [
   {
     name: "Editieren",
     actionLinkBuilder: (row: Record<string, string>) =>
-      `/organizations/${indexStore.selectedOrganization}/integrations/${row.id}`,
+      `/organizations/${indexStore.selectedOrganization}/integrations/${row.id}/connections`,
   },
 ];
 </script>

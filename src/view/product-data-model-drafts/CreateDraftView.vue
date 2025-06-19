@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div class="flex flex-col gap-3 p-3">
     <div class="sm:flex sm:items-center">
       <div class="sm:flex-auto">
         <h1 class="text-base font-semibold text-gray-900">
@@ -10,7 +10,7 @@
         </p>
       </div>
     </div>
-    <div class="mt-8 flow-root">
+    <div>
       <CreateDraftForm @submit="onSubmit" />
     </div>
   </div>

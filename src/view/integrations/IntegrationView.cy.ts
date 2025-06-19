@@ -22,7 +22,7 @@ describe("<IntegrationView />", () => {
     cy.spy(router, "push").as("pushSpy");
     cy.get("@pushSpy").should(
       "have.been.calledWith",
-      `/organizations/${orgaId}/integrations/pro-alpha`,
+      `/organizations/${orgaId}/integrations/pro-alpha/connections`,
     );
   });
 });
