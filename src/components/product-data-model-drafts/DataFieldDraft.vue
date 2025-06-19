@@ -2,7 +2,10 @@
   <div :class="[generateClassesForLayout(dataField.layout)]">
     <input
       @mousedown.prevent="onClicked"
-      v-if="props.dataField.type === DataFieldType.TEXT_FIELD"
+      v-if="
+        props.dataField.type === DataFieldType.TEXT_FIELD ||
+        props.dataField.type === DataFieldType.PRODUCT_PASSPORT_LINK
+      "
       readonly
       class="block w-full cursor-pointer select-none rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
       :placeholder="dataField.name"

@@ -38,7 +38,7 @@ describe("<ModelView />", () => {
     };
     const dataField2: DataFieldDto = {
       id: "f2",
-      type: DataFieldType.TEXT_FIELD,
+      type: DataFieldType.PRODUCT_PASSPORT_LINK,
       name: "Neuer Title 2",
       options: {
         min: 2,
@@ -143,12 +143,15 @@ describe("<ModelView />", () => {
       ownedByOrganizationId: "ownedByOrganizationId",
       sections: [section1, section2, section3],
     };
+
+    const uuid = "uuid1";
+
     const model = {
       id: "someId",
       name: "My model",
       dataValues: [
         { value: "val1", dataFieldId: "f1", dataSectionId: "s1", row: 0 },
-        { value: "val2", dataFieldId: "f2", dataSectionId: "s1", row: 0 },
+        { value: uuid, dataFieldId: "f2", dataSectionId: "s1", row: 0 },
       ],
       productDataModelId: productDataModel.id,
     };
@@ -164,7 +167,7 @@ describe("<ModelView />", () => {
           row: 0,
         },
         {
-          value: "otherVal2",
+          value: uuid,
           dataFieldId: "f2",
           dataSectionId: "s1",
           row: 0,
@@ -205,10 +208,27 @@ describe("<ModelView />", () => {
       },
     ).as("updateData");
 
+    const refernceMock = {
+      id: "ref1",
+      modelId: "modelId",
+      organizationId: orgaId,
+      granularityLevel: GranularityLevel.ITEM,
+    };
+
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/unique-product-identifiers/${uuid}/reference`,
+      {
+        statusCode: 200,
+        body: refernceMock, // Mock response
+      },
+    ).as("getUniqueProductIdentifierReference");
+
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);
 
     cy.mountWithPinia(ModelView, { router });
+
     cy.wrap(router.push(`/organizations/${orgaId}/models/${model.id}`));
 
     cy.wait("@getModel").its("response.statusCode").should("eq", 200);
@@ -221,7 +241,7 @@ describe("<ModelView />", () => {
       cy.contains("Speichern").should("not.exist");
     });
     cy.get('[data-cy="s1.f1.0"]').should("have.value", "val1");
-    cy.get('[data-cy="s1.f2.0"]').should("have.value", "val2");
+    cy.get('[data-cy="s1.f2.0"]').should("have.value", uuid);
     cy.get('[data-cy="s1.f3.0"]').should(
       "contain.text",
       "Wird auf Artikelebene gesetzt",
@@ -237,7 +257,7 @@ describe("<ModelView />", () => {
           value: "val1add1",
           row: 0,
         },
-        { dataSectionId: "s1", dataFieldId: "f2", value: "val2add2", row: 0 },
+        { dataSectionId: "s1", dataFieldId: "f2", value: "uuid1add2", row: 0 },
       ]);
       expect(interceptor.response?.statusCode).to.equal(200);
       cy.wrap(
@@ -248,7 +268,16 @@ describe("<ModelView />", () => {
           .its("response.statusCode")
           .should("eq", 200);
         cy.get('[data-cy="s1.f1.0"]').should("have.value", "otherVal1");
-        cy.get('[data-cy="s1.f2.0"]').should("have.value", "otherVal2");
+        cy.get('[data-cy="s1.f2.0"]').should("have.value", uuid);
+        cy.spy(router, "push").as("pushSpy");
+        cy.get('[data-cy="Visit s1.f2.0"]').click();
+        cy.wait("@getUniqueProductIdentifierReference")
+          .its("response.statusCode")
+          .should("eq", 200);
+        cy.get("@pushSpy").should(
+          "have.been.calledWith",
+          `/organizations/${orgaId}/models/${refernceMock.modelId}/items/${refernceMock.id}`,
+        );
       });
     });
   });

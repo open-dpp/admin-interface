@@ -153,89 +153,105 @@ describe("<DraftView />", () => {
     cy.contains(`Abschnitt`).should("not.be.visible");
   });
 
-  it("renders draft and creates a data field", () => {
-    const orgaId = "orgaId";
+  interface TestCase {
+    type: DataFieldType;
+    textToSelect: string;
+  }
 
-    const dataFieldToCreate: DataFieldDto = {
-      id: "dCreate1",
-      type: DataFieldType.TEXT_FIELD,
-      name: "Processor",
-      options: {},
-      layout: {
-        colStart: { sm: 2 },
-        rowStart: { sm: 1 },
-        colSpan: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
-      granularityLevel: GranularityLevel.ITEM,
-    };
-
-    cy.intercept(
-      "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+  Cypress._.forEach<TestCase>(
+    [
+      { type: DataFieldType.TEXT_FIELD, textToSelect: "Textfeld" },
       {
-        statusCode: 200,
-        body: draft,
+        type: DataFieldType.PRODUCT_PASSPORT_LINK,
+        textToSelect: "Produktpass Verlinkung",
       },
-    ).as("getDraft");
+    ],
+    ({ type, textToSelect }) => {
+      it(`renders draft and creates a data field of type ${type}`, () => {
+        const orgaId = "orgaId";
 
-    cy.intercept(
-      "POST",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}/data-fields`,
-      {
-        statusCode: 200,
-        body: {
-          ...draft,
-          sections: [
-            {
-              ...section,
-              dataFields: [...section.dataFields, dataFieldToCreate],
+        const dataFieldToCreate: DataFieldDto = {
+          id: "dCreate1",
+          type: type,
+          name: "Processor",
+          options: {},
+          layout: {
+            colStart: { sm: 2 },
+            rowStart: { sm: 1 },
+            colSpan: { sm: 1 },
+            rowSpan: { sm: 1 },
+          },
+          granularityLevel: GranularityLevel.ITEM,
+        };
+
+        cy.intercept(
+          "GET",
+          `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+          {
+            statusCode: 200,
+            body: draft,
+          },
+        ).as("getDraft");
+
+        cy.intercept(
+          "POST",
+          `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}/data-fields`,
+          {
+            statusCode: 200,
+            body: {
+              ...draft,
+              sections: [
+                {
+                  ...section,
+                  dataFields: [...section.dataFields, dataFieldToCreate],
+                },
+                repeatableSection,
+              ],
+            }, // Mock response
+          },
+        ).as("createDataField");
+
+        const indexStore = useIndexStore();
+        indexStore.selectOrganization(orgaId);
+
+        cy.wrap(
+          router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+        );
+        cy.mountWithPinia(DraftView, { router });
+
+        cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+
+        // add data field
+        cy.get(`[data-cy="${section.id}-1"]`).click();
+        cy.contains("li", textToSelect).click();
+        cy.get('[data-cy="name"]').type(dataFieldToCreate.name);
+        cy.get('[data-cy="select-granularity-level"]').select(
+          dataFieldToCreate.granularityLevel,
+        );
+
+        cy.get('[data-cy="submit"]').click();
+
+        cy.wait("@createDataField").then(({ request }) => {
+          const expected = {
+            name: dataFieldToCreate.name,
+            type: type,
+            layout: {
+              colSpan: { sm: 1 },
+              colStart: { sm: 3 },
+              rowStart: { sm: 1 },
+              rowSpan: { sm: 1 },
             },
-            repeatableSection,
-          ],
-        }, // Mock response
-      },
-    ).as("createDataField");
+            granularityLevel: GranularityLevel.ITEM,
+          };
+          cy.expectDeepEqualWithDiff(request.body, expected);
+        });
 
-    const indexStore = useIndexStore();
-    indexStore.selectOrganization(orgaId);
-
-    cy.wrap(
-      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
-    );
-    cy.mountWithPinia(DraftView, { router });
-
-    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-
-    // add data field
-    cy.get(`[data-cy="${section.id}-1"]`).click();
-    cy.contains("li", "Textfeld").click();
-    cy.get('[data-cy="name"]').type(dataFieldToCreate.name);
-    cy.get('[data-cy="select-granularity-level"]').select(
-      dataFieldToCreate.granularityLevel,
-    );
-
-    cy.get('[data-cy="submit"]').click();
-
-    cy.wait("@createDataField").then(({ request }) => {
-      const expected = {
-        name: dataFieldToCreate.name,
-        type: DataFieldType.TEXT_FIELD,
-        layout: {
-          colSpan: { sm: 1 },
-          colStart: { sm: 3 },
-          rowStart: { sm: 1 },
-          rowSpan: { sm: 1 },
-        },
-        granularityLevel: GranularityLevel.ITEM,
-      };
-      cy.expectDeepEqualWithDiff(request.body, expected);
-    });
-
-    cy.get(`[data-cy="${dataFieldToCreate.id}"]`)
-      .find("input")
-      .should("have.attr", "placeholder", dataFieldToCreate.name);
-  });
+        cy.get(`[data-cy="${dataFieldToCreate.id}"]`)
+          .find("input")
+          .should("have.attr", "placeholder", dataFieldToCreate.name);
+      });
+    },
+  );
 
   it("creates a sub section and data field of repeatable", () => {
     const orgaId = "orgaId";

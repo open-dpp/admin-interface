@@ -29,10 +29,20 @@
 import { usePassportFormStore } from "../../stores/passport.form";
 import SectionForm from "./form-components/SectionForm.vue";
 import SectionHeader from "../SectionHeader.vue";
+import { useNotificationStore } from "../../stores/notification";
+import { logError } from "../logging/logging";
 
 const passportFormStore = usePassportFormStore();
+const notificationStore = useNotificationStore();
 
 const onSubmit = async (dataValues: { id: string; value: unknown }[]) => {
-  await passportFormStore.updateDataValues(dataValues);
+  try {
+    await passportFormStore.updateDataValues(dataValues);
+    notificationStore.addSuccessNotification("Daten erfolgreich gespeichert");
+  } catch (e) {
+    const message = "Daten konnten nicht gespeichert werden";
+    notificationStore.addErrorNotification(message);
+    logError(message, e);
+  }
 };
 </script>
