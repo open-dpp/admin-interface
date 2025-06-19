@@ -56,7 +56,11 @@ import {
   LayoutDto,
   SectionType,
 } from "@open-dpp/api-client";
-import { ArrowPathIcon, TableCellsIcon } from "@heroicons/vue/24/outline";
+import {
+  ArrowPathIcon,
+  ChartBarSquareIcon,
+  TableCellsIcon,
+} from "@heroicons/vue/24/outline";
 import {
   SidebarContentType,
   useDraftSidebarStore,
@@ -122,7 +126,7 @@ const dataFields: SelectOption[] = [
   {
     title: "Numerisches Feld",
     description: "Fügen Sie ein numerisches Feld hinzu",
-    icon: ArrowPathIcon,
+    icon: ChartBarSquareIcon,
     background: "bg-teal-500",
     type: DataFieldType.NUMERIC_FIELD,
     sidebarType: SidebarContentType.DATA_FIELD_FORM,

@@ -85,35 +85,25 @@ const formSchemaFromType = (
       });
       break;
     case DataFieldType.NUMERIC_FIELD:
-      return [
-        {
-          $formkit: "text",
-          name: "name",
-          label: "Name des numerischen Feldes",
-          "data-cy": "name",
-        },
-        {
-          $formkit: "number",
-          name: "min",
-          label: "Minimum",
-          "data-cy": "min",
-        },
-        {
-          $formkit: "number",
-          name: "max",
-          label: "Maximum",
-          "data-cy": "max",
-        },
-        !existingGranularityLevel
-          ? {
-              $formkit: "select",
-              name: "granularityLevel",
-              label: "Granularitätsebene",
-              options: granularityOptions,
-              "data-cy": "select-granularity-level",
-            }
-          : undefined,
-      ].filter((d) => d !== undefined);
+      dataFieldFormkitSchema.push({
+        $formkit: "text",
+        name: "name",
+        label: "Name des numerischen Feldes",
+        "data-cy": "name",
+      });
+      dataFieldFormkitSchema.push({
+        $formkit: "number",
+        name: "min",
+        label: "Minimum",
+        "data-cy": "min",
+      });
+      dataFieldFormkitSchema.push({
+        $formkit: "number",
+        name: "max",
+        label: "Maximum",
+        "data-cy": "max",
+      });
+      break;
     default:
       console.warn(
         `[DataFieldForm] Unsupported node type: ${type}, using generic form. Please implement a form schema for this type.`,
@@ -141,19 +131,19 @@ watch(
     );
     if (dataField) {
       dataFieldToModify.value = dataField;
-      formData.value = {
-        name: dataFieldToModify.value.name,
-        granularityLevel: dataFieldToModify.value.granularityLevel,
-      };
-    }
-    if (newId && newType === DataFieldType.NUMERIC_FIELD) {
-      dataFieldToModify.value = draftStore.findDataField(newId);
-      formData.value = {
-        name: dataFieldToModify.value?.name,
-        granularityLevel: dataFieldToModify.value?.granularityLevel,
-        min: dataFieldToModify.value?.options?.min,
-        max: dataFieldToModify.value?.options?.max,
-      };
+      if (dataField.type === DataFieldType.NUMERIC_FIELD) {
+        formData.value = {
+          name: dataField.name,
+          granularityLevel: dataField.granularityLevel,
+          min: dataField.options?.min,
+          max: dataField.options?.max,
+        };
+      } else {
+        formData.value = {
+          name: dataFieldToModify.value.name,
+          granularityLevel: dataFieldToModify.value.granularityLevel,
+        };
+      }
     }
   },
   { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
