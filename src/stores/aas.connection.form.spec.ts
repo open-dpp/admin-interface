@@ -274,7 +274,6 @@ describe("IntegrationFormStore", () => {
       $formkit: "select",
       label: "Feld aus der Asset Administration Shell",
       placeholder: "Wählen Sie ein Feld aus der Asset Administration Shell",
-
       name: `aas-${0}`,
       options: selectOptionsAas,
       "data-cy": "aas-select-0",
@@ -286,6 +285,12 @@ describe("IntegrationFormStore", () => {
       name: `dpp-${0}`,
       options: selectOptionsDpp,
       "data-cy": "dpp-select-0",
+    },
+    {
+      $el: "div",
+      attrs: {
+        class: "w-full border-t border-gray-300 m-2",
+      },
     },
     {
       $formkit: "select",
@@ -398,6 +403,12 @@ describe("IntegrationFormStore", () => {
 
     expect(integrationFormStore.formSchema).toEqual([
       ...expectedFormSchema,
+      {
+        $el: "div",
+        attrs: {
+          class: "w-full border-t border-gray-300 m-2",
+        },
+      },
       {
         $formkit: "select",
         label: "Feld aus der Asset Administration Shell",

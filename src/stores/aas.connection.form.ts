@@ -72,6 +72,15 @@ export const useAasConnectionFormStore = defineStore(
       }[]
     >([]);
 
+    const horizontalLine = () => {
+      return {
+        $el: "div",
+        attrs: {
+          class: "w-full border-t border-gray-300 m-2",
+        },
+      };
+    };
+
     const newFieldAssignementRow = (index: number) => {
       return [
         {
@@ -94,13 +103,16 @@ export const useAasConnectionFormStore = defineStore(
     };
 
     const initializeFormSchema = () => {
-      formSchema.value = aasConnection.value?.fieldAssignments
-        .map((_, index) => {
+      if (aasConnection.value) {
+        formSchema.value = [];
+        for (const [index] of aasConnection.value.fieldAssignments.entries()) {
           lastRowIndex.value = index;
-          return newFieldAssignementRow(index);
-        })
-        .flat();
-      return formSchema.value;
+          formSchema.value.push(...newFieldAssignementRow(index));
+          if (index !== aasConnection.value.fieldAssignments.length - 1) {
+            formSchema.value.push(horizontalLine());
+          }
+        }
+      }
     };
 
     const initializeFormData = () => {
@@ -123,6 +135,7 @@ export const useAasConnectionFormStore = defineStore(
 
     const addFieldAssignmentRow = () => {
       const newIndex = lastRowIndex.value + 1;
+      formSchema.value.push(horizontalLine());
       formSchema.value.push(...newFieldAssignementRow(newIndex));
       lastRowIndex.value = newIndex;
       return formSchema.value;
@@ -164,22 +177,22 @@ export const useAasConnectionFormStore = defineStore(
       }
     };
 
-    const switchModel = async (modelId: string) => {
-      const model = (await apiClient.models.getModelById(modelId)).data;
-      if (aasConnection.value && model.productDataModelId) {
-        aasConnection.value.modelId = model.id;
-        aasConnection.value.dataModelId = model.productDataModelId;
-        await apiClient.aasIntegration.modifyConnection(
-          aasConnection.value.id,
-          {
-            name: aasConnection.value.name,
-            modelId: aasConnection.value.modelId,
-            fieldAssignments: aasConnection.value.fieldAssignments,
-          },
-        );
-        await updateProductDataModelOptions();
-      }
-    };
+    // const switchModel = async (modelId: string) => {
+    //   const model = (await apiClient.models.getModelById(modelId)).data;
+    //   if (aasConnection.value && model.productDataModelId) {
+    //     aasConnection.value.modelId = model.id;
+    //     aasConnection.value.dataModelId = model.productDataModelId;
+    //     await apiClient.aasIntegration.modifyConnection(
+    //       aasConnection.value.id,
+    //       {
+    //         name: aasConnection.value.name,
+    //         modelId: aasConnection.value.modelId,
+    //         fieldAssignments: aasConnection.value.fieldAssignments,
+    //       },
+    //     );
+    //     await updateProductDataModelOptions();
+    //   }
+    // };
 
     const updateProductDataModelOptions = async () => {
       if (aasConnection.value) {
@@ -244,7 +257,6 @@ export const useAasConnectionFormStore = defineStore(
       addFieldAssignmentRow,
       formData,
       formSchema,
-      switchModel,
     };
   },
 );

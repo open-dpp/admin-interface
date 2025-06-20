@@ -21,7 +21,7 @@ const router = createRouter({
 });
 
 describe("<ConnectionView />", () => {
-  it("renders drafts and creates a new one", () => {
+  it("renders connection and modifies it", () => {
     const dataFieldId1 = "f1";
     const dataFieldId2 = "f2";
     const sectionId1 = "s1";
@@ -245,6 +245,11 @@ describe("<ConnectionView />", () => {
       cy.get('[data-cy="dpp-select-1"]').should("have.value", "s2/f2");
       cy.get('[data-cy="dpp-select-0"]').select("s0/f0");
       cy.get('[data-cy="dpp-select-1"]').select("s2/f3");
+
+      cy.contains("button", "Feldverknüpfung hinzufügen").click();
+      cy.get('[data-cy="aas-select-2"]').select("p1/i1");
+      cy.get('[data-cy="dpp-select-2"]').select("s1/f1");
+
       cy.contains("button", "Speichern").click();
       cy.wait("@modifyConnection").then(({ request }) => {
         const expected = {
@@ -260,6 +265,12 @@ describe("<ConnectionView />", () => {
             {
               dataFieldId: "f3",
               sectionId: "s2",
+              idShortParent: "p1",
+              idShort: "i1",
+            },
+            {
+              dataFieldId: "f1",
+              sectionId: "s1",
               idShortParent: "p1",
               idShort: "i1",
             },
