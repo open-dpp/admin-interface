@@ -9,15 +9,6 @@ const organizationListBreadCrumbs = (to: RouteLocationNormalizedGeneric) => [
   { name: "Organisationen", route: ORGANIZATION_LIST, params: to.params },
 ];
 
-export const organizationBreadcrumbs = () => [
-  /* ...organizationListBreadCrumbs(to),
-  {
-    name: to.params.organizationId + "" || "Organisation",
-    route: ORGANIZATION,
-    params: to.params,
-  }, */
-];
-
 export const ORGANIZATION_LIST: RouteRecordRaw = {
   path: "",
   name: "Organizations",
@@ -45,10 +36,6 @@ export const ORGANIZATION: RouteRecordRaw = {
   name: "Organization",
   props: true,
   component: () => import("../../view/organizations/OrganizationView.vue"),
-  beforeEnter: () => {
-    const layoutStore = useLayoutStore();
-    layoutStore.breadcrumbs = organizationBreadcrumbs();
-  },
 };
 
 export const ORGANIZATION_MEMBERS: RouteRecordRaw = {
@@ -60,7 +47,6 @@ export const ORGANIZATION_MEMBERS: RouteRecordRaw = {
   beforeEnter: (to: RouteLocationNormalizedGeneric) => {
     const layoutStore = useLayoutStore();
     layoutStore.breadcrumbs = [
-      ...organizationBreadcrumbs(),
       {
         name: "Mitglieder",
         route: ORGANIZATION_MEMBERS,

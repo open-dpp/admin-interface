@@ -1,10 +1,8 @@
 import { RouteLocationNormalizedGeneric, RouteRecordRaw } from "vue-router";
 import { useLayoutStore } from "../../../stores/layout";
-import { organizationBreadcrumbs } from "../organizations";
 import { useDraftStore } from "../../../stores/draft";
 
 const draftListBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
-  ...organizationBreadcrumbs(),
   {
     name: "Produktpass Designs",
     route: DRAFT_LIST,
