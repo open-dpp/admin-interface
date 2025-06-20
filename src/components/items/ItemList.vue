@@ -1,29 +1,34 @@
 <template>
   <div>
     <ListHeader
-      title="Artikelpässe"
-      description="Alle Pässe auf Einzelartikelebene."
-      @add="emits('add')"
       creation-label="Artikelpass hinzufügen"
+      description="Alle Pässe auf Einzelartikelebene."
+      title="Artikelpässe"
+      @add="emits('add')"
     />
-    <SimpleTable :headers="['ID']" :rows="rows" :row-actions="actions" />
+    <SimpleTable
+      :headers="['ID']"
+      :ignore-row-keys="['id']"
+      :row-actions="actions"
+      :rows="rows"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { computed } from "vue";
-import Item from "../../types/Item";
 import { useIndexStore } from "../../stores";
 import { useRoute } from "vue-router";
 import ListHeader from "../lists/ListHeader.vue";
 import SimpleTable from "../lists/SimpleTable.vue";
+import { ItemDto } from "@open-dpp/api-client";
 
 const indexStore = useIndexStore();
 
 const route = useRoute();
 
 const props = defineProps<{
-  items: Item[];
+  items: ItemDto[];
 }>();
 
 const emits = defineEmits<{
@@ -31,7 +36,10 @@ const emits = defineEmits<{
 }>();
 
 const rows = computed(() => {
-  return props.items.map((i) => ({ id: i.id }));
+  return props.items.map((i) => ({
+    id: i.id,
+    uuid: i.uniqueProductIdentifiers[0].uuid,
+  }));
 });
 
 const actions = [

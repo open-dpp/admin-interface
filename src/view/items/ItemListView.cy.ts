@@ -2,9 +2,9 @@ import ItemListView from "./ItemListView.vue";
 import { createMemoryHistory, createRouter } from "vue-router";
 
 import { API_URL } from "../../const";
-import Item from "../../types/Item";
 import { routes } from "../../router";
 import { useIndexStore } from "../../stores";
+import { ItemDto, ModelDto } from "@open-dpp/api-client";
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -14,9 +14,35 @@ const router = createRouter({
 describe("<ItemListView />", () => {
   it("renders items and creates a new one", () => {
     // see: https://on.cypress.io/mounting-vue
-    const data = [{ id: "i1" }];
+    const data: Array<ItemDto> = [
+      {
+        id: "i1",
+        dataValues: [],
+        uniqueProductIdentifiers: [
+          {
+            uuid: "uuid",
+            referenceId: "refId",
+          },
+        ],
+        productDataModelId: "",
+      },
+    ];
     const modelId = "someId";
     const orgaId = "orgaId";
+    const modelDto: ModelDto = {
+      id: modelId,
+      productDataModelId: "",
+      name: "Test Model",
+      dataValues: [],
+      uniqueProductIdentifiers: [
+        {
+          uuid: "uuid",
+          referenceId: "refId",
+        },
+      ],
+      owner: "",
+      description: "Description",
+    };
     cy.intercept(
       "GET",
       `${API_URL}/organizations/${orgaId}/models/${modelId}/items`,
@@ -34,6 +60,14 @@ describe("<ItemListView />", () => {
         body: data, // Mock response
       },
     ).as("createData");
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/models/${modelId}`,
+      {
+        statusCode: 200,
+        body: modelDto,
+      },
+    );
 
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);
@@ -50,7 +84,7 @@ describe("<ItemListView />", () => {
   });
 
   it("should fetch empty items on render and create first item", async () => {
-    const data: Item[] = [];
+    const data: ItemDto[] = [];
     const modelId = "someId";
     const orgaId = "orgaId";
     cy.intercept(

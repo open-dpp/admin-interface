@@ -33,14 +33,14 @@
 <script lang="ts" setup>
 import { useRoute } from "vue-router";
 import { onMounted, ref } from "vue";
-import Item from "../../types/Item";
 import ItemList from "../../components/items/ItemList.vue";
 import apiClient from "../../lib/api-client";
+import { ItemDto } from "@open-dpp/api-client";
 
 const route = useRoute();
 const buttonLabel = "Neuen Artikelpass hinzufügen";
 
-const items = ref<Item[]>([]);
+const items = ref<ItemDto[]>([]);
 
 const fetchItems = async () => {
   const response = await apiClient.items.getItems(String(route.params.modelId));

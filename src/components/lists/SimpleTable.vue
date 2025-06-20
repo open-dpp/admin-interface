@@ -21,7 +21,12 @@
         <td
           v-for="(key, colIndex) in rowKeys"
           :key="colIndex"
+          :class="{
+            'hover:cursor-pointer hover:text-indigo-600':
+              key === 'uuid' || key === 'id',
+          }"
           class="whitespace-nowrap py-4 text-sm text-gray-500"
+          @click="copyIdentifierToClipboard(key, row[key])"
         >
           {{ row[key] }}
         </td>
@@ -42,8 +47,11 @@
   </table>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import { computed } from "vue";
+import { useNotificationStore } from "../../stores/notification";
+
+const notificationStore = useNotificationStore();
 
 const props = defineProps<{
   headers: string[];
@@ -66,4 +74,15 @@ const rowKeys = computed(() => {
       )
     : [];
 });
+
+const copyIdentifierToClipboard = (key: string, text: string) => {
+  if (key === "uuid" || key === "id") {
+    navigator.clipboard.writeText(text);
+    notificationStore.addSuccessNotification(
+      "In die Zwischenablage kopiert.",
+      undefined,
+      1000,
+    );
+  }
+};
 </script>

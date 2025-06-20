@@ -2,8 +2,8 @@ import { RouteLocationNormalizedGeneric, RouteRecordRaw } from "vue-router";
 import { useLayoutStore } from "../../../stores/layout";
 import { modelBreadcrumbs } from "./models";
 
-const itemListBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
-  ...modelBreadcrumbs(to),
+const itemListBreadcrumbs = async (to: RouteLocationNormalizedGeneric) => [
+  ...(await modelBreadcrumbs(to)),
   {
     name: "Artikelpässe",
     route: ITEM_LIST,
@@ -15,9 +15,9 @@ export const ITEM_LIST: RouteRecordRaw = {
   path: "",
   name: "OrganizationModelsItems",
   component: () => import("../../../view/items/ItemListView.vue"),
-  beforeEnter: (to: RouteLocationNormalizedGeneric) => {
+  beforeEnter: async (to: RouteLocationNormalizedGeneric) => {
     const layoutStore = useLayoutStore();
-    layoutStore.breadcrumbs = itemListBreadcrumbs(to);
+    layoutStore.breadcrumbs = await itemListBreadcrumbs(to);
   },
 };
 
@@ -25,9 +25,9 @@ export const ITEM: RouteRecordRaw = {
   path: "",
   name: "Item",
   component: () => import("../../../view/items/ItemView.vue"),
-  beforeEnter: (to: RouteLocationNormalizedGeneric) => {
+  beforeEnter: async (to: RouteLocationNormalizedGeneric) => {
     const layoutStore = useLayoutStore();
-    layoutStore.breadcrumbs = itemListBreadcrumbs(to);
+    layoutStore.breadcrumbs = await itemListBreadcrumbs(to);
   },
 };
 
@@ -35,10 +35,10 @@ export const ITEM_QRCODE: RouteRecordRaw = {
   path: "qr-code",
   name: "ItemQrCode",
   component: () => import("../../../view/items/ItemQrCode.vue"),
-  beforeEnter: (to: RouteLocationNormalizedGeneric) => {
+  beforeEnter: async (to: RouteLocationNormalizedGeneric) => {
     const layoutStore = useLayoutStore();
     layoutStore.breadcrumbs = [
-      ...itemListBreadcrumbs(to),
+      ...(await itemListBreadcrumbs(to)),
       {
         name: "Artikel",
         route: ITEM_QRCODE,
