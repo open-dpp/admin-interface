@@ -10,7 +10,7 @@ import {
   ProductDataModelDto,
   SectionDto,
   SectionType,
-  VisibilityLevel
+  VisibilityLevel,
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 import ItemView from "./ItemView.vue";
