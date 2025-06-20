@@ -46,6 +46,7 @@ export const useAasConnectionFormStore = defineStore(
   () => {
     const formData = ref<Record<string, string>>({});
     const formSchema = ref();
+
     const granularityLevel = GranularityLevel.ITEM;
     const fetchInFlight = ref<boolean>(false);
     const lastRowIndex = ref<number>(0);
@@ -81,25 +82,55 @@ export const useAasConnectionFormStore = defineStore(
       };
     };
 
-    const newFieldAssignementRow = (index: number) => {
-      return [
-        {
-          $formkit: "select",
-          label: `Feld aus der Asset Administration Shell`,
-          name: aasFieldId(index),
-          placeholder: "Wählen Sie ein Feld aus der Asset Administration Shell",
-          options: aasProperties.value,
-          "data-cy": `aas-select-${index}`,
+    const newFieldAssignmentRow = (index: number) => {
+      return {
+        $el: "div",
+        attrs: {
+          class: "flex flex-col md:flex-row justify-around gap-2 items-center",
         },
-        {
-          $formkit: "select",
-          label: `Feld aus dem Produktdatenmodell`,
-          placeholder: "Wählen Sie ein Feld aus dem Produktdatenmodell", // Add this line
-          name: dppFieldId(index),
-          options: productDataModelOptions.value,
-          "data-cy": `dpp-select-${index}`,
-        },
-      ];
+        children: [
+          {
+            $el: "div",
+            attrs: {
+              class: "flex",
+            },
+            children: [
+              {
+                $formkit: "select",
+                label: `Feld aus der Asset Administration Shell`,
+                name: aasFieldId(index),
+                placeholder:
+                  "Wählen Sie ein Feld aus der Asset Administration Shell",
+                options: aasProperties.value,
+                "data-cy": `aas-select-${index}`,
+              },
+            ],
+          },
+          {
+            $el: "div",
+            children: "ist verknüpft mit",
+            attrs: {
+              class: "flex",
+            },
+          },
+          {
+            $el: "div",
+            attrs: {
+              class: "flex",
+            },
+            children: [
+              {
+                $formkit: "select",
+                label: `Feld aus dem Produktdatenmodell`,
+                placeholder: "Wählen Sie ein Feld aus dem Produktdatenmodell", // Add this line
+                name: dppFieldId(index),
+                options: productDataModelOptions.value,
+                "data-cy": `dpp-select-${index}`,
+              },
+            ],
+          },
+        ],
+      };
     };
 
     const initializeFormSchema = () => {
@@ -107,7 +138,7 @@ export const useAasConnectionFormStore = defineStore(
         formSchema.value = [];
         for (const [index] of aasConnection.value.fieldAssignments.entries()) {
           lastRowIndex.value = index;
-          formSchema.value.push(...newFieldAssignementRow(index));
+          formSchema.value.push(newFieldAssignmentRow(index));
           if (index !== aasConnection.value.fieldAssignments.length - 1) {
             formSchema.value.push(horizontalLine());
           }
@@ -135,8 +166,10 @@ export const useAasConnectionFormStore = defineStore(
 
     const addFieldAssignmentRow = () => {
       const newIndex = lastRowIndex.value + 1;
-      formSchema.value.push(horizontalLine());
-      formSchema.value.push(...newFieldAssignementRow(newIndex));
+      if (lastRowIndex.value > 0) {
+        formSchema.value.push(horizontalLine());
+      }
+      formSchema.value.push(newFieldAssignmentRow(newIndex));
       lastRowIndex.value = newIndex;
       return formSchema.value;
     };

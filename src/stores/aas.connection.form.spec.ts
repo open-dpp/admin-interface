@@ -269,47 +269,109 @@ describe("IntegrationFormStore", () => {
     },
   ];
 
+  const rowDiv = {
+    $el: "div",
+    attrs: {
+      class: "flex flex-col md:flex-row justify-around gap-2 items-center",
+    },
+    children: [],
+  };
+
+  const horizontalLine = {
+    $el: "div",
+    attrs: {
+      class: "w-full border-t border-gray-300 m-2",
+    },
+  };
+
+  const connectedMsgDiv = {
+    $el: "div",
+    attrs: {
+      class: "flex",
+    },
+    children: "ist verknüpft mit",
+  };
+
+  const flexDivStart = {
+    $el: "div",
+    attrs: {
+      class: "flex",
+    },
+  };
+
+  const placeHolderAas =
+    "Wählen Sie ein Feld aus der Asset Administration Shell";
+  const placeHolderDpp = "Wählen Sie ein Feld aus dem Produktdatenmodell";
+  const labelAas = "Feld aus der Asset Administration Shell";
+  const labelDpp = "Feld aus dem Produktdatenmodell";
+
   const expectedFormSchema = [
     {
-      $formkit: "select",
-      label: "Feld aus der Asset Administration Shell",
-      placeholder: "Wählen Sie ein Feld aus der Asset Administration Shell",
-      name: `aas-${0}`,
-      options: selectOptionsAas,
-      "data-cy": "aas-select-0",
+      ...rowDiv,
+      children: [
+        {
+          ...flexDivStart,
+          children: [
+            {
+              $formkit: "select",
+              label: labelAas,
+              placeholder: placeHolderAas,
+              name: `aas-${0}`,
+              options: selectOptionsAas,
+              "data-cy": "aas-select-0",
+            },
+          ],
+        },
+        connectedMsgDiv,
+        {
+          ...flexDivStart,
+          children: [
+            {
+              $formkit: "select",
+              label: labelDpp,
+              placeholder: placeHolderDpp,
+              name: `dpp-${0}`,
+              options: selectOptionsDpp,
+              "data-cy": "dpp-select-0",
+            },
+          ],
+        },
+      ],
     },
+    horizontalLine,
     {
-      $formkit: "select",
-      label: "Feld aus dem Produktdatenmodell",
-      placeholder: "Wählen Sie ein Feld aus dem Produktdatenmodell",
-      name: `dpp-${0}`,
-      options: selectOptionsDpp,
-      "data-cy": "dpp-select-0",
-    },
-    {
-      $el: "div",
-      attrs: {
-        class: "w-full border-t border-gray-300 m-2",
-      },
-    },
-    {
-      $formkit: "select",
-      label: "Feld aus der Asset Administration Shell",
-      placeholder: "Wählen Sie ein Feld aus der Asset Administration Shell",
-      name: `aas-${1}`,
-      options: selectOptionsAas,
-      "data-cy": "aas-select-1",
-    },
-    {
-      $formkit: "select",
-      label: "Feld aus dem Produktdatenmodell",
-      placeholder: "Wählen Sie ein Feld aus dem Produktdatenmodell",
-      name: `dpp-${1}`,
-      options: selectOptionsDpp,
-      "data-cy": "dpp-select-1",
+      ...rowDiv,
+      children: [
+        {
+          ...flexDivStart,
+          children: [
+            {
+              $formkit: "select",
+              label: labelAas,
+              placeholder: placeHolderAas,
+              name: `aas-${1}`,
+              options: selectOptionsAas,
+              "data-cy": "aas-select-1",
+            },
+          ],
+        },
+        connectedMsgDiv,
+        {
+          ...flexDivStart,
+          children: [
+            {
+              $formkit: "select",
+              label: labelDpp,
+              placeholder: placeHolderDpp,
+              name: `dpp-${1}`,
+              options: selectOptionsDpp,
+              "data-cy": "dpp-select-1",
+            },
+          ],
+        },
+      ],
     },
   ];
-
   it("should getFormSchema and getFormData", async () => {
     const integrationFormStore = useAasConnectionFormStore();
 
@@ -403,27 +465,38 @@ describe("IntegrationFormStore", () => {
 
     expect(integrationFormStore.formSchema).toEqual([
       ...expectedFormSchema,
+      horizontalLine,
       {
-        $el: "div",
-        attrs: {
-          class: "w-full border-t border-gray-300 m-2",
-        },
-      },
-      {
-        $formkit: "select",
-        label: "Feld aus der Asset Administration Shell",
-        name: `aas-${2}`,
-        placeholder: "Wählen Sie ein Feld aus der Asset Administration Shell", // Add this line
-        options: selectOptionsAas,
-        "data-cy": "aas-select-2",
-      },
-      {
-        $formkit: "select",
-        label: "Feld aus dem Produktdatenmodell",
-        name: `dpp-${2}`,
-        placeholder: "Wählen Sie ein Feld aus dem Produktdatenmodell", // Add this line
-        options: selectOptionsDpp,
-        "data-cy": "dpp-select-2",
+        ...rowDiv,
+        children: [
+          {
+            ...flexDivStart,
+            children: [
+              {
+                $formkit: "select",
+                label: labelAas,
+                name: `aas-${2}`,
+                placeholder: placeHolderAas,
+                options: selectOptionsAas,
+                "data-cy": "aas-select-2",
+              },
+            ],
+          },
+          connectedMsgDiv,
+          {
+            ...flexDivStart,
+            children: [
+              {
+                $formkit: "select",
+                label: labelDpp,
+                name: `dpp-${2}`,
+                placeholder: placeHolderDpp,
+                options: selectOptionsDpp,
+                "data-cy": "dpp-select-2",
+              },
+            ],
+          },
+        ],
       },
     ]);
 
