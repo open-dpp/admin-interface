@@ -240,7 +240,7 @@ describe("<ModelView />", () => {
       cy.contains("Wird auf Artikelebene gesetzt").should("be.visible");
       cy.contains("Speichern").should("not.exist");
     });
-    cy.get('[data-cy="s1.f1.0"]').should("have.value", "otherVal1");
+    cy.get('[data-cy="s1.f1.0"]').should("have.value", "val1");
     cy.get('[data-cy="s1.f2.0"]').should("have.value", uuid);
     cy.get('[data-cy="s1.f3.0"]').should(
       "contain.text",

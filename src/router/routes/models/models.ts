@@ -20,9 +20,6 @@ export const modelBreadcrumbs = async (to: RouteLocationNormalizedGeneric) => {
     const foundModel = modelStore.models.find((m) => m.id === modelId);
     if (foundModel) {
       modelName = foundModel.name;
-    } else {
-      const model = await modelStore.getModelById(modelId);
-      modelName = model?.name;
     }
     return [
       ...modelListBreadcrumbs(to),

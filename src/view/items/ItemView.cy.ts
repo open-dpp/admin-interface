@@ -6,10 +6,11 @@ import {
   DataFieldDto,
   DataFieldType,
   GranularityLevel,
+  ItemDto,
   ProductDataModelDto,
   SectionDto,
   SectionType,
-  VisibilityLevel,
+  VisibilityLevel
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 import ItemView from "./ItemView.vue";
@@ -152,7 +153,7 @@ describe("<ItemView />", () => {
       productDataModelId: productDataModel.id,
     };
 
-    const otherItem = {
+    const otherItem: ItemDto = {
       id: "otherId",
       dataValues: [
         {
@@ -169,6 +170,12 @@ describe("<ItemView />", () => {
         },
       ],
       productDataModelId: productDataModel.id,
+      uniqueProductIdentifiers: [
+        {
+          uuid: "uuid",
+          referenceId: "ref1",
+        },
+      ],
     };
 
     const orgaId = "orga1";
