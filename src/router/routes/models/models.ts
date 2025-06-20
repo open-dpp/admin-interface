@@ -1,10 +1,10 @@
 import { RouteLocationNormalizedGeneric, RouteRecordRaw } from "vue-router";
 import { useLayoutStore } from "../../../stores/layout";
 import { ITEMS_PARENT } from "./items";
-import { organizationBreadcrumbs } from "../organizations";
+import { useModelsStore } from "../../../stores/models";
 
 const modelListBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
-  ...organizationBreadcrumbs(to),
+  // ...organizationBreadcrumbs(to),
   {
     name: "Modellpässe",
     route: MODEL_LIST,
@@ -12,22 +12,41 @@ const modelListBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
   },
 ];
 
-export const modelBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
-  ...modelListBreadcrumbs(to),
-  {
-    name: to.params.modelId + "" || "Modellpass",
-    route: MODEL,
-    params: to.params,
-  },
-];
+export const modelBreadcrumbs = async (to: RouteLocationNormalizedGeneric) => {
+  if (to.params.modelId) {
+    const modelId = String(to.params.modelId);
+    const modelStore = useModelsStore();
+    let modelName: string | null = null;
+    const foundModel = modelStore.models.find((m) => m.id === modelId);
+    if (foundModel) {
+      modelName = foundModel.name;
+    }
+    return [
+      ...modelListBreadcrumbs(to),
+      {
+        name: modelName || modelId,
+        route: MODEL,
+        params: to.params,
+      },
+    ];
+  }
+  return [
+    ...modelListBreadcrumbs(to),
+    {
+      name: "Modellpass",
+      route: MODEL,
+      params: to.params,
+    },
+  ];
+};
 
 export const MODEL: RouteRecordRaw = {
   path: "",
   name: "Model",
   component: () => import("../../../view/models/ModelView.vue"),
-  beforeEnter: (to: RouteLocationNormalizedGeneric) => {
+  beforeEnter: async (to: RouteLocationNormalizedGeneric) => {
     const layoutStore = useLayoutStore();
-    layoutStore.breadcrumbs = modelBreadcrumbs(to);
+    layoutStore.breadcrumbs = await modelBreadcrumbs(to);
   },
 };
 
@@ -35,10 +54,10 @@ export const MODEL_QRCODE: RouteRecordRaw = {
   path: "qr-code",
   name: "ModelQrCode",
   component: () => import("../../../view/models/ModelQrCode.vue"),
-  beforeEnter: (to: RouteLocationNormalizedGeneric) => {
+  beforeEnter: async (to: RouteLocationNormalizedGeneric) => {
     const layoutStore = useLayoutStore();
     layoutStore.breadcrumbs = [
-      ...modelBreadcrumbs(to),
+      ...(await modelBreadcrumbs(to)),
       {
         name: "QR Code",
         route: MODEL_QRCODE,

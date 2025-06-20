@@ -18,6 +18,7 @@ export const useIndexStore = defineStore("index", () => {
     }
     localStorage.setItem(LAST_SELECTED_ORGANIZATION_ID_KEY, organizationId);
     selectedOrganization.value = organizationId;
+    apiClient.setActiveOrganizationId(organizationId);
   };
 
   watch(

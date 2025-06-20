@@ -31,6 +31,14 @@ describe("<CreateModelVew />", () => {
       statusCode: 201,
       body: { id: modelId }, // Mock response
     }).as("createModel");
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/models/${modelId}`,
+      {
+        statusCode: 201,
+        body: { id: modelId }, // Mock response
+      },
+    ).as("getModel");
 
     cy.intercept(
       "POST",

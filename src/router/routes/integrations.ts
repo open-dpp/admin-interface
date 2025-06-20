@@ -1,10 +1,7 @@
 import { RouteLocationNormalizedGeneric, RouteRecordRaw } from "vue-router";
 import { useLayoutStore } from "../../stores/layout";
-import { organizationBreadcrumbs } from "./organizations";
-import { PRO_ALPHA_INTEGRATION_ID } from "../../const";
 
 export const integrationBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
-  ...organizationBreadcrumbs(to),
   {
     name: "Integrationen",
     route: INTEGRATIONS,

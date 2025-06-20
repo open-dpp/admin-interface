@@ -1,15 +1,16 @@
 <template>
   <div>
     <ListHeader
-      title="Modellpässe"
-      description="Alle Pässe auf der Produktmodellebene. Ein Produktmodell ist zum Beispiel das Galaxy S22 Ultra."
       :creation-link="`/organizations/${indexStore.selectedOrganization}/models/create`"
       creation-label="Modellpass hinzufügen"
+      description="Alle Pässe auf der Produktmodellebene. Ein Produktmodell ist zum Beispiel das Galaxy S22 Ultra."
+      title="Modellpässe"
     />
     <SimpleTable
       :headers="['ID', 'Name']"
-      :rows="rows"
+      :ignore-row-keys="['id']"
       :row-actions="actions"
+      :rows="rows"
     />
   </div>
 </template>
@@ -25,7 +26,11 @@ const indexStore = useIndexStore();
 const modelsStore = useModelsStore();
 
 const rows = computed(() => {
-  return modelsStore.models.map((m) => ({ id: m.id, name: m.name }));
+  return modelsStore.models.map((m) => ({
+    id: m.id,
+    uuid: m.uniqueProductIdentifiers[0].uuid,
+    name: m.name,
+  }));
 });
 
 const actions = [

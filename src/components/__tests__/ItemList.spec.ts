@@ -4,6 +4,7 @@ import ItemList from "../items/ItemList.vue";
 import { createMemoryHistory, createRouter } from "vue-router";
 import { routes } from "../../router";
 import { createPinia } from "pinia";
+import { ItemDto } from "@open-dpp/api-client";
 
 const pinia = createPinia();
 const router = createRouter({
@@ -13,7 +14,20 @@ const router = createRouter({
 
 describe("ItemList.vue", () => {
   test("should render items", async () => {
-    const items = [{ id: "id1" }, { id: "id2" }];
+    const items: Array<ItemDto> = [
+      {
+        id: "id1",
+        productDataModelId: "1",
+        uniqueProductIdentifiers: [{ uuid: "2", referenceId: "3" }],
+        dataValues: [],
+      },
+      {
+        id: "id2",
+        productDataModelId: "5",
+        uniqueProductIdentifiers: [{ uuid: "6", referenceId: "7" }],
+        dataValues: [],
+      },
+    ];
     render(ItemList, {
       props: {
         items,
@@ -32,12 +46,27 @@ describe("ItemList.vue", () => {
 
     rows.slice(1).forEach((row, index) => {
       const cells = within(row).getAllByRole("cell");
-      expect(cells[0].textContent).toEqual(items[index].id);
+      expect(cells[0].textContent).toEqual(
+        items[index].uniqueProductIdentifiers[0].uuid,
+      );
       expect(cells[1].textContent).toEqual("EditierenQR-Code");
     });
   });
   test("should create item", async () => {
-    const items = [{ id: "id1" }, { id: "id2" }];
+    const items: Array<ItemDto> = [
+      {
+        id: "id1",
+        productDataModelId: "1",
+        uniqueProductIdentifiers: [{ uuid: "2", referenceId: "3" }],
+        dataValues: [],
+      },
+      {
+        id: "id2",
+        productDataModelId: "5",
+        uniqueProductIdentifiers: [{ uuid: "6", referenceId: "7" }],
+        dataValues: [],
+      },
+    ];
     const { emitted } = render(ItemList, {
       props: {
         items,

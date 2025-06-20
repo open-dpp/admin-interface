@@ -6,6 +6,7 @@ import {
   DataFieldDto,
   DataFieldType,
   GranularityLevel,
+  ItemDto,
   ProductDataModelDto,
   SectionDto,
   SectionType,
@@ -152,7 +153,7 @@ describe("<ItemView />", () => {
       productDataModelId: productDataModel.id,
     };
 
-    const otherItem = {
+    const otherItem: ItemDto = {
       id: "otherId",
       dataValues: [
         {
@@ -169,6 +170,12 @@ describe("<ItemView />", () => {
         },
       ],
       productDataModelId: productDataModel.id,
+      uniqueProductIdentifiers: [
+        {
+          uuid: "uuid",
+          referenceId: "ref1",
+        },
+      ],
     };
 
     const orgaId = "orga1";
@@ -203,6 +210,14 @@ describe("<ItemView />", () => {
         body: item, // Mock response
       },
     ).as("updateData");
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/models/${modelId}`,
+      {
+        statusCode: 200,
+        body: { id: modelId },
+      },
+    );
 
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);
