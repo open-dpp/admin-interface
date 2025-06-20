@@ -8,7 +8,6 @@ import {
   GranularityLevel,
   SectionType,
 } from "@open-dpp/api-client";
-import { z } from "zod/v4";
 
 function aasDropdownValue(parentIdShort: string, idShort: string) {
   return [parentIdShort, idShort].join("/");
@@ -34,11 +33,23 @@ function dataFieldDropdownValueToDppId(dropdownValue: string) {
   };
 }
 
+function aasFieldId(index: number) {
+  return `aas-${index}`;
+}
+
+function dppFieldId(index: number) {
+  return `dpp-${index}`;
+}
+
 export const useAasConnectionFormStore = defineStore(
   "aas-connection-form",
   () => {
+    const formData = ref<Record<string, string>>({});
+    const formSchema = ref();
     const granularityLevel = GranularityLevel.ITEM;
     const fetchInFlight = ref<boolean>(false);
+    const lastRowIndex = ref<number>(0);
+
     const aasConnection = ref<AasConnectionDto>();
     const aasProperties = ref<
       {
@@ -61,65 +72,72 @@ export const useAasConnectionFormStore = defineStore(
       }[]
     >([]);
 
-    const getFormSchema = () => {
-      return aasConnection.value?.fieldAssignments
-        .map((fm, index) => [
-          {
-            $formkit: "select",
-            label: `${index + 1}. Feld aus der Asset Administration Shell`,
-            name: `aas-${index}`,
-            options: aasProperties.value,
-            "data-cy": `aas-select-${index}`,
-          },
-          {
-            $formkit: "select",
-            label: `${index + 1}. Feld aus dem Produktdatenmodell`,
-            name: `dpp-${index}`,
-            options: productDataModelOptions.value,
-            "data-cy": `dpp-select-${index}`,
-          },
-        ])
-        .flat();
+    const newFieldAssignementRow = (index: number) => {
+      return [
+        {
+          $formkit: "select",
+          label: `Feld aus der Asset Administration Shell`,
+          name: aasFieldId(index),
+          placeholder: "Wählen Sie ein Feld aus der Asset Administration Shell",
+          options: aasProperties.value,
+          "data-cy": `aas-select-${index}`,
+        },
+        {
+          $formkit: "select",
+          label: `Feld aus dem Produktdatenmodell`,
+          placeholder: "Wählen Sie ein Feld aus dem Produktdatenmodell", // Add this line
+          name: dppFieldId(index),
+          options: productDataModelOptions.value,
+          "data-cy": `dpp-select-${index}`,
+        },
+      ];
     };
 
-    const getFormData = () => {
+    const initializeFormSchema = () => {
+      formSchema.value = aasConnection.value?.fieldAssignments
+        .map((_, index) => {
+          lastRowIndex.value = index;
+          return newFieldAssignementRow(index);
+        })
+        .flat();
+      return formSchema.value;
+    };
+
+    const initializeFormData = () => {
       if (!aasConnection.value) {
         return {};
       }
-      return Object.fromEntries(
+      formData.value = Object.fromEntries(
         aasConnection.value.fieldAssignments
           .map((fm, index) => [
-            [`aas-${index}`, aasDropdownValue(fm.idShortParent, fm.idShort)],
+            [aasFieldId(index), aasDropdownValue(fm.idShortParent, fm.idShort)],
             [
-              `dpp-${index}`,
+              dppFieldId(index),
               dataFieldDropdownValue(fm.sectionId, fm.dataFieldId),
             ],
           ])
           .flat(),
       );
+      return formData;
     };
 
-    const modifyConnection = async (data: {
-      fieldAssignments: Record<string, string>;
-    }) => {
-      if (aasConnection.value) {
-        const AasFieldAssignmentSchema = z.object({
-          dataFieldId: z.string(),
-          sectionId: z.string(),
-          idShortParent: z.string(),
-          idShort: z.string(),
-        });
-        const UpdateAasConnectionSchema = z.object({
-          name: z.string(),
-          modelId: z.string().nullable(),
-          fieldAssignments: AasFieldAssignmentSchema.array(),
-        });
+    const addFieldAssignmentRow = () => {
+      const newIndex = lastRowIndex.value + 1;
+      formSchema.value.push(...newFieldAssignementRow(newIndex));
+      lastRowIndex.value = newIndex;
+      return formSchema.value;
+    };
 
-        const fieldAssignments = Object.entries(data.fieldAssignments)
+    const submitModifications = async () => {
+      if (aasConnection.value) {
+        const fieldAssignments = Object.entries(formData.value)
           .map(([key, value]) => {
             const [source, keyIndex] = key.split("-");
             if (source === "aas") {
-              const ddpField = data.fieldAssignments[`dpp-${keyIndex}`];
+              const ddpField = formData.value[`dpp-${keyIndex}`];
+              if (!ddpField) {
+                return undefined;
+              }
               const aasValues = aasDropdownValueToAasId(value);
               const dppValues = dataFieldDropdownValueToDppId(ddpField);
               return {
@@ -136,13 +154,57 @@ export const useAasConnectionFormStore = defineStore(
 
         const response = await apiClient.aasIntegration.modifyConnection(
           aasConnection.value.id,
-          UpdateAasConnectionSchema.parse({
+          {
             name: aasConnection.value.name,
             modelId: aasConnection.value.modelId,
             fieldAssignments,
-          }),
+          },
         );
         aasConnection.value = response.data;
+      }
+    };
+
+    const switchModel = async (modelId: string) => {
+      const model = (await apiClient.models.getModelById(modelId)).data;
+      if (aasConnection.value && model.productDataModelId) {
+        aasConnection.value.modelId = model.id;
+        aasConnection.value.dataModelId = model.productDataModelId;
+        await apiClient.aasIntegration.modifyConnection(
+          aasConnection.value.id,
+          {
+            name: aasConnection.value.name,
+            modelId: aasConnection.value.modelId,
+            fieldAssignments: aasConnection.value.fieldAssignments,
+          },
+        );
+        await updateProductDataModelOptions();
+      }
+    };
+
+    const updateProductDataModelOptions = async () => {
+      if (aasConnection.value) {
+        const productDataModelResponse =
+          await apiClient.productDataModels.getProductDataModelById(
+            aasConnection.value.dataModelId,
+          );
+        const productDataModel = productDataModelResponse.data;
+
+        productDataModelOptions.value = productDataModel.sections
+          .filter(
+            (s) =>
+              (s.granularityLevel === granularityLevel ||
+                !s.granularityLevel) &&
+              s.type === SectionType.GROUP,
+          )
+          .map((section) => ({
+            group: section.name,
+            options: section.dataFields
+              .filter((d) => d.granularityLevel === granularityLevel)
+              .map((field) => ({
+                label: field.name,
+                value: dataFieldDropdownValue(section.id, field.id),
+              })),
+          }));
       }
     };
 
@@ -167,30 +229,10 @@ export const useAasConnectionFormStore = defineStore(
             property: prop.property,
           })),
         }));
-
-        const productDataModelResponse =
-          await apiClient.productDataModels.getProductDataModelById(
-            aasConnection.value.dataModelId,
-          );
-        const productDataModel = productDataModelResponse.data;
-
-        productDataModelOptions.value = productDataModel.sections
-          .filter(
-            (s) =>
-              (s.granularityLevel === granularityLevel ||
-                !s.granularityLevel) &&
-              s.type === SectionType.GROUP,
-          )
-          .map((section) => ({
-            group: section.name,
-            options: section.dataFields
-              .filter((d) => d.granularityLevel === granularityLevel)
-              .map((field) => ({
-                label: field.name,
-                value: dataFieldDropdownValue(section.id, field.id),
-              })),
-          }));
+        await updateProductDataModelOptions();
       }
+      initializeFormData();
+      initializeFormSchema();
       fetchInFlight.value = false;
     };
 
@@ -198,9 +240,11 @@ export const useAasConnectionFormStore = defineStore(
       aasConnection,
       fetchConnection,
       fetchInFlight,
-      modifyConnection,
-      getFormSchema,
-      getFormData,
+      submitModifications,
+      addFieldAssignmentRow,
+      formData,
+      formSchema,
+      switchModel,
     };
   },
 );

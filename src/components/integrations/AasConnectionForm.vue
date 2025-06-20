@@ -1,32 +1,37 @@
 <template>
-  <FormKit v-model="formData" :actions="false" type="form" @submit="onSubmit">
-    <FormKitSchema v-if="formSchema" :schema="formSchema" />
+  <FormKit
+    v-model="aasConnectionFormStore.formData"
+    :actions="false"
+    type="form"
+    @submit="onSubmit"
+  >
+    <FormKitSchema
+      v-if="aasConnectionFormStore.formSchema"
+      :schema="aasConnectionFormStore.formSchema"
+    />
     <FormKit label="Speichern" type="submit" />
   </FormKit>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
 import { useAasConnectionFormStore } from "../../stores/aas.connection.form";
+import { computed, onMounted } from "vue";
+import { useModelsStore } from "../../stores/models";
 
 const aasConnectionFormStore = useAasConnectionFormStore();
-const formData = ref<Record<string, string>>({});
-const formSchema = ref();
 
-watch(
-  () => aasConnectionFormStore.aasConnection?.id, // The store property to watch
-  () => {
-    formSchema.value = aasConnectionFormStore.getFormSchema();
-    formData.value = aasConnectionFormStore.getFormData();
-  },
-  { immediate: true },
+const modelsStore = useModelsStore();
+
+const selectableModels = computed(() =>
+  modelsStore.models.map((m) => ({ label: `${m.name} ${m.id}`, value: m.id })),
 );
 
 const onSubmit = async () => {
-  if (formData.value) {
-    await aasConnectionFormStore.modifyConnection({
-      fieldAssignments: formData.value,
-    });
-  }
+  //if (formData.value) {
+  await aasConnectionFormStore.submitModifications();
 };
+
+onMounted(async () => {
+  await modelsStore.getModels();
+});
 </script>

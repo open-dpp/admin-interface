@@ -26,6 +26,24 @@
         </dl>
       </div>
     </div>
+    <div
+      v-if="
+        aasConnectionFormStore.aasConnection &&
+        !aasConnectionFormStore.fetchInFlight
+      "
+      class="flex justify-between items-center border-b border-gray-900/5 bg-gray-50"
+    >
+      <div class="flex items-center gap-2">
+        <div class="text-sm/6 font-medium text-gray-900">Feldverknüpfungen</div>
+      </div>
+      <button
+        class="m-2 block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+        type="button"
+        @click="aasConnectionFormStore.addFieldAssignmentRow"
+      >
+        Feldverknüpfung hinzufügen
+      </button>
+    </div>
     <AasConnectionForm
       v-if="
         aasConnectionFormStore.aasConnection &&

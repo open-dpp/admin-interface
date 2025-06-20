@@ -272,28 +272,33 @@ describe("IntegrationFormStore", () => {
   const expectedFormSchema = [
     {
       $formkit: "select",
-      label: "1. Feld aus der Asset Administration Shell",
+      label: "Feld aus der Asset Administration Shell",
+      placeholder: "Wählen Sie ein Feld aus der Asset Administration Shell",
+
       name: `aas-${0}`,
       options: selectOptionsAas,
       "data-cy": "aas-select-0",
     },
     {
       $formkit: "select",
-      label: "1. Feld aus dem Produktdatenmodell",
+      label: "Feld aus dem Produktdatenmodell",
+      placeholder: "Wählen Sie ein Feld aus dem Produktdatenmodell",
       name: `dpp-${0}`,
       options: selectOptionsDpp,
       "data-cy": "dpp-select-0",
     },
     {
       $formkit: "select",
-      label: "2. Feld aus der Asset Administration Shell",
+      label: "Feld aus der Asset Administration Shell",
+      placeholder: "Wählen Sie ein Feld aus der Asset Administration Shell",
       name: `aas-${1}`,
       options: selectOptionsAas,
       "data-cy": "aas-select-1",
     },
     {
       $formkit: "select",
-      label: "2. Feld aus dem Produktdatenmodell",
+      label: "Feld aus dem Produktdatenmodell",
+      placeholder: "Wählen Sie ein Feld aus dem Produktdatenmodell",
       name: `dpp-${1}`,
       options: selectOptionsDpp,
       "data-cy": "dpp-select-1",
@@ -308,13 +313,9 @@ describe("IntegrationFormStore", () => {
     mocks.getPropertiesOfAas.mockResolvedValue({ data: mockedProperties });
     await integrationFormStore.fetchConnection(connectionId);
 
-    const actual = integrationFormStore.getFormSchema();
+    expect(integrationFormStore.formSchema).toEqual(expectedFormSchema);
 
-    expect(actual).toEqual(expectedFormSchema);
-
-    const actualFormData = integrationFormStore.getFormData();
-
-    expect(actualFormData).toEqual({
+    expect(integrationFormStore.formData).toEqual({
       "aas-0": "p1/i1",
       "aas-1": "p2/i2",
       "dpp-0": "s1/f1",
@@ -362,9 +363,8 @@ describe("IntegrationFormStore", () => {
     });
 
     await integrationFormStore.fetchConnection(connectionId);
-    await integrationFormStore.modifyConnection({
-      fieldAssignments: formUpdate.fieldAssignments,
-    });
+    integrationFormStore.formData = formUpdate.fieldAssignments;
+    await integrationFormStore.submitModifications();
 
     await waitFor(() =>
       expect(apiClient.aasIntegration.modifyConnection).toHaveBeenCalledWith(
@@ -377,17 +377,50 @@ describe("IntegrationFormStore", () => {
       ),
     );
 
-    const actualFormSchema = integrationFormStore.getFormSchema();
-
-    expect(actualFormSchema).toEqual(expectedFormSchema);
-
-    const actualFormData = integrationFormStore.getFormData();
-
-    expect(actualFormData).toEqual({
+    expect(integrationFormStore.formSchema).toEqual(expectedFormSchema);
+    expect(integrationFormStore.formData).toEqual({
       "aas-0": "p1-update/i1-update",
       "aas-1": "p2-update/i2-update",
       "dpp-0": "s0/f0",
       "dpp-1": "s2/f3",
+    });
+  });
+
+  it("should add field assignment", async () => {
+    const integrationFormStore = useAasConnectionFormStore();
+
+    mocks.getProductDataModelById.mockResolvedValue({ data: productDataModel });
+    mocks.getConnection.mockResolvedValue({ data: aasConnection });
+    mocks.getPropertiesOfAas.mockResolvedValue({ data: mockedProperties });
+    await integrationFormStore.fetchConnection(connectionId);
+
+    integrationFormStore.addFieldAssignmentRow();
+
+    expect(integrationFormStore.formSchema).toEqual([
+      ...expectedFormSchema,
+      {
+        $formkit: "select",
+        label: "Feld aus der Asset Administration Shell",
+        name: `aas-${2}`,
+        placeholder: "Wählen Sie ein Feld aus der Asset Administration Shell", // Add this line
+        options: selectOptionsAas,
+        "data-cy": "aas-select-2",
+      },
+      {
+        $formkit: "select",
+        label: "Feld aus dem Produktdatenmodell",
+        name: `dpp-${2}`,
+        placeholder: "Wählen Sie ein Feld aus dem Produktdatenmodell", // Add this line
+        options: selectOptionsDpp,
+        "data-cy": "dpp-select-2",
+      },
+    ]);
+
+    expect(integrationFormStore.formData).toEqual({
+      "aas-0": "p1/i1",
+      "aas-1": "p2/i2",
+      "dpp-0": "s1/f1",
+      "dpp-1": "s2/f2",
     });
   });
 });
