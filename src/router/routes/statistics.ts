@@ -3,7 +3,7 @@ import { useLayoutStore } from "../../stores/layout";
 import { organizationBreadcrumbs } from "./organizations";
 
 export const statisticBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
-  ...organizationBreadcrumbs(to),
+  ...organizationBreadcrumbs(),
   {
     name: "Auswertungen",
     route: STATISTICS,

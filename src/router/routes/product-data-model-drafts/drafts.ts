@@ -4,7 +4,7 @@ import { organizationBreadcrumbs } from "../organizations";
 import { useDraftStore } from "../../../stores/draft";
 
 const draftListBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
-  ...organizationBreadcrumbs(to),
+  ...organizationBreadcrumbs(),
   {
     name: "Produktpass Designs",
     route: DRAFT_LIST,
