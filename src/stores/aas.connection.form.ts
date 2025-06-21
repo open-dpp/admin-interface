@@ -6,6 +6,7 @@ import {
   AasConnectionDto,
   AasPropertyDto,
   GranularityLevel,
+  ModelDto,
   ProductDataModelDto,
   SectionType,
 } from "@open-dpp/api-client";
@@ -235,9 +236,8 @@ export const useAasConnectionFormStore = defineStore(
       }
     };
 
-    const switchModel = async (modelId: string) => {
+    const switchModel = async (model: ModelDto) => {
       try {
-        const model = (await apiClient.models.getModelById(modelId)).data;
         if (aasConnection.value && model.productDataModelId) {
           aasConnection.value.modelId = model.id;
           aasConnection.value.dataModelId = model.productDataModelId;

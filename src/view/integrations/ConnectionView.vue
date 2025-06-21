@@ -80,7 +80,7 @@
                 <button
                   v-if="editModel"
                   type="button"
-                  @click="editModel = false"
+                  @click="onCancel"
                   class="text-sm/6 font-semibold text-gray-600 hover:text-gray-500"
                 >
                   Cancel
@@ -134,11 +134,23 @@ const selectedModelId = ref<string>("");
 const editModel = ref(false);
 const modelsStore = useModelsStore();
 
+const findModel = (id: string) => {
+  return modelsStore.models.find((m) => m.id === id);
+};
+
+const onCancel = () => {
+  editModel.value = false;
+  selectedModelId.value = selectedModel.value?.id ?? "";
+};
+
 const updateModel = async () => {
   if (aasConnectionFormStore.aasConnection && selectedModelId.value) {
-    await aasConnectionFormStore.switchModel(selectedModelId.value);
-    selectedModel.value = await modelsStore.getModelById(selectedModelId.value);
-    editModel.value = false;
+    const foundModel = findModel(selectedModelId.value);
+    if (foundModel) {
+      await aasConnectionFormStore.switchModel(foundModel);
+      selectedModel.value = foundModel;
+      editModel.value = false;
+    }
   }
 };
 
@@ -151,8 +163,8 @@ watch(
 
     if (aasConnectionFormStore.aasConnection?.modelId) {
       await modelsStore.getModels();
-      selectedModel.value = modelsStore.models.find(
-        (m) => m.id === aasConnectionFormStore.aasConnection?.modelId,
+      selectedModel.value = findModel(
+        aasConnectionFormStore.aasConnection.modelId,
       );
       selectedModelId.value = selectedModel.value?.id ?? "";
     }

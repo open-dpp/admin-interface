@@ -8,6 +8,7 @@ import {
   AssetAdministrationShellType,
   DataFieldType,
   GranularityLevel,
+  ModelDto,
   ProductDataModelDto,
   SectionType,
   VisibilityLevel,
@@ -700,8 +701,16 @@ describe("IntegrationFormStore", () => {
       },
     });
     await integrationFormStore.fetchConnection(connectionId);
+    const model: ModelDto = {
+      name: "modelName",
+      id: otherModelId,
+      productDataModelId: otherProductDataModel.id,
+      owner: "o1",
+      uniqueProductIdentifiers: [],
+      dataValues: [],
+    };
 
-    await integrationFormStore.switchModel(otherModelId);
+    await integrationFormStore.switchModel(model);
 
     expect(integrationFormStore.formSchema).toEqual([
       {

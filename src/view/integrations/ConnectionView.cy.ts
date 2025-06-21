@@ -203,6 +203,11 @@ describe("<ConnectionView />", () => {
       },
     ).as("getAasProperties");
 
+    cy.intercept("GET", `${API_URL}/organizations/${orgaId}/models`, {
+      statusCode: 200,
+      body: [{ id: aasConnection.modelId, name: "Truck Modellpass 1.0.0" }], // Mock response
+    }).as("getModels");
+
     cy.intercept(
       "GET",
       `${API_URL}/product-data-models/${productDataModel.id}`,
@@ -240,6 +245,8 @@ describe("<ConnectionView />", () => {
       cy.get('[data-cy="aas-select-1"]').should("have.value", "p2/i2");
       cy.get('[data-cy="aas-select-0"]').select("p2/i2");
       cy.get('[data-cy="aas-select-1"]').select("p1/i1");
+      cy.contains("Truck").should("be.visible");
+      cy.contains("Truck Modellpass 1.0.0").should("be.visible");
 
       cy.get('[data-cy="dpp-select-0"]').should("have.value", "s1/f1");
       cy.get('[data-cy="dpp-select-1"]').should("have.value", "s2/f2");
