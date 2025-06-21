@@ -39,6 +39,7 @@ import { AssetAdministrationShellType } from "@open-dpp/api-client";
 import { useRouter } from "vue-router";
 import { useIndexStore } from "../../stores";
 import { z } from "zod/v4";
+import { AAS_NAME_MAPPING } from "../../lib/aas-name-mapping";
 
 const modelsStore = useModelsStore();
 const aasConnectionStore = useAasConnectionStore();
@@ -51,15 +52,15 @@ const selectableModels = computed(() =>
 
 const selectableAasTypes = [
   {
-    label: "Truck",
+    label: AAS_NAME_MAPPING[AssetAdministrationShellType.Truck],
     value: AssetAdministrationShellType.Truck,
   },
   {
-    label: "Semitrailer",
+    label: AAS_NAME_MAPPING[AssetAdministrationShellType.Semitrailer],
     value: AssetAdministrationShellType.Semitrailer,
   },
   {
-    label: "Semitrailer Truck",
+    label: AAS_NAME_MAPPING[AssetAdministrationShellType.Semitrailer_Truck],
     value: AssetAdministrationShellType.Semitrailer_Truck,
   },
 ];

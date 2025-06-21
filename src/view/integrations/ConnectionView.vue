@@ -23,6 +23,71 @@
               {{ aasConnectionFormStore.aasConnection.name }}
             </dd>
           </div>
+          <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-900">
+              Verknüpfte Asset Administration Shell
+            </dt>
+            <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
+              {{
+                AAS_NAME_MAPPING[aasConnectionFormStore.aasConnection.aasType]
+              }}
+            </dd>
+          </div>
+          <div
+            v-if="selectedModel"
+            class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 items-center"
+          >
+            <dt class="text-sm font-medium text-gray-900">
+              Verknüpfter Modellpass
+            </dt>
+            <dd class="mt-1 flex justify-between gap-x-6 sm:mt-0">
+              <div>
+                <div
+                  v-if="!editModel"
+                  class="text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0"
+                >
+                  {{ selectedModel.name }}
+                </div>
+                <div v-if="editModel">
+                  <select class="block w-full" v-model="selectedModelId">
+                    <option
+                      v-for="model in modelsStore.models"
+                      :key="model.id"
+                      :value="model.id"
+                    >
+                      {{ model.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="flex gap-1">
+                <button
+                  v-if="!editModel"
+                  type="button"
+                  @click="editModel = true"
+                  class="text-sm/6 font-semibold text-indigo-600 hover:text-indigo-500"
+                >
+                  Editieren
+                </button>
+                <button
+                  v-if="editModel"
+                  type="button"
+                  @click="updateModel"
+                  class="text-sm/6 font-semibold text-indigo-600 hover:text-indigo-500"
+                >
+                  Speichern
+                </button>
+                <button
+                  v-if="editModel"
+                  type="button"
+                  @click="editModel = false"
+                  class="text-sm/6 font-semibold text-gray-600 hover:text-gray-500"
+                >
+                  Cancel
+                </button>
+              </div>
+            </dd>
+          </div>
         </dl>
       </div>
     </div>
@@ -54,13 +119,28 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from "vue";
+import { watch, ref } from "vue";
 import { useRoute } from "vue-router";
 import { useAasConnectionFormStore } from "../../stores/aas.connection.form";
 import AasConnectionForm from "../../components/integrations/AasConnectionForm.vue";
+import { useModelsStore } from "../../stores/models";
+import { ModelDto } from "@open-dpp/api-client";
+import { AAS_NAME_MAPPING } from "../../lib/aas-name-mapping";
 
 const route = useRoute();
 const aasConnectionFormStore = useAasConnectionFormStore();
+const selectedModel = ref<ModelDto | null>();
+const selectedModelId = ref<string>("");
+const editModel = ref(false);
+const modelsStore = useModelsStore();
+
+const updateModel = async () => {
+  if (aasConnectionFormStore.aasConnection && selectedModelId.value) {
+    await aasConnectionFormStore.switchModel(selectedModelId.value);
+    selectedModel.value = await modelsStore.getModelById(selectedModelId.value);
+    editModel.value = false;
+  }
+};
 
 watch(
   () => [route.params.connectionId], // The store property to watch
@@ -68,6 +148,14 @@ watch(
     await aasConnectionFormStore.fetchConnection(
       String(route.params.connectionId),
     );
+
+    if (aasConnectionFormStore.aasConnection?.modelId) {
+      await modelsStore.getModels();
+      selectedModel.value = modelsStore.models.find(
+        (m) => m.id === aasConnectionFormStore.aasConnection?.modelId,
+      );
+      selectedModelId.value = selectedModel.value?.id ?? "";
+    }
   },
   { immediate: true }, // Optional: to run the watcher immediately when the component mounts
 );
