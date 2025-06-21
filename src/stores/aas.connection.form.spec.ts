@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => {
     getConnection: vi.fn(),
     getPropertiesOfAas: vi.fn(),
     modifyConnection: vi.fn(),
+    getModelById: vi.fn(),
   };
 });
 
@@ -31,6 +32,9 @@ vi.mock("../lib/api-client", () => ({
       getConnection: mocks.getConnection,
       getPropertiesOfAas: mocks.getPropertiesOfAas,
       modifyConnection: mocks.modifyConnection,
+    },
+    models: {
+      getModelById: mocks.getModelById,
     },
     productDataModels: {
       getProductDataModelById: mocks.getProductDataModelById,
@@ -235,7 +239,158 @@ describe("IntegrationFormStore", () => {
     ],
   };
 
-  const selectOptionsDpp = [
+  const otherProductDataModel: ProductDataModelDto = {
+    id: "other-dataModelId",
+    name: "Other Test Product Data Model",
+    version: "1.0.0",
+    visibility: VisibilityLevel.PRIVATE,
+    createdByUserId: "userId",
+    ownedByOrganizationId: "orgaId",
+    sections: [
+      {
+        id: "s0",
+        name: "Section 0",
+        type: SectionType.GROUP,
+        subSections: ["s2"],
+        layout: {
+          colStart: { sm: 1 },
+          rowStart: { sm: 1 },
+          colSpan: { sm: 1 },
+          rowSpan: { sm: 1 },
+          cols: { sm: 3 },
+        },
+        dataFields: [
+          {
+            id: "f0",
+            name: "Field 0",
+            type: DataFieldType.TEXT_FIELD,
+            layout: {
+              colStart: { sm: 1 },
+              rowStart: { sm: 1 },
+              colSpan: { sm: 1 },
+              rowSpan: { sm: 1 },
+            },
+            granularityLevel: GranularityLevel.ITEM,
+          },
+        ],
+      },
+      {
+        id: "s1",
+        name: "Section 1",
+        type: SectionType.GROUP,
+        subSections: [],
+        layout: {
+          colStart: { sm: 1 },
+          rowStart: { sm: 1 },
+          colSpan: { sm: 1 },
+          rowSpan: { sm: 1 },
+          cols: { sm: 3 },
+        },
+        dataFields: [
+          {
+            id: "f1-other",
+            name: "Field 1 other",
+            type: DataFieldType.TEXT_FIELD,
+            layout: {
+              colStart: { sm: 1 },
+              rowStart: { sm: 1 },
+              colSpan: { sm: 1 },
+              rowSpan: { sm: 1 },
+            },
+            granularityLevel: GranularityLevel.ITEM,
+          },
+        ],
+      },
+      {
+        id: "s2",
+        parentId: "s0",
+        name: "Section 2",
+        type: SectionType.GROUP,
+        subSections: [],
+        layout: {
+          colStart: { sm: 1 },
+          rowStart: { sm: 1 },
+          colSpan: { sm: 1 },
+          rowSpan: { sm: 1 },
+          cols: { sm: 3 },
+        },
+        dataFields: [
+          {
+            id: "f2",
+            name: "Field 2",
+            type: DataFieldType.TEXT_FIELD,
+            layout: {
+              colStart: { sm: 1 },
+              rowStart: { sm: 1 },
+              colSpan: { sm: 1 },
+              rowSpan: { sm: 1 },
+            },
+            granularityLevel: GranularityLevel.ITEM,
+          },
+          {
+            id: "f3-other",
+            name: "Field 3 other",
+            type: DataFieldType.TEXT_FIELD,
+            layout: {
+              colStart: { sm: 2 },
+              rowStart: { sm: 1 },
+              colSpan: { sm: 1 },
+              rowSpan: { sm: 1 },
+            },
+            granularityLevel: GranularityLevel.ITEM,
+          },
+          {
+            id: "f4",
+            name: "Field 4",
+            type: DataFieldType.TEXT_FIELD,
+            layout: {
+              colStart: { sm: 3 },
+              rowStart: { sm: 1 },
+              colSpan: { sm: 1 },
+              rowSpan: { sm: 1 },
+            },
+            granularityLevel: GranularityLevel.MODEL,
+          },
+        ],
+      },
+    ],
+  };
+
+  const selectOptionsOfOtherProductDataModel = [
+    {
+      group: "Section 0",
+      options: [
+        {
+          label: "Field 0",
+          value: "s0/f0",
+        },
+      ],
+    },
+    {
+      group: "Section 1",
+      options: [
+        {
+          label: "Field 1 other",
+          value: "s1/f1-other",
+        },
+      ],
+    },
+    {
+      group: "Section 2",
+      options: [
+        {
+          label: "Field 2",
+          value: "s2/f2",
+        },
+        {
+          label: "Field 3 other",
+          value: "s2/f3-other",
+        },
+      ],
+    },
+  ];
+
+  const selectOptionsOfProductDataModel = [
     {
       group: "Section 0",
       options: [
@@ -332,7 +487,7 @@ describe("IntegrationFormStore", () => {
               label: labelDpp,
               placeholder: placeHolderDpp,
               name: `dpp-${0}`,
-              options: selectOptionsDpp,
+              options: selectOptionsOfProductDataModel,
               "data-cy": "dpp-select-0",
               required: true,
             },
@@ -368,7 +523,7 @@ describe("IntegrationFormStore", () => {
               label: labelDpp,
               placeholder: placeHolderDpp,
               name: `dpp-${1}`,
-              options: selectOptionsDpp,
+              options: selectOptionsOfProductDataModel,
               "data-cy": "dpp-select-1",
               required: true,
             },
@@ -378,10 +533,12 @@ describe("IntegrationFormStore", () => {
       rowIndex: 1,
     },
   ];
-  it("should getFormSchema and getFormData", async () => {
+  it("should initialize formSchema and formData correctly", async () => {
     const integrationFormStore = useAasConnectionFormStore();
 
-    mocks.getProductDataModelById.mockResolvedValue({ data: productDataModel });
+    mocks.getProductDataModelById.mockResolvedValue({
+      data: productDataModel,
+    });
     mocks.getConnection.mockResolvedValue({ data: aasConnection });
     mocks.getPropertiesOfAas.mockResolvedValue({ data: mockedProperties });
     await integrationFormStore.fetchConnection(connectionId);
@@ -429,7 +586,9 @@ describe("IntegrationFormStore", () => {
     mocks.getConnection.mockResolvedValue({
       data: aasConnection,
     });
-    mocks.getProductDataModelById.mockResolvedValue({ data: productDataModel });
+    mocks.getProductDataModelById.mockResolvedValue({
+      data: productDataModel,
+    });
     mocks.getPropertiesOfAas.mockResolvedValue({ data: mockedProperties });
     mocks.modifyConnection.mockResolvedValue({
       data: mockedAasConnectionUpdate,
@@ -462,7 +621,9 @@ describe("IntegrationFormStore", () => {
   it("should add field assignment", async () => {
     const integrationFormStore = useAasConnectionFormStore();
 
-    mocks.getProductDataModelById.mockResolvedValue({ data: productDataModel });
+    mocks.getProductDataModelById.mockResolvedValue({
+      data: productDataModel,
+    });
     mocks.getConnection.mockResolvedValue({ data: aasConnection });
     mocks.getPropertiesOfAas.mockResolvedValue({ data: mockedProperties });
     await integrationFormStore.fetchConnection(connectionId);
@@ -498,7 +659,7 @@ describe("IntegrationFormStore", () => {
                 label: labelDpp,
                 name: `dpp-${2}`,
                 placeholder: placeHolderDpp,
-                options: selectOptionsDpp,
+                options: selectOptionsOfProductDataModel,
                 "data-cy": "dpp-select-2",
                 required: true,
               },
@@ -513,6 +674,113 @@ describe("IntegrationFormStore", () => {
       "aas-0": "p1/i1",
       "aas-1": "p2/i2",
       "dpp-0": "s1/f1",
+      "dpp-1": "s2/f2",
+    });
+  });
+
+  it("should switch model", async () => {
+    const integrationFormStore = useAasConnectionFormStore();
+
+    mocks.getProductDataModelById.mockImplementation((id: string) =>
+      id === productDataModel.id
+        ? {
+            data: productDataModel,
+          }
+        : {
+            data: otherProductDataModel,
+          },
+    );
+    const otherModelId = "otherModelId";
+    mocks.getConnection.mockResolvedValue({ data: aasConnection });
+    mocks.getPropertiesOfAas.mockResolvedValue({ data: mockedProperties });
+    mocks.getModelById.mockResolvedValue({
+      data: {
+        modelId: otherModelId,
+        productDataModelId: otherProductDataModel.id,
+      },
+    });
+    await integrationFormStore.fetchConnection(connectionId);
+
+    await integrationFormStore.switchModel(otherModelId);
+
+    expect(integrationFormStore.formSchema).toEqual([
+      {
+        ...rowDiv,
+        children: [
+          {
+            ...flexDivStart,
+            children: [
+              {
+                $formkit: "select",
+                label: labelAas,
+                placeholder: placeHolderAas,
+                name: `aas-${0}`,
+                options: selectOptionsAas,
+                "data-cy": "aas-select-0",
+                required: true,
+              },
+            ],
+          },
+          connectedMsgDiv,
+          {
+            ...flexDivStart,
+            children: [
+              {
+                $formkit: "select",
+                label: labelDpp,
+                placeholder: placeHolderDpp,
+                name: `dpp-${0}`,
+                options: selectOptionsOfOtherProductDataModel,
+                "data-cy": "dpp-select-0",
+                required: true,
+              },
+            ],
+          },
+        ],
+        rowIndex: 0,
+      },
+      horizontalLine,
+      {
+        ...rowDiv,
+        children: [
+          {
+            ...flexDivStart,
+            children: [
+              {
+                $formkit: "select",
+                label: labelAas,
+                placeholder: placeHolderAas,
+                name: `aas-${1}`,
+                options: selectOptionsAas,
+                "data-cy": "aas-select-1",
+                required: true,
+              },
+            ],
+          },
+          connectedMsgDiv,
+          {
+            ...flexDivStart,
+            children: [
+              {
+                $formkit: "select",
+                label: labelDpp,
+                placeholder: placeHolderDpp,
+                name: `dpp-${1}`,
+                options: selectOptionsOfOtherProductDataModel,
+                "data-cy": "dpp-select-1",
+                required: true,
+              },
+            ],
+          },
+        ],
+        rowIndex: 1,
+      },
+    ]);
+
+    expect(integrationFormStore.formData).toEqual({
+      "aas-0": "p1/i1",
+      "aas-1": "p2/i2",
+      "dpp-0": "",
       "dpp-1": "s2/f2",
     });
   });

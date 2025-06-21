@@ -236,36 +236,42 @@ export const useAasConnectionFormStore = defineStore(
     };
 
     const switchModel = async (modelId: string) => {
-      const model = (await apiClient.models.getModelById(modelId)).data;
-      if (aasConnection.value && model.productDataModelId) {
-        aasConnection.value.modelId = model.id;
-        aasConnection.value.dataModelId = model.productDataModelId;
-        const response =
-          await apiClient.productDataModels.getProductDataModelById(
-            aasConnection.value.dataModelId,
-          );
-        const productDataModel = response.data;
-        await updateProductDataModelOptions(productDataModel);
-        formSchema.value = formSchema.value.map((schemaItem: unknown) => {
-          return isFieldAssignmentRow(schemaItem)
-            ? newFieldAssignmentRow(schemaItem.rowIndex)
-            : schemaItem;
-        });
-        formData.value = Object.fromEntries(
-          Object.entries(formData.value).map(([key, value]) => {
-            console.log(key, value);
-            if (key.startsWith("dpp") && value) {
-              const { sectionId, dataFieldId } =
-                dataFieldDropdownValueToDppId(value);
-              const foundValue = productDataModel.sections
-                .find((s) => s.id === sectionId)
-                ?.dataFields.find((f) => f.id === dataFieldId);
-              if (!foundValue) {
-                return [key, ""];
+      try {
+        const model = (await apiClient.models.getModelById(modelId)).data;
+        if (aasConnection.value && model.productDataModelId) {
+          aasConnection.value.modelId = model.id;
+          aasConnection.value.dataModelId = model.productDataModelId;
+          const response =
+            await apiClient.productDataModels.getProductDataModelById(
+              aasConnection.value.dataModelId,
+            );
+          const productDataModel = response.data;
+          await updateProductDataModelOptions(productDataModel);
+          formSchema.value = formSchema.value.map((schemaItem: unknown) => {
+            return isFieldAssignmentRow(schemaItem)
+              ? newFieldAssignmentRow(schemaItem.rowIndex)
+              : schemaItem;
+          });
+          formData.value = Object.fromEntries(
+            Object.entries(formData.value).map(([key, value]) => {
+              if (key.startsWith("dpp") && value) {
+                const { sectionId, dataFieldId } =
+                  dataFieldDropdownValueToDppId(value);
+                const foundValue = productDataModel.sections
+                  .find((s) => s.id === sectionId)
+                  ?.dataFields.find((f) => f.id === dataFieldId);
+                if (!foundValue) {
+                  return [key, ""];
+                }
               }
-            }
-            return [key, value];
-          }),
+              return [key, value];
+            }),
+          );
+        }
+      } catch (e) {
+        errorHandlingStore.logErrorWithNotification(
+          "Wechsel des Modellpasses fehlgeschlagen",
+          e,
         );
       }
     };
