@@ -21,7 +21,7 @@ const router = createRouter({
 });
 
 describe("<ItemView />", () => {
-  it("renders model form and modify its data", () => {
+  it("renders model form and modify its data", async () => {
     const dataField1: DataFieldDto = {
       id: "f1",
       type: DataFieldType.TEXT_FIELD,
@@ -227,48 +227,48 @@ describe("<ItemView />", () => {
       router.push(
         `/organizations/${orgaId}/models/${modelId}/items/${item.id}`,
       ),
-    );
-
-    cy.wait("@getItem").its("response.statusCode").should("eq", 200);
-    cy.wait("@getProductModelData")
-      .its("response.statusCode")
-      .should("eq", 200);
-    cy.contains("Artikelpass Informationen").should("be.visible");
-    cy.get('[data-cy="section-card-s3"]').within(() => {
-      cy.contains("Wird auf Modelebene gesetzt").should("be.visible");
-      cy.contains("Speichern").should("not.exist");
-    });
-    cy.get('[data-cy="s1.f1.0"]').should("have.value", "val1");
-    cy.get('[data-cy="s1.f2.0"]').should("have.value", "val2");
-    cy.get('[data-cy="s1.f3.0"]').should(
-      "contain.text",
-      "Wird auf Modelebene gesetzt",
-    );
-    cy.get('[data-cy="s1.f1.0"]').type("add1");
-    cy.get('[data-cy="s1.f2.0"]').type("add2");
-    cy.contains("button", "Speichern").click();
-    cy.wait("@updateData").then((interceptor) => {
-      expect(interceptor.request.body).to.deep.equal([
-        {
-          dataSectionId: "s1",
-          dataFieldId: "f1",
-          value: "val1add1",
-          row: 0,
-        },
-        { dataSectionId: "s1", dataFieldId: "f2", value: "val2add2", row: 0 },
-      ]);
-      expect(interceptor.response?.statusCode).to.equal(200);
-      cy.wrap(
-        router.push(
-          `/organizations/${orgaId}/models/${modelId}/items/${otherItem.id}`,
-        ),
-      ).then(() => {
-        cy.wait("@getItem").its("response.statusCode").should("eq", 200);
-        cy.wait("@getProductModelData")
-          .its("response.statusCode")
-          .should("eq", 200);
-        cy.get('[data-cy="s1.f1.0"]').should("have.value", "otherVal1");
-        cy.get('[data-cy="s1.f2.0"]').should("have.value", "otherVal2");
+    ).then(() => {
+      cy.wait("@getItem").its("response.statusCode").should("eq", 200);
+      cy.wait("@getProductModelData")
+        .its("response.statusCode")
+        .should("eq", 200);
+      cy.contains("Artikelpass Informationen").should("be.visible");
+      cy.get('[data-cy="section-card-s3"]').within(() => {
+        cy.contains("Wird auf Modelebene gesetzt").should("be.visible");
+        cy.contains("Speichern").should("not.exist");
+      });
+      cy.get('[data-cy="s1.f1.0"]').should("have.value", "val1");
+      cy.get('[data-cy="s1.f2.0"]').should("have.value", "val2");
+      cy.get('[data-cy="s1.f3.0"]').should(
+        "contain.text",
+        "Wird auf Modelebene gesetzt",
+      );
+      cy.get('[data-cy="s1.f1.0"]').type("add1");
+      cy.get('[data-cy="s1.f2.0"]').type("add2");
+      cy.contains("button", "Speichern").click();
+      cy.wait("@updateData").then((interceptor) => {
+        expect(interceptor.request.body).to.deep.equal([
+          {
+            dataSectionId: "s1",
+            dataFieldId: "f1",
+            value: "val1add1",
+            row: 0,
+          },
+          { dataSectionId: "s1", dataFieldId: "f2", value: "val2add2", row: 0 },
+        ]);
+        expect(interceptor.response?.statusCode).to.equal(200);
+        cy.wrap(
+          router.push(
+            `/organizations/${orgaId}/models/${modelId}/items/${otherItem.id}`,
+          ),
+        ).then(() => {
+          cy.wait("@getItem").its("response.statusCode").should("eq", 200);
+          cy.wait("@getProductModelData")
+            .its("response.statusCode")
+            .should("eq", 200);
+          cy.get('[data-cy="s1.f1.0"]').should("have.value", "otherVal1");
+          cy.get('[data-cy="s1.f2.0"]').should("have.value", "otherVal2");
+        });
       });
     });
   });

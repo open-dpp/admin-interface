@@ -1,6 +1,6 @@
 <template>
   <section>
-    <div class="flex flex-col gap-3 p-3">
+    <div v-if="!fetchInFlight" class="flex flex-col gap-3 p-3">
       <DraftsList v-if="drafts.length > 0" :drafts="drafts" />
       <EmptyState
         v-else
@@ -20,10 +20,13 @@ import EmptyState from "../../components/models/EmptyState.vue";
 import { useIndexStore } from "../../stores";
 
 const indexStore = useIndexStore();
+const fetchInFlight = ref(true);
 
 const drafts = ref<ProductDataModelDraftGetAllDto[]>([]);
 
 onMounted(async () => {
+  fetchInFlight.value = true;
   drafts.value = (await apiClient.productDataModelDrafts.getAll()).data;
+  fetchInFlight.value = false;
 });
 </script>

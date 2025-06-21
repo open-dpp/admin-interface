@@ -39,7 +39,7 @@ import {
   LayoutDto,
 } from "@open-dpp/api-client";
 import { useDraftStore } from "../../stores/draft";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { useDraftSidebarStore } from "../../stores/draftSidebar";
 import { useNotificationStore } from "../../stores/notification";
 

@@ -48,7 +48,14 @@ export const useNotificationStore = defineStore("notification", () => {
     message: string,
     actionLink?: ActionLink,
     duration: number = 6000,
-  ) => addNotification(message, NotificationType.ERROR, actionLink, duration);
+  ) => {
+    return addNotification(
+      message,
+      NotificationType.ERROR,
+      actionLink,
+      duration,
+    );
+  };
 
   const addInfoNotification = (
     message: string,

@@ -11,3 +11,5 @@ export const VIEW_ROOT_URL = import.meta.env.VITE_VIEW_ROOT_URL;
 const LOCAL_STORAGE_PREFIX = "open-dpp-local";
 export const LAST_SELECTED_ORGANIZATION_ID_KEY = `${LOCAL_STORAGE_PREFIX}-last-selected-organization-id`;
 export const QUICK_ACCESS_ITEMS_KEY = `${LOCAL_STORAGE_PREFIX}-quick-access-items`;
+
+export const PRO_ALPHA_INTEGRATION_ID = "pro-alpha";

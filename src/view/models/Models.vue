@@ -1,6 +1,6 @@
 <template>
   <section>
-    <div class="flex flex-col gap-3 p-3">
+    <div v-if="!fetchInFlight" class="flex flex-col gap-3 p-3">
       <ModelList v-if="modelsStore.models.length > 0" @edit="onSelect" />
       <EmptyState
         v-else
@@ -19,7 +19,7 @@ import { useIndexStore } from "../../stores";
 
 const modelsStore = useModelsStore();
 const indexStore = useIndexStore();
-
+const fetchInFlight = ref(true);
 const selectedProductId = ref<string>();
 
 const onSelect = async (productId: string) => {
@@ -27,6 +27,8 @@ const onSelect = async (productId: string) => {
 };
 
 onMounted(async () => {
+  fetchInFlight.value = true;
   await modelsStore.getModels();
+  fetchInFlight.value = false;
 });
 </script>
