@@ -18,8 +18,9 @@ describe("<IntegrationView />", () => {
     cy.wrap(router.push(`/organizations/${orgaId}/integrations`));
 
     cy.contains("Alle Ihre Integrationen").should("be.visible");
-    cy.contains("Editieren").click();
     cy.spy(router, "push").as("pushSpy");
+    cy.contains("Editieren").click();
+
     cy.get("@pushSpy").should(
       "have.been.calledWith",
       `/organizations/${orgaId}/integrations/pro-alpha/connections`,

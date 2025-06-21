@@ -5,12 +5,21 @@ import {
   AasConnectionGetAllDto,
   CreateAasConnectionDto,
 } from "@open-dpp/api-client";
+import { useErrorHandlingStore } from "./error.handling";
 
 export const useAasConnectionStore = defineStore("aas-integration", () => {
   const aasConnections = ref<AasConnectionGetAllDto[]>([]);
+  const errorHandlingStore = useErrorHandlingStore();
   const fetchConnections = async () => {
-    const response = await apiClient.aasIntegration.getAllConnections();
-    aasConnections.value = response.data;
+    try {
+      const response = await apiClient.aasIntegration.getAllConnections();
+      aasConnections.value = response.data;
+    } catch (error) {
+      errorHandlingStore.logErrorWithNotification(
+        "Laden der Verbindungen fehlgeschlagen:",
+        error,
+      );
+    }
   };
 
   const createConnection = async (data: CreateAasConnectionDto) => {

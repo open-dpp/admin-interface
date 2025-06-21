@@ -9,7 +9,22 @@
       </div>
     </div>
     <div>
-      <CreateConnectionForm v-if="modelsStore.models" />
+      <CreateConnectionForm
+        v-if="modelsStore.models && modelsStore.models.length > 0"
+      />
+      <div
+        v-if="modelsStore.models && modelsStore.models.length === 0"
+        class="text-gray-500 p-4"
+      >
+        Kein Modellpass vorhanden, für den Artikelpässe automatisiert über eine
+        Verbindung erstellt werden können. Bitte
+        <router-link
+          :to="`/organizations/${indexStore.selectedOrganization}/models`"
+          class="text-blue-600 hover:text-blue-800 underline"
+        >
+          erstellen Sie zuerst einen Modellpass.
+        </router-link>
+      </div>
     </div>
   </div>
 </template>
@@ -18,8 +33,10 @@
 import { onMounted } from "vue";
 import { useModelsStore } from "../../stores/models";
 import CreateConnectionForm from "../../components/integrations/CreateConnectionForm.vue";
+import { useIndexStore } from "../../stores";
 
 const modelsStore = useModelsStore();
+const indexStore = useIndexStore();
 
 onMounted(async () => {
   await modelsStore.getModels();

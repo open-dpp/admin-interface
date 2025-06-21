@@ -69,6 +69,6 @@ describe("AasConnectionStore", () => {
         mockedConnection,
       ),
     );
-    expect(result).toEqual(result);
+    expect(result).toEqual(mockedConnection);
   });
 });

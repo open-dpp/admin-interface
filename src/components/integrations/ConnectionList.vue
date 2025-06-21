@@ -15,14 +15,17 @@ import { computed, onMounted } from "vue";
 import { useAasConnectionStore } from "../../stores/aas.connection";
 import { useIndexStore } from "../../stores";
 import { PRO_ALPHA_INTEGRATION_ID } from "../../const";
+import { AasConnectionGetAllDto } from "@open-dpp/api-client";
 
 const aasIntegrationStore = useAasConnectionStore();
 const indexStore = useIndexStore();
 const rows = computed(() => {
-  return aasIntegrationStore.aasConnections.map((c) => ({
-    id: c.id,
-    name: c.name,
-  }));
+  return aasIntegrationStore.aasConnections.map(
+    (c: AasConnectionGetAllDto) => ({
+      id: c.id,
+      name: c.name,
+    }),
+  );
 });
 
 const actions = [

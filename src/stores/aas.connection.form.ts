@@ -8,6 +8,7 @@ import {
   GranularityLevel,
   SectionType,
 } from "@open-dpp/api-client";
+import { useErrorHandlingStore } from "./error.handling";
 
 function aasDropdownValue(parentIdShort: string, idShort: string) {
   return [parentIdShort, idShort].join("/");
@@ -46,7 +47,7 @@ export const useAasConnectionFormStore = defineStore(
   () => {
     const formData = ref<Record<string, string>>({});
     const formSchema = ref();
-
+    const errorHandlingStore = useErrorHandlingStore();
     const granularityLevel = GranularityLevel.ITEM;
     const fetchInFlight = ref<boolean>(false);
     const lastRowIndex = ref<number>(0);
@@ -175,38 +176,45 @@ export const useAasConnectionFormStore = defineStore(
     };
 
     const submitModifications = async () => {
-      if (aasConnection.value) {
-        const fieldAssignments = Object.entries(formData.value)
-          .map(([key, value]) => {
-            const [source, keyIndex] = key.split("-");
-            if (source === "aas") {
-              const ddpField = formData.value[`dpp-${keyIndex}`];
-              if (!ddpField) {
+      try {
+        if (aasConnection.value) {
+          const fieldAssignments = Object.entries(formData.value)
+            .map(([key, value]) => {
+              const [source, keyIndex] = key.split("-");
+              if (source === "aas") {
+                const ddpField = formData.value[`dpp-${keyIndex}`];
+                if (!ddpField) {
+                  return undefined;
+                }
+                const aasValues = aasDropdownValueToAasId(value);
+                const dppValues = dataFieldDropdownValueToDppId(ddpField);
+                return {
+                  dataFieldId: dppValues.dataFieldId,
+                  sectionId: dppValues.sectionId,
+                  idShortParent: aasValues.parentIdShort,
+                  idShort: aasValues.idShort,
+                };
+              } else {
                 return undefined;
               }
-              const aasValues = aasDropdownValueToAasId(value);
-              const dppValues = dataFieldDropdownValueToDppId(ddpField);
-              return {
-                dataFieldId: dppValues.dataFieldId,
-                sectionId: dppValues.sectionId,
-                idShortParent: aasValues.parentIdShort,
-                idShort: aasValues.idShort,
-              };
-            } else {
-              return undefined;
-            }
-          })
-          .filter((a) => a !== undefined);
+            })
+            .filter((a) => a !== undefined);
 
-        const response = await apiClient.aasIntegration.modifyConnection(
-          aasConnection.value.id,
-          {
-            name: aasConnection.value.name,
-            modelId: aasConnection.value.modelId,
-            fieldAssignments,
-          },
+          const response = await apiClient.aasIntegration.modifyConnection(
+            aasConnection.value.id,
+            {
+              name: aasConnection.value.name,
+              modelId: aasConnection.value.modelId,
+              fieldAssignments,
+            },
+          );
+          aasConnection.value = response.data;
+        }
+      } catch (e) {
+        errorHandlingStore.logErrorWithNotification(
+          "Speichern der Verbindung fehlgeschlagen",
+          e,
         );
-        aasConnection.value = response.data;
       }
     };
 
