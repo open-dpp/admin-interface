@@ -47,6 +47,7 @@
     "eslint-config-prettier": "^10.0.2",
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-vue": "^9.32.0",
+    "fishery": "^2.3.1",
     "globals": "^16.0.0",
     "jest-diff": "^29.7.0",
     "jsdom": "^26.0.0",

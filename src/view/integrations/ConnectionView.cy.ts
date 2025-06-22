@@ -3,17 +3,20 @@ import { createMemoryHistory, createRouter } from "vue-router";
 import { API_URL, PRO_ALPHA_INTEGRATION_ID } from "../../const";
 import { routes } from "../../router";
 import {
-  AasConnectionDto,
   AasPropertyWithParentDto,
-  AssetAdministrationShellType,
-  DataFieldType,
   GranularityLevel,
-  ProductDataModelDto,
-  SectionType,
-  VisibilityLevel,
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 import ConnectionView from "./ConnectionView.vue";
+import {
+  dataFieldFactory,
+  sectionFactory,
+} from "../../fixtures/section.factory";
+import { productDataModelFactory } from "../../fixtures/product-data-model.factory";
+import {
+  aasConnectionFactory,
+  fieldAssignmentFactory,
+} from "../../fixtures/aas-connection.factory";
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -22,31 +25,7 @@ const router = createRouter({
 
 describe("<ConnectionView />", () => {
   it("renders connection and modifies it", () => {
-    const dataFieldId1 = "f1";
-    const dataFieldId2 = "f2";
-    const sectionId1 = "s1";
     const sectionId2 = "s2";
-    const aasConnection: AasConnectionDto = {
-      id: "con1",
-      name: "Connection 1",
-      modelId: "modelId",
-      aasType: AssetAdministrationShellType.Truck,
-      dataModelId: "dataModelId",
-      fieldAssignments: [
-        {
-          dataFieldId: dataFieldId1,
-          sectionId: sectionId1,
-          idShortParent: "p1",
-          idShort: "i1",
-        },
-        {
-          dataFieldId: dataFieldId2,
-          sectionId: sectionId2,
-          idShortParent: "p2",
-          idShort: "i2",
-        },
-      ],
-    };
     const mockedProperties: AasPropertyWithParentDto[] = [
       {
         parentIdShort: "p1",
@@ -66,122 +45,49 @@ describe("<ConnectionView />", () => {
       },
     ];
 
-    const productDataModel: ProductDataModelDto = {
-      id: "dataModelId",
-      name: "Test Product Data Model",
-      version: "1.0.0",
-      visibility: VisibilityLevel.PRIVATE,
-      createdByUserId: "userId",
-      ownedByOrganizationId: "orgaId",
-      sections: [
-        {
-          id: "s0",
-          name: "Section 0",
-          type: SectionType.GROUP,
-          subSections: ["s2"],
-          layout: {
-            colStart: { sm: 1 },
-            rowStart: { sm: 1 },
-            colSpan: { sm: 1 },
-            rowSpan: { sm: 1 },
-            cols: { sm: 3 },
-          },
-          dataFields: [
-            {
-              id: "f0",
-              name: "Field 0",
-              type: DataFieldType.TEXT_FIELD,
-              layout: {
-                colStart: { sm: 1 },
-                rowStart: { sm: 1 },
-                colSpan: { sm: 1 },
-                rowSpan: { sm: 1 },
-              },
-              granularityLevel: GranularityLevel.ITEM,
-            },
-          ],
-        },
-        {
-          id: sectionId1,
-          name: "Section 1",
-          type: SectionType.GROUP,
-          subSections: [],
-          layout: {
-            colStart: { sm: 1 },
-            rowStart: { sm: 1 },
-            colSpan: { sm: 1 },
-            rowSpan: { sm: 1 },
-            cols: { sm: 3 },
-          },
-          dataFields: [
-            {
-              id: dataFieldId1,
-              name: "Field 1",
-              type: DataFieldType.TEXT_FIELD,
-              layout: {
-                colStart: { sm: 1 },
-                rowStart: { sm: 1 },
-                colSpan: { sm: 1 },
-                rowSpan: { sm: 1 },
-              },
-              granularityLevel: GranularityLevel.ITEM,
-            },
-          ],
-        },
-        {
-          id: sectionId2,
-          parentId: "s0",
-          name: "Section 2",
-          type: SectionType.GROUP,
-          subSections: [],
-          layout: {
-            colStart: { sm: 1 },
-            rowStart: { sm: 1 },
-            colSpan: { sm: 1 },
-            rowSpan: { sm: 1 },
-            cols: { sm: 3 },
-          },
-          dataFields: [
-            {
-              id: dataFieldId2,
-              name: "Field 2",
-              type: DataFieldType.TEXT_FIELD,
-              layout: {
-                colStart: { sm: 1 },
-                rowStart: { sm: 1 },
-                colSpan: { sm: 1 },
-                rowSpan: { sm: 1 },
-              },
-              granularityLevel: GranularityLevel.ITEM,
-            },
-            {
-              id: "f3",
-              name: "Field 3",
-              type: DataFieldType.TEXT_FIELD,
-              layout: {
-                colStart: { sm: 2 },
-                rowStart: { sm: 1 },
-                colSpan: { sm: 1 },
-                rowSpan: { sm: 1 },
-              },
-              granularityLevel: GranularityLevel.ITEM,
-            },
-            {
-              id: "f4",
-              name: "Field 4",
-              type: DataFieldType.TEXT_FIELD,
-              layout: {
-                colStart: { sm: 3 },
-                rowStart: { sm: 1 },
-                colSpan: { sm: 1 },
-                rowSpan: { sm: 1 },
-              },
-              granularityLevel: GranularityLevel.MODEL,
-            },
-          ],
-        },
-      ],
-    };
+    const dataField1 = dataFieldFactory.build();
+    const section1 = sectionFactory.build({
+      subSections: [sectionId2],
+      dataFields: [dataField1],
+    });
+    const dataField2 = dataFieldFactory.build();
+    const section2 = sectionFactory.build({
+      dataFields: [dataField2],
+    });
+    const dataField3 = dataFieldFactory.build();
+    const dataField4 = dataFieldFactory.build();
+    const dataField5 = dataFieldFactory.build({
+      granularityLevel: GranularityLevel.MODEL,
+    });
+    const section3 = sectionFactory.build({
+      id: sectionId2,
+      parentId: section1.id,
+      dataFields: [dataField3, dataField4, dataField5],
+    });
+
+    const productDataModel = productDataModelFactory.build({
+      sections: [section1, section2, section3],
+    });
+
+    const fieldAssignment1 = fieldAssignmentFactory.build({
+      dataFieldId: dataField2.id,
+      sectionId: section2.id,
+      idShortParent: "p1",
+      idShort: "i1",
+    });
+
+    const fieldAssignment2 = fieldAssignmentFactory.build({
+      dataFieldId: dataField3.id,
+      sectionId: section3.id,
+      idShortParent: "p2",
+      idShort: "i2",
+    });
+
+    const aasConnection = aasConnectionFactory.build({
+      modelId: "modelId",
+      dataModelId: productDataModel.id,
+      fieldAssignments: [fieldAssignment1, fieldAssignment2],
+    });
 
     const orgaId = "orgaId";
 
@@ -235,6 +141,8 @@ describe("<ConnectionView />", () => {
       ),
     ).then(() => {
       cy.mountWithPinia(ConnectionView, { router });
+      cy.wait("@getModels").its("response.statusCode").should("eq", 200);
+
       cy.wait("@getConnection").its("response.statusCode").should("eq", 200);
       cy.wait("@getAasProperties").its("response.statusCode").should("eq", 200);
       cy.wait("@getProductDataModel")
@@ -248,14 +156,26 @@ describe("<ConnectionView />", () => {
       cy.contains("Truck").should("be.visible");
       cy.contains("Truck Modellpass 1.0.0").should("be.visible");
 
-      cy.get('[data-cy="dpp-select-0"]').should("have.value", "s1/f1");
-      cy.get('[data-cy="dpp-select-1"]').should("have.value", "s2/f2");
-      cy.get('[data-cy="dpp-select-0"]').select("s0/f0");
-      cy.get('[data-cy="dpp-select-1"]').select("s2/f3");
+      cy.get('[data-cy="dpp-select-0"]').should(
+        "have.value",
+        `${section2.id}/${dataField2.id}`,
+      );
+      cy.get('[data-cy="dpp-select-1"]').should(
+        "have.value",
+        `${section3.id}/${dataField3.id}`,
+      );
+      cy.get('[data-cy="dpp-select-0"]').select(
+        `${section1.id}/${dataField1.id}`,
+      );
+      cy.get('[data-cy="dpp-select-1"]').select(
+        `${section3.id}/${dataField4.id}`,
+      );
 
       cy.contains("button", "Feldverknüpfung hinzufügen").click();
       cy.get('[data-cy="aas-select-2"]').select("p1/i1");
-      cy.get('[data-cy="dpp-select-2"]').select("s1/f1");
+      cy.get('[data-cy="dpp-select-2"]').select(
+        `${section2.id}/${dataField2.id}`,
+      );
 
       cy.contains("button", "Speichern").click();
       cy.wait("@modifyConnection").then(({ request }) => {
@@ -264,20 +184,20 @@ describe("<ConnectionView />", () => {
           modelId: aasConnection.modelId,
           fieldAssignments: [
             {
-              dataFieldId: "f0",
-              sectionId: "s0",
+              dataFieldId: dataField1.id,
+              sectionId: section1.id,
               idShortParent: "p2",
               idShort: "i2",
             },
             {
-              dataFieldId: "f3",
-              sectionId: "s2",
+              dataFieldId: dataField4.id,
+              sectionId: section3.id,
               idShortParent: "p1",
               idShort: "i1",
             },
             {
-              dataFieldId: "f1",
-              sectionId: "s1",
+              dataFieldId: dataField2.id,
+              sectionId: section2.id,
               idShortParent: "p1",
               idShort: "i1",
             },
