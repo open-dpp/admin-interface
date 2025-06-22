@@ -1,5 +1,5 @@
 <template>
-  <div class="">
+  <div>
     <ListHeader
       :creation-link="`/organizations/${indexStore.selectedOrganization}/models/create`"
       creation-label="Modellpass hinzufügen"
