@@ -151,6 +151,12 @@ describe("<ItemView />", () => {
         { value: "val2", dataFieldId: "f2", dataSectionId: "s1", row: 0 },
       ],
       productDataModelId: productDataModel.id,
+      uniqueProductIdentifiers: [
+        {
+          uuid: "uuid",
+          referenceId: "someId",
+        },
+      ],
     };
 
     const otherItem: ItemDto = {
@@ -233,6 +239,9 @@ describe("<ItemView />", () => {
         .its("response.statusCode")
         .should("eq", 200);
       cy.contains("Artikelpass Informationen").should("be.visible");
+
+      cy.contains("Artikel mit ID uuid").should("be.visible");
+
       cy.get('[data-cy="section-card-s3"]').within(() => {
         cy.contains("Wird auf Modelebene gesetzt").should("be.visible");
         cy.contains("Speichern").should("not.exist");

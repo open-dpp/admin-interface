@@ -6,6 +6,7 @@ import {
   PassportDto,
   ProductDataModelDto,
   SectionDto,
+  UniqueProductIdentifierDto,
 } from "@open-dpp/api-client";
 import apiClient from "../lib/api-client";
 import { assign, keys, maxBy, minBy, pick } from "lodash";
@@ -251,11 +252,25 @@ export const usePassportFormStore = defineStore("passport.form", () => {
     fetchInFlight.value = false;
   };
 
+  const _getUUID = (uniqueProductIdentifiers: UniqueProductIdentifierDto[]) => {
+    return uniqueProductIdentifiers.length > 0
+      ? uniqueProductIdentifiers[0].uuid
+      : "Referenz nicht gesetzt";
+  };
+
+  const getUUID = () => {
+    return _getUUID(passport.value?.uniqueProductIdentifiers ?? []);
+  };
+
   const fetchItem = async (modelIdToFetch: string, id: string) => {
     fetchInFlight.value = true;
     const response = await apiClient.items.getItem(modelIdToFetch, id);
     granularityLevel.value = GranularityLevel.ITEM;
-    passport.value = { ...response.data, name: `Artikel mit ID ${id}` };
+    passport.value = {
+      ...response.data,
+      name: `Artikel mit ID ${_getUUID(response.data.uniqueProductIdentifiers)}`,
+    };
+
     modelId.value = modelIdToFetch;
     await fetchProductDataModel();
     fetchInFlight.value = false;
@@ -287,6 +302,7 @@ export const usePassportFormStore = defineStore("passport.form", () => {
   };
 
   return {
+    getUUID,
     granularityLevel,
     passport,
     productDataModel,

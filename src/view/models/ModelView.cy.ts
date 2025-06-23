@@ -144,16 +144,27 @@ describe("<ModelView />", () => {
       sections: [section1, section2, section3],
     };
 
-    const uuid = "uuid1";
+    const uuidToOtherPassport = "uuid1";
 
     const model = {
       id: "someId",
       name: "My model",
       dataValues: [
         { value: "val1", dataFieldId: "f1", dataSectionId: "s1", row: 0 },
-        { value: uuid, dataFieldId: "f2", dataSectionId: "s1", row: 0 },
+        {
+          value: uuidToOtherPassport,
+          dataFieldId: "f2",
+          dataSectionId: "s1",
+          row: 0,
+        },
       ],
       productDataModelId: productDataModel.id,
+      uniqueProductIdentifiers: [
+        {
+          uuid: "own-uuid",
+          referenceId: "someId",
+        },
+      ],
     };
 
     const otherModel = {
@@ -167,7 +178,7 @@ describe("<ModelView />", () => {
           row: 0,
         },
         {
-          value: uuid,
+          value: uuidToOtherPassport,
           dataFieldId: "f2",
           dataSectionId: "s1",
           row: 0,
@@ -217,7 +228,7 @@ describe("<ModelView />", () => {
 
     cy.intercept(
       "GET",
-      `${API_URL}/organizations/${orgaId}/unique-product-identifiers/${uuid}/reference`,
+      `${API_URL}/organizations/${orgaId}/unique-product-identifiers/${uuidToOtherPassport}/reference`,
       {
         statusCode: 200,
         body: refernceMock, // Mock response
@@ -236,12 +247,13 @@ describe("<ModelView />", () => {
       .its("response.statusCode")
       .should("eq", 200);
     cy.contains("Modellpass Informationen").should("be.visible");
+    cy.contains("own-uuid").should("be.visible");
     cy.get('[data-cy="section-card-s3"]').within(() => {
       cy.contains("Wird auf Artikelebene gesetzt").should("be.visible");
       cy.contains("Speichern").should("not.exist");
     });
     cy.get('[data-cy="s1.f1.0"]').should("have.value", "val1");
-    cy.get('[data-cy="s1.f2.0"]').should("have.value", uuid);
+    cy.get('[data-cy="s1.f2.0"]').should("have.value", uuidToOtherPassport);
     cy.get('[data-cy="s1.f3.0"]').should(
       "contain.text",
       "Wird auf Artikelebene gesetzt",
@@ -268,8 +280,9 @@ describe("<ModelView />", () => {
           .its("response.statusCode")
           .should("eq", 200);
         cy.get('[data-cy="s1.f1.0"]').should("have.value", "otherVal1");
-        cy.get('[data-cy="s1.f2.0"]').should("have.value", uuid);
+        cy.get('[data-cy="s1.f2.0"]').should("have.value", uuidToOtherPassport);
         cy.spy(router, "push").as("pushSpy");
+        cy.contains("Referenz nicht gesetzt").should("be.visible");
         cy.get('[data-cy="Visit s1.f2.0"]').click();
         cy.wait("@getUniqueProductIdentifierReference")
           .its("response.statusCode")
