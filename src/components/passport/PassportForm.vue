@@ -11,7 +11,7 @@
       :data-cy="`section-card-${section.id}`"
       class="overflow-hidden bg-white shadow sm:rounded-lg w-full"
     >
-      <SectionHeader :section="section" :is-draft-view="false" />
+      <SectionHeader :section="section" />
       <div
         v-if="
           section.granularityLevel === passportFormStore.granularityLevel ||

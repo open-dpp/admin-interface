@@ -11,12 +11,12 @@ import ConnectionView from "./ConnectionView.vue";
 import {
   dataFieldFactory,
   sectionFactory,
-} from "../../fixtures/section.factory";
-import { productDataModelFactory } from "../../fixtures/product-data-model.factory";
+} from "../../testing-utils/fixtures/section.factory";
+import { productDataModelFactory } from "../../testing-utils/fixtures/product-data-model.factory";
 import {
   aasConnectionFactory,
   fieldAssignmentFactory,
-} from "../../fixtures/aas-connection.factory";
+} from "../../testing-utils/fixtures/aas-connection.factory";
 
 const router = createRouter({
   history: createMemoryHistory(),

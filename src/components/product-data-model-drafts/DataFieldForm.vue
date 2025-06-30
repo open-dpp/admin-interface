@@ -8,23 +8,19 @@
       @submit="onSubmit"
     >
       <FormKitSchema v-if="formSchema" :schema="formSchema" />
-      <div class="flex gap-2">
-        <button
-          class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          data-cy="submit"
-          type="submit"
-        >
+      <div class="flex gap-1">
+        <BaseButton variant="primary" data-cy="submit" type="submit">
           {{ dataFieldToModify ? "Ändern" : "Hinzufügen" }}
-        </button>
-        <button
+        </BaseButton>
+        <BaseButton
           v-if="dataFieldToModify"
-          class="block rounded-md bg-red-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-red-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-red-600"
           data-cy="delete"
           type="button"
+          variant="error"
           @click="onDelete"
         >
           Datenfeld löschen
-        </button>
+        </BaseButton>
       </div>
     </FormKit>
   </div>
@@ -42,6 +38,8 @@ import { useDraftStore } from "../../stores/draft";
 import { z } from "zod/v4";
 import { useDraftSidebarStore } from "../../stores/draftSidebar";
 import { useNotificationStore } from "../../stores/notification";
+import BaseButton from "../BaseButton.vue";
+import { useModelDialogStore } from "../../stores/modal.dialog";
 
 const props = defineProps<{
   type: DataFieldType;
@@ -56,6 +54,7 @@ const formSchema = ref();
 const dataFieldToModify = ref<DataFieldDto | undefined>();
 const draftStore = useDraftStore();
 const draftSidebarStore = useDraftSidebarStore();
+const modelDialogStore = useModelDialogStore();
 
 const formSchemaFromType = (
   type: string,
@@ -146,14 +145,23 @@ watch(
       }
     }
   },
-  { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
+  { immediate: true }, // Optional: to run the watcher immediately when the component mounts
 );
 
 const onDelete = async () => {
-  if (dataFieldToModify.value) {
-    await draftStore.deleteDataField(dataFieldToModify.value.id);
-    draftSidebarStore.close();
-  }
+  modelDialogStore.open(
+    {
+      title: "Datenfeld löschen",
+      description: "Sind Sie sicher, dass Sie dieses Datenfeld löschen wollen?",
+      type: "warning",
+    },
+    async () => {
+      if (dataFieldToModify.value) {
+        await draftStore.deleteDataField(dataFieldToModify.value.id);
+        draftSidebarStore.close();
+      }
+    },
+  );
 };
 
 const onSubmit = async () => {
@@ -167,7 +175,7 @@ const onSubmit = async () => {
   const data = z
     .object({
       name: z.string(),
-      granularityLevel: z.nativeEnum(GranularityLevel),
+      granularityLevel: z.enum(GranularityLevel),
       options: z.any().optional(),
     })
     .parse({
