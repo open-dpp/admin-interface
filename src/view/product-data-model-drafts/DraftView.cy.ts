@@ -5,13 +5,14 @@ import { routes } from "../../router";
 import {
   DataFieldDto,
   DataFieldType,
+  GranularityLevel,
   ProductDataModelDraftDto,
   SectionDto,
   SectionType,
-  GranularityLevel,
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 import DraftView from "./DraftView.vue";
+import TestWrapper from "../../testing-utils/TestWrapper.vue";
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -197,7 +198,13 @@ describe("<DraftView />", () => {
     cy.wrap(
       router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
     );
-    cy.mountWithPinia(DraftView, { router });
+
+    cy.mountWithPinia(TestWrapper, {
+      slots: {
+        default: DraftView,
+      },
+      router,
+    });
 
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
     cy.get(`[data-cy="edit-section-${section.id}"]`).click();
@@ -216,7 +223,9 @@ describe("<DraftView />", () => {
     });
 
     cy.get(`[data-cy="edit-section-${section.id}"]`).click();
+
     cy.contains("Abschnitt löschen").click();
+    cy.contains("button", "Okey").click();
     cy.wait("@deleteSection").its("response.statusCode").should("eq", 200);
   });
 
@@ -536,12 +545,19 @@ describe("<DraftView />", () => {
     cy.wrap(
       router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
     );
-    cy.mountWithPinia(DraftView, { router });
+    cy.mountWithPinia(TestWrapper, {
+      slots: {
+        default: DraftView,
+      },
+      router,
+    });
 
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
 
     cy.get(`[data-cy="${dataFieldToDelete.id}"]`).click();
     cy.get('[data-cy="delete"]').click();
+
+    cy.contains("button", "Okey").click();
 
     cy.wait("@deleteDataField").its("response.statusCode").should("eq", 200);
     cy.get(`[data-cy="${dataFieldToDelete.id}"]`).should("not.exist");
@@ -702,38 +718,6 @@ describe("<DraftView />", () => {
   //   );
   // });
   //
-  // it("renders draft and deletes section", () => {
-  //   const orgaId = "orgaId";
-  //   cy.intercept(
-  //     "GET",
-  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
-  //     {
-  //       statusCode: 200,
-  //       body: draft, // Mock response
-  //     },
-  //   ).as("getDraft");
-  //
-  //   cy.intercept(
-  //     "DELETE",
-  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}`,
-  //     {
-  //       statusCode: 200,
-  //       body: draft, // Mock response
-  //     },
-  //   ).as("deleteSection");
-  //
-  //   const indexStore = useIndexStore();
-  //   indexStore.selectOrganization(orgaId);
-  //
-  //   cy.wrap(
-  //     router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
-  //   );
-  //   cy.mountWithPinia(DraftView, { router });
-  //
-  //   cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-  //   cy.get('[data-cy="deleteSection"]').click();
-  //   cy.wait("@deleteSection").its("response.statusCode").should("eq", 200);
-  // });
   //
   // it("renders draft and navigates to section edit", () => {
   //   const orgaId = "orgaId";

@@ -1,10 +1,9 @@
 <template>
   <button
     v-bind="props"
-    :type="props.type"
     :class="[
       colorClasses,
-      'm-2 block rounded-md px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs focus-visible:outline focus-visible:outline-offset-2',
+      'm-2 block rounded-md px-3 py-1.5 text-center text-sm/6 font-semibold shadow-xs focus-visible:outline focus-visible:outline-offset-2',
     ]"
     @click="emits('click', $event)"
   >
@@ -22,13 +21,12 @@ const props = defineProps<{
 }>();
 
 const colorClasses = computed(() => {
-  const defaultColors =
-    "bg-indigo-600 hover:bg-indigo-500 focus-visible:outline-indigo-600";
+  const defaultColors = "bg-white text-gray-900 hover:bg-gray-50";
   switch (props.variant) {
     case "primary":
-      return defaultColors;
+      return "bg-indigo-600 hover:bg-indigo-500 focus-visible:outline-indigo-600 text-white";
     case "error":
-      return "bg-red-600 hover:bg-red-500 focus-visible:outline-red-600";
+      return "bg-red-600 hover:bg-red-500 focus-visible:outline-red-600 text-white";
     default:
       return defaultColors;
   }

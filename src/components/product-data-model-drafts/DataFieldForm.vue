@@ -9,11 +9,7 @@
     >
       <FormKitSchema v-if="formSchema" :schema="formSchema" />
       <div class="flex gap-1">
-        <BaseButton
-          class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          data-cy="submit"
-          type="submit"
-        >
+        <BaseButton variant="primary" data-cy="submit" type="submit">
           {{ dataFieldToModify ? "Ändern" : "Hinzufügen" }}
         </BaseButton>
         <BaseButton
@@ -43,6 +39,7 @@ import { z } from "zod/v4";
 import { useDraftSidebarStore } from "../../stores/draftSidebar";
 import { useNotificationStore } from "../../stores/notification";
 import BaseButton from "../BaseButton.vue";
+import { useModelDialogStore } from "../../stores/modal.dialog";
 
 const props = defineProps<{
   type: DataFieldType;
@@ -57,6 +54,7 @@ const formSchema = ref();
 const dataFieldToModify = ref<DataFieldDto | undefined>();
 const draftStore = useDraftStore();
 const draftSidebarStore = useDraftSidebarStore();
+const modelDialogStore = useModelDialogStore();
 
 const formSchemaFromType = (
   type: string,
@@ -151,10 +149,19 @@ watch(
 );
 
 const onDelete = async () => {
-  if (dataFieldToModify.value) {
-    await draftStore.deleteDataField(dataFieldToModify.value.id);
-    draftSidebarStore.close();
-  }
+  modelDialogStore.open(
+    {
+      title: "Datenfeld löschen",
+      description: "Sind Sie sicher, dass Sie dieses Datenfeld löschen wollen?",
+      type: "warning",
+    },
+    async () => {
+      if (dataFieldToModify.value) {
+        await draftStore.deleteDataField(dataFieldToModify.value.id);
+        draftSidebarStore.close();
+      }
+    },
+  );
 };
 
 const onSubmit = async () => {
@@ -168,7 +175,7 @@ const onSubmit = async () => {
   const data = z
     .object({
       name: z.string(),
-      granularityLevel: z.nativeEnum(GranularityLevel),
+      granularityLevel: z.enum(GranularityLevel),
       options: z.any().optional(),
     })
     .parse({

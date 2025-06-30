@@ -2,6 +2,7 @@
   <BaseSectionHeader :section="props.section">
     <template #action>
       <BaseButton
+        variant="primary"
         v-if="!disabledMessage && section.type === SectionType.REPEATABLE"
         @click="onAddRow"
       >

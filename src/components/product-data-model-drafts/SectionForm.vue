@@ -9,7 +9,7 @@
     >
       <FormKitSchema v-if="formSchema" :schema="formSchema" />
       <div class="flex gap-1">
-        <BaseButton data-cy="submit" type="submit">
+        <BaseButton variant="primary" data-cy="submit" type="submit">
           {{ sectionToModify ? "Ändern" : "Hinzufügen" }}
         </BaseButton>
         <BaseButton
@@ -38,6 +38,7 @@ import { useDraftStore } from "../../stores/draft";
 import { z } from "zod/v4";
 import { useDraftSidebarStore } from "../../stores/draftSidebar";
 import BaseButton from "../BaseButton.vue";
+import { useModelDialogStore } from "../../stores/modal.dialog";
 
 const props = defineProps<{
   type: SectionType;
@@ -52,8 +53,10 @@ const formSchema = ref();
 const sectionToModify = ref<SectionDto | undefined>();
 const draftStore = useDraftStore();
 const draftSidebarStore = useDraftSidebarStore();
+const modelDialogStore = useModelDialogStore();
 
 const formSchemaFromType = (
+  type: SectionType,
   showColumnSelect: boolean,
   existingGranularityLevel: GranularityLevel | undefined,
 ) => {
@@ -84,7 +87,7 @@ const formSchemaFromType = (
     });
   }
 
-  if (!existingGranularityLevel) {
+  if (!existingGranularityLevel && type === SectionType.REPEATABLE) {
     dataSectionFormkitSchema.push({
       $formkit: "select",
       name: "granularityLevel",
@@ -97,10 +100,11 @@ const formSchemaFromType = (
 };
 
 watch(
-  [() => props.id], // The store property to watch
-  ([newId]) => {
+  [() => props.type, () => props.id], // The store property to watch
+  ([newType, newId]) => {
     const dataSection = newId ? draftStore.findSectionById(newId) : undefined;
     formSchema.value = formSchemaFromType(
+      newType,
       dataSection === undefined,
       dataSection?.granularityLevel ?? props.parentGranularityLevel,
     );
@@ -122,10 +126,19 @@ const numberFromString = z.preprocess(
 );
 
 const onDelete = async () => {
-  if (sectionToModify.value) {
-    await draftStore.deleteSection(sectionToModify.value.id);
-    draftSidebarStore.close();
-  }
+  modelDialogStore.open(
+    {
+      title: "Abschnitt löschen",
+      description: "Sind Sie sicher, dass Sie diesen Abschnitt löschen wollen?",
+      type: "warning",
+    },
+    async () => {
+      if (sectionToModify.value) {
+        await draftStore.deleteSection(sectionToModify.value.id);
+        draftSidebarStore.close();
+      }
+    },
+  );
 };
 
 const onSubmit = async () => {

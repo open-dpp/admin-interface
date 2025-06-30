@@ -34,6 +34,7 @@
         <BaseSectionHeader :section="section">
           <template #action>
             <BaseButton
+              variant="primary"
               @click="onEditSectionClicked(section)"
               :data-cy="`edit-section-${section.id}`"
             >
