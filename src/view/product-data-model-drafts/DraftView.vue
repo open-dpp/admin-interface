@@ -31,11 +31,16 @@
         :key="section.id"
         class="grid grid-cols-1 overflow-hidden bg-white shadow sm:rounded-lg w-full"
       >
-        <SectionHeader
-          :disabled="false"
-          :is-draft-view="true"
-          :section="section"
-        />
+        <BaseSectionHeader :section="section">
+          <template #action>
+            <BaseButton
+              @click="onEditSectionClicked(section)"
+              :data-cy="`edit-section-${section.id}`"
+            >
+              Editieren
+            </BaseButton>
+          </template>
+        </BaseSectionHeader>
         <div class="p-4">
           <SectionDraft :section="section" />
         </div>
@@ -56,13 +61,28 @@ import { useIndexStore } from "../../stores";
 import AddNode from "../../components/product-data-model-drafts/AddNode.vue";
 import DraftSidebar from "../../components/product-data-model-drafts/DraftSidebar.vue";
 import SectionDraft from "../../components/product-data-model-drafts/SectionDraft.vue";
-import SectionHeader from "../../components/SectionHeader.vue";
+import BaseSectionHeader from "../../components/BaseSectionHeader.vue";
+import BaseButton from "../../components/BaseButton.vue";
+import {
+  SidebarContentType,
+  useDraftSidebarStore,
+} from "../../stores/draftSidebar";
 
 const route = useRoute();
 
 const draftStore = useDraftStore();
 const notificationStore = useNotificationStore();
 const indexStore = useIndexStore();
+
+const draftSidebarStore = useDraftSidebarStore();
+
+const onEditSectionClicked = (section: SectionDto) => {
+  draftSidebarStore.open(SidebarContentType.SECTION_FORM, {
+    type: section.type,
+    layout: section.layout,
+    id: section.id,
+  });
+};
 
 const rootSections = computed<SectionDto[]>(
   () =>

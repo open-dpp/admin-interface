@@ -8,23 +8,23 @@
       @submit="onSubmit"
     >
       <FormKitSchema v-if="formSchema" :schema="formSchema" />
-      <div class="flex gap-2">
-        <button
+      <div class="flex gap-1">
+        <BaseButton
           class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           data-cy="submit"
           type="submit"
         >
           {{ dataFieldToModify ? "Ändern" : "Hinzufügen" }}
-        </button>
-        <button
+        </BaseButton>
+        <BaseButton
           v-if="dataFieldToModify"
-          class="block rounded-md bg-red-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-red-500 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-red-600"
           data-cy="delete"
           type="button"
+          variant="error"
           @click="onDelete"
         >
           Datenfeld löschen
-        </button>
+        </BaseButton>
       </div>
     </FormKit>
   </div>
@@ -42,6 +42,7 @@ import { useDraftStore } from "../../stores/draft";
 import { z } from "zod/v4";
 import { useDraftSidebarStore } from "../../stores/draftSidebar";
 import { useNotificationStore } from "../../stores/notification";
+import BaseButton from "../BaseButton.vue";
 
 const props = defineProps<{
   type: DataFieldType;
@@ -146,7 +147,7 @@ watch(
       }
     }
   },
-  { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
+  { immediate: true }, // Optional: to run the watcher immediately when the component mounts
 );
 
 const onDelete = async () => {
