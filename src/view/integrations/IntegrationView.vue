@@ -7,7 +7,7 @@
       </div>
       <div class="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
         <button
-          class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+          class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           @click="createApiKey"
         >
           API Key erstellen
@@ -49,12 +49,20 @@ const actions = [
 ];
 
 const createApiKey = async () => {
-  const response = await axiosIns.post(
-    keycloakIns.authServerUrl + "/realms/open-dpp/api-key/create",
-  );
-  if (response.status === 200) {
-    notificationStore.addSuccessNotification(
-      "API Key wurde erfolgreich erstellt: " + response.data,
+  try {
+    const response = await axiosIns.post(
+      `${keycloakIns.authServerUrl}/realms/open-dpp/api-key/create`,
+    );
+    if (response.status === 200) {
+      notificationStore.addSuccessNotification(
+        `API Key wurde erfolgreich erstellt. Bitte kopieren Sie den Schlüssel: ${response.data}`,
+        undefined,
+        24_000,
+      );
+    }
+  } catch {
+    notificationStore.addErrorNotification(
+      "Fehler beim Erstellen des API Keys. Bitte versuchen Sie es erneut.",
     );
   }
 };
