@@ -1,5 +1,5 @@
 <template>
-  <TransitionRoot as="template" :show="modelDialogStore.isOpen">
+  <TransitionRoot :show="modelDialogStore.isOpen" as="template">
     <Dialog class="relative z-20" @close="modelDialogStore.close">
       <TransitionChild
         as="template"
@@ -35,21 +35,21 @@
                 >
                   <ExclamationTriangleIcon
                     v-if="modelDialogStore.content.type === 'warning'"
-                    class="size-6 text-red-600"
                     aria-hidden="true"
+                    class="size-6 text-red-600"
                   />
                   <InformationCircleIcon
                     v-else
-                    class="size-6 text-indigo-600"
                     aria-hidden="true"
+                    class="size-6 text-indigo-600"
                   />
                 </div>
                 <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                   <DialogTitle
                     as="h3"
                     class="text-base font-semibold text-gray-900"
-                    >{{ modelDialogStore.content.title }}</DialogTitle
-                  >
+                    >{{ modelDialogStore.content.title }}
+                  </DialogTitle>
                   <div class="mt-2">
                     <p class="text-sm text-gray-500">
                       {{ modelDialogStore.content.description }}
@@ -67,7 +67,7 @@
                   type="button"
                   @click="modelDialogStore.confirm"
                 >
-                  Okey
+                  Bestätigen
                 </BaseButton>
                 <BaseButton type="button" @click="modelDialogStore.cancel">
                   Abbrechen
@@ -81,7 +81,7 @@
   </TransitionRoot>
 </template>
 
-<script setup lang="ts">
+<script lang="ts" setup>
 import {
   Dialog,
   DialogPanel,

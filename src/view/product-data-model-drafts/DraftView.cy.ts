@@ -225,7 +225,7 @@ describe("<DraftView />", () => {
     cy.get(`[data-cy="edit-section-${section.id}"]`).click();
 
     cy.contains("Abschnitt löschen").click();
-    cy.contains("button", "Okey").click();
+    cy.contains("button", "Bestätigen").click();
     cy.wait("@deleteSection").its("response.statusCode").should("eq", 200);
   });
 
@@ -557,7 +557,7 @@ describe("<DraftView />", () => {
     cy.get(`[data-cy="${dataFieldToDelete.id}"]`).click();
     cy.get('[data-cy="delete"]').click();
 
-    cy.contains("button", "Okey").click();
+    cy.contains("button", "Bestätigen").click();
 
     cy.wait("@deleteDataField").its("response.statusCode").should("eq", 200);
     cy.get(`[data-cy="${dataFieldToDelete.id}"]`).should("not.exist");
