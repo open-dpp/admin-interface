@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { useNotificationStore } from "./notification";
 
 type ConfirmAction = () => Promise<void>;
 type CancelAction = () => void;
@@ -36,7 +37,14 @@ export const useModelDialogStore = defineStore("model-dialog-store", () => {
 
   const confirm = async () => {
     if (confirmAction.value) {
-      await confirmAction.value();
+      try {
+        await confirmAction.value();
+      } catch {
+        const notificationStore = useNotificationStore();
+        notificationStore.addErrorNotification(
+          "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+        );
+      }
     }
     close();
   };
