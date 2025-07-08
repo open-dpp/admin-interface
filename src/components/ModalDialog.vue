@@ -96,7 +96,5 @@ import {
 import { useModelDialogStore } from "../stores/modal.dialog";
 import BaseButton from "./BaseButton.vue";
 
-console.log("I am here");
-
 const modelDialogStore = useModelDialogStore();
 </script>
