@@ -22,7 +22,7 @@ const organization = ref<OrganizationDto | null>(null);
 
 const fetchMembers = async () => {
   if (indexStore.selectedOrganization) {
-    const res = await apiClient.organizations.getMembers(
+    const res = await apiClient.dpp.organizations.getMembers(
       indexStore.selectedOrganization,
     );
     members.value = res.data;
@@ -31,7 +31,7 @@ const fetchMembers = async () => {
 
 onMounted(async () => {
   if (indexStore.selectedOrganization) {
-    const resOrg = await apiClient.organizations.getById(
+    const resOrg = await apiClient.dpp.organizations.getById(
       indexStore.selectedOrganization,
     );
     organization.value = resOrg.data;

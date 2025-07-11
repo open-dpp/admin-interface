@@ -7,9 +7,7 @@ export const useUniqueProductIdentifierStore = defineStore(
   () => {
     const buildLinkToReferencedProduct = async (id: string) => {
       const response =
-        await apiClient.uniqueProductIdentifiers.getUniqueProductIdentifierReference(
-          id,
-        );
+        await apiClient.dpp.uniqueProductIdentifiers.getReference(id);
       const reference = response.data;
       if (reference.granularityLevel === GranularityLevel.ITEM) {
         return `/organizations/${reference.organizationId}/models/${reference.modelId}/items/${reference.id}`;

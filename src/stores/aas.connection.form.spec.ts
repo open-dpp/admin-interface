@@ -29,16 +29,18 @@ const mocks = vi.hoisted(() => {
 vi.mock("../lib/api-client", () => ({
   default: {
     setActiveOrganizationId: vi.fn(),
-    aasIntegration: {
-      getConnection: mocks.getConnection,
-      getPropertiesOfAas: mocks.getPropertiesOfAas,
-      modifyConnection: mocks.modifyConnection,
-    },
-    models: {
-      getModelById: mocks.getModelById,
-    },
-    productDataModels: {
-      getProductDataModelById: mocks.getProductDataModelById,
+    dpp: {
+      aasIntegration: {
+        getConnection: mocks.getConnection,
+        getPropertiesOfAas: mocks.getPropertiesOfAas,
+        modifyConnection: mocks.modifyConnection,
+      },
+      models: {
+        getById: mocks.getModelById,
+      },
+      productDataModels: {
+        getById: mocks.getProductDataModelById,
+      },
     },
   },
 }));
@@ -600,14 +602,13 @@ describe("IntegrationFormStore", () => {
     await integrationFormStore.submitModifications();
 
     await waitFor(() =>
-      expect(apiClient.aasIntegration.modifyConnection).toHaveBeenCalledWith(
-        connectionId,
-        {
-          fieldAssignments: mockedAasConnectionUpdate.fieldAssignments,
-          modelId: mockedAasConnectionUpdate.modelId,
-          name: mockedAasConnectionUpdate.name,
-        },
-      ),
+      expect(
+        apiClient.dpp.aasIntegration.modifyConnection,
+      ).toHaveBeenCalledWith(connectionId, {
+        fieldAssignments: mockedAasConnectionUpdate.fieldAssignments,
+        modelId: mockedAasConnectionUpdate.modelId,
+        name: mockedAasConnectionUpdate.name,
+      }),
     );
 
     expect(integrationFormStore.formSchema).toEqual(expectedFormSchema);

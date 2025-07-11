@@ -19,9 +19,11 @@ const mocks = vi.hoisted(() => {
 vi.mock("../lib/api-client", () => ({
   default: {
     setActiveOrganizationId: vi.fn(),
-    aasIntegration: {
-      getAllConnections: mocks.getAllConnections,
-      createConnection: mocks.createConnection,
+    dpp: {
+      aasIntegration: {
+        getAllConnections: mocks.getAllConnections,
+        createConnection: mocks.createConnection,
+      },
     },
   },
 }));
@@ -65,9 +67,9 @@ describe("AasConnectionStore", () => {
     });
     const result = await aasConnectionStore.createConnection(mockedConnection);
     await waitFor(() =>
-      expect(apiClient.aasIntegration.createConnection).toHaveBeenCalledWith(
-        mockedConnection,
-      ),
+      expect(
+        apiClient.dpp.aasIntegration.createConnection,
+      ).toHaveBeenCalledWith(mockedConnection),
     );
     expect(result).toEqual(mockedConnection);
   });

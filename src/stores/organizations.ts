@@ -7,12 +7,12 @@ export const useOrganizationsStore = defineStore("organizations", () => {
   const organizations = ref<OrganizationDto[]>([]);
 
   const fetchOrganizations = async () => {
-    const response = await apiClient.organizations.getAll();
+    const response = await apiClient.dpp.organizations.getAll();
     organizations.value = response.data;
   };
 
   const createOrganization = async (data: { name: string }) => {
-    const response = await apiClient.organizations.post({
+    const response = await apiClient.dpp.organizations.post({
       name: data.name,
     });
     organizations.value.push(response.data);

@@ -16,9 +16,9 @@ import {
 
 const mocks = vi.hoisted(() => {
   return {
-    addModelData: vi.fn(),
+    addData: vi.fn(),
     getModelById: vi.fn(),
-    getItem: vi.fn(),
+    getItemById: vi.fn(),
     getProductDataModelById: vi.fn(),
   };
 });
@@ -26,15 +26,17 @@ const mocks = vi.hoisted(() => {
 vi.mock("../lib/api-client", () => ({
   default: {
     setActiveOrganizationId: vi.fn(),
-    models: {
-      addModelData: mocks.addModelData,
-      getModelById: mocks.getModelById,
-    },
-    items: {
-      getItem: mocks.getItem,
-    },
-    productDataModels: {
-      getProductDataModelById: mocks.getProductDataModelById,
+    dpp: {
+      models: {
+        addData: mocks.addData,
+        getById: mocks.getModelById,
+      },
+      items: {
+        getById: mocks.getItemById,
+      },
+      productDataModels: {
+        getById: mocks.getProductDataModelById,
+      },
     },
   },
 }));
@@ -638,7 +640,7 @@ describe("PassportFormStore", () => {
 
     const passportFormStore = usePassportFormStore();
     mocks.getProductDataModelById.mockResolvedValue({ data: productDataModel });
-    mocks.getItem.mockResolvedValue({ data: item });
+    mocks.getItemById.mockResolvedValue({ data: item });
     await passportFormStore.fetchItem(modelId, item.id);
 
     const result = passportFormStore.getFormSchema(section1Group);
@@ -704,11 +706,11 @@ describe("PassportFormStore", () => {
         row: 2,
       },
     ];
-    mocks.addModelData.mockResolvedValue({
+    mocks.addData.mockResolvedValue({
       data: { ...model, dataValues: [...model.dataValues, expected] },
     });
     await passportFormStore.addRowToSection(section1.id);
 
-    expect(mocks.addModelData).toHaveBeenCalledWith(model.id, expected);
+    expect(mocks.addData).toHaveBeenCalledWith(model.id, expected);
   });
 });

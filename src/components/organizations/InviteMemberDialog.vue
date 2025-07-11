@@ -131,7 +131,7 @@ const inviteUser = async (fields: { email: string }) => {
   try {
     if (fields.email) {
       loading.value = true;
-      const response = await apiClient.organizations.inviteUser(
+      const response = await apiClient.dpp.organizations.inviteUser(
         fields.email,
         props.organizationId,
       );
