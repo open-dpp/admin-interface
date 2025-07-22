@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import { Component, DefineComponent, markRaw, ref, shallowRef } from "vue";
-import ItemSelection from "../components/product-data-model-drafts/ItemSelection.vue";
-import DataFieldForm from "../components/product-data-model-drafts/DataFieldForm.vue";
-import SectionForm from "../components/product-data-model-drafts/SectionForm.vue";
+import ItemSelection from "../components/template-drafts/ItemSelection.vue";
+import DataFieldForm from "../components/template-drafts/DataFieldForm.vue";
+import SectionForm from "../components/template-drafts/SectionForm.vue";
 
 export enum SidebarContentType {
   ITEM_SELECTION = "ITEM_SELECTION",

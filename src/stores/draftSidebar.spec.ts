@@ -1,10 +1,10 @@
 import { createPinia, setActivePinia } from "pinia";
 import { expect, it } from "vitest";
 import { SidebarContentType, useDraftSidebarStore } from "./draftSidebar";
-import ItemSelection from "../components/product-data-model-drafts/ItemSelection.vue";
+import ItemSelection from "../components/template-drafts/ItemSelection.vue";
 import { DataFieldType, SectionType } from "@open-dpp/api-client";
-import DataFieldForm from "../components/product-data-model-drafts/DataFieldForm.vue";
-import SectionForm from "../components/product-data-model-drafts/SectionForm.vue";
+import DataFieldForm from "../components/template-drafts/DataFieldForm.vue";
+import SectionForm from "../components/template-drafts/SectionForm.vue";
 
 describe("DraftSidebarStore", () => {
   beforeEach(() => {

@@ -5,19 +5,19 @@ import {
   DataFieldDraftCreateDto,
   DataFieldDraftUpdateDto,
   LayoutDto,
-  ProductDataModelDraftCreateDto,
-  ProductDataModelDraftDto,
   PublicationCreateDto,
   ResponsiveConfigDto,
   SectionDraftCreateDto,
   SectionDraftUpdateDto,
   SectionDto,
+  TemplateDraftCreateDto,
+  TemplateDraftDto,
 } from "@open-dpp/api-client";
 
 export const useDraftStore = defineStore("draft", () => {
-  const draft = ref<ProductDataModelDraftDto>();
+  const draft = ref<TemplateDraftDto>();
 
-  const createDraft = async (data: ProductDataModelDraftCreateDto) => {
+  const createDraft = async (data: TemplateDraftCreateDto) => {
     const response = await apiClient.dpp.productDataModelDrafts.create(data);
     draft.value = response.data;
   };

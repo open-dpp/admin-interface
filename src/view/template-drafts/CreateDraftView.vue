@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts" setup>
-import CreateDraftForm from "../../components/product-data-model-drafts/CreateDraftForm.vue";
+import CreateDraftForm from "../../components/template-drafts/CreateDraftForm.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useDraftStore } from "../../stores/draft";
 

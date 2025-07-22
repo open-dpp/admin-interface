@@ -7,8 +7,8 @@ import {
   DataFieldType,
   GranularityLevel,
   LayoutDto,
-  ProductDataModelDraftDto,
   SectionType,
+  TemplateDraftDto,
   VisibilityLevel,
 } from "@open-dpp/api-client";
 
@@ -80,7 +80,7 @@ describe("DraftStore", () => {
     },
   };
 
-  const draft: ProductDataModelDraftDto = {
+  const draft: TemplateDraftDto = {
     id: "draftId",
     name: "My draft",
     version: "1.0.0",

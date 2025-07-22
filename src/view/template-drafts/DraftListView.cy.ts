@@ -2,9 +2,9 @@ import { createMemoryHistory, createRouter } from "vue-router";
 
 import { API_URL } from "../../const";
 import { routes } from "../../router";
-import { ProductDataModelDraftGetAllDto } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 import DraftListView from "./DraftListView.vue";
+import { TemplateDraftGetAllDto } from "@open-dpp/api-client";
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -13,7 +13,7 @@ const router = createRouter({
 
 describe("<DraftListView />", () => {
   it("renders drafts and creates a new one", () => {
-    const drafts: ProductDataModelDraftGetAllDto[] = [
+    const drafts: TemplateDraftGetAllDto[] = [
       {
         id: "draft1",
         name: "My first draft",
@@ -26,14 +26,10 @@ describe("<DraftListView />", () => {
 
     const orgaId = "orgaId";
 
-    cy.intercept(
-      "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts`,
-      {
-        statusCode: 200,
-        body: drafts, // Mock response
-      },
-    ).as("getDrafts");
+    cy.intercept("GET", `${API_URL}/organizations/${orgaId}/template-drafts`, {
+      statusCode: 200,
+      body: drafts, // Mock response
+    }).as("getDrafts");
 
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);
@@ -65,14 +61,10 @@ describe("<DraftListView />", () => {
   it("should fetch empty drafts on render and create first draft", () => {
     const orgaId = "orgaId";
 
-    cy.intercept(
-      "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts`,
-      {
-        statusCode: 200,
-        body: [], // Mock response
-      },
-    ).as("getDrafts");
+    cy.intercept("GET", `${API_URL}/organizations/${orgaId}/template-drafts`, {
+      statusCode: 200,
+      body: [], // Mock response
+    }).as("getDrafts");
 
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);

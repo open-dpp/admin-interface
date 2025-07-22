@@ -56,12 +56,12 @@ import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useDraftStore } from "../../stores/draft";
 import { SectionDto, Sector, VisibilityLevel } from "@open-dpp/api-client";
-import PublishDraftButton from "../../components/product-data-model-drafts/PublishDraftButton.vue";
+import PublishDraftButton from "../../components/template-drafts/PublishDraftButton.vue";
 import { useNotificationStore } from "../../stores/notification";
 import { useIndexStore } from "../../stores";
-import AddNode from "../../components/product-data-model-drafts/AddNode.vue";
-import DraftSidebar from "../../components/product-data-model-drafts/DraftSidebar.vue";
-import SectionDraft from "../../components/product-data-model-drafts/SectionDraft.vue";
+import AddNode from "../../components/template-drafts/AddNode.vue";
+import DraftSidebar from "../../components/template-drafts/DraftSidebar.vue";
+import SectionDraft from "../../components/template-drafts/SectionDraft.vue";
 import BaseSectionHeader from "../../components/BaseSectionHeader.vue";
 import BaseButton from "../../components/BaseButton.vue";
 import {
