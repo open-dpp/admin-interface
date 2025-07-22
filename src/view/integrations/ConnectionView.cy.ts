@@ -12,7 +12,7 @@ import {
   dataFieldFactory,
   sectionFactory,
 } from "../../testing-utils/fixtures/section.factory";
-import { productDataModelFactory } from "../../testing-utils/fixtures/product-data-model.factory";
+import { templateFactory } from "../../testing-utils/fixtures/template.factory";
 import {
   aasConnectionFactory,
   fieldAssignmentFactory,
@@ -65,7 +65,7 @@ describe("<ConnectionView />", () => {
       dataFields: [dataField3, dataField4, dataField5],
     });
 
-    const productDataModel = productDataModelFactory.build({
+    const productDataModel = templateFactory.build({
       sections: [section1, section2, section3],
     });
 
@@ -116,7 +116,7 @@ describe("<ConnectionView />", () => {
 
     cy.intercept(
       "GET",
-      `${API_URL}/product-data-models/${productDataModel.id}`,
+      `${API_URL}/organizations/${orgaId}/templates/${productDataModel.id}`,
       {
         statusCode: 200,
         body: productDataModel, // Mock response

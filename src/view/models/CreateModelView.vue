@@ -10,8 +10,8 @@
     </div>
     <div class="mt-8 flow-root">
       <CreateModelForm
-        v-if="productDataModels"
-        :product-data-models="productDataModels"
+        v-if="templates"
+        :templates="templates"
         @submit="onSubmit"
       />
     </div>
@@ -22,14 +22,14 @@
 import CreateModelForm from "../../components/models/CreateModelForm.vue";
 import { onMounted, ref } from "vue";
 import apiClient from "../../lib/api-client";
-import { ProductDataModelGetAllDto } from "@open-dpp/api-client";
 import { useRouter } from "vue-router";
+import { TemplateGetAllDto } from "@open-dpp/api-client";
 
 const props = defineProps<{
   organizationId: string;
 }>();
 
-const productDataModels = ref<ProductDataModelGetAllDto[]>();
+const templates = ref<TemplateGetAllDto[]>();
 const router = useRouter();
 
 const onSubmit = async (
@@ -51,7 +51,7 @@ const onSubmit = async (
 };
 
 onMounted(async () => {
-  const response = await apiClient.dpp.productDataModels.getAll();
-  productDataModels.value = response.data;
+  const response = await apiClient.dpp.templates.getAll();
+  templates.value = response.data;
 });
 </script>

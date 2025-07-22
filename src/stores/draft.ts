@@ -18,18 +18,18 @@ export const useDraftStore = defineStore("draft", () => {
   const draft = ref<TemplateDraftDto>();
 
   const createDraft = async (data: TemplateDraftCreateDto) => {
-    const response = await apiClient.dpp.productDataModelDrafts.create(data);
+    const response = await apiClient.dpp.templateDrafts.create(data);
     draft.value = response.data;
   };
 
   const fetchDraft = async (id: string) => {
-    const response = await apiClient.dpp.productDataModelDrafts.getById(id);
+    const response = await apiClient.dpp.templateDrafts.getById(id);
     draft.value = response.data;
   };
 
   const addSection = async (data: SectionDraftCreateDto) => {
     if (draft.value) {
-      const response = await apiClient.dpp.productDataModelDrafts.addSection(
+      const response = await apiClient.dpp.templateDrafts.addSection(
         draft.value.id,
         data,
       );
@@ -39,7 +39,7 @@ export const useDraftStore = defineStore("draft", () => {
 
   const deleteSection = async (sectionId: string) => {
     if (draft.value) {
-      const response = await apiClient.dpp.productDataModelDrafts.deleteSection(
+      const response = await apiClient.dpp.templateDrafts.deleteSection(
         draft.value.id,
         sectionId,
       );
@@ -52,7 +52,7 @@ export const useDraftStore = defineStore("draft", () => {
     data: SectionDraftUpdateDto,
   ) => {
     if (draft.value) {
-      const response = await apiClient.dpp.productDataModelDrafts.modifySection(
+      const response = await apiClient.dpp.templateDrafts.modifySection(
         draft.value.id,
         sectionId,
         data,
@@ -66,7 +66,7 @@ export const useDraftStore = defineStore("draft", () => {
     data: DataFieldDraftCreateDto,
   ) => {
     if (draft.value) {
-      const response = await apiClient.dpp.productDataModelDrafts.addDataField(
+      const response = await apiClient.dpp.templateDrafts.addDataField(
         draft.value.id,
         sectionId,
         data,
@@ -102,12 +102,11 @@ export const useDraftStore = defineStore("draft", () => {
   const deleteDataField = async (dataFieldId: string) => {
     const foundSection = findSectionOfDataField(dataFieldId);
     if (draft.value && foundSection) {
-      const response =
-        await apiClient.dpp.productDataModelDrafts.deleteDataField(
-          draft.value.id,
-          foundSection.id,
-          dataFieldId,
-        );
+      const response = await apiClient.dpp.templateDrafts.deleteDataField(
+        draft.value.id,
+        foundSection.id,
+        dataFieldId,
+      );
       draft.value = response.data;
     }
   };
@@ -118,20 +117,19 @@ export const useDraftStore = defineStore("draft", () => {
   ) => {
     const foundSection = findSectionOfDataField(dataFieldId);
     if (draft.value && foundSection) {
-      const response =
-        await apiClient.dpp.productDataModelDrafts.modifyDataField(
-          draft.value.id,
-          foundSection.id,
-          dataFieldId,
-          data,
-        );
+      const response = await apiClient.dpp.templateDrafts.modifyDataField(
+        draft.value.id,
+        foundSection.id,
+        dataFieldId,
+        data,
+      );
       draft.value = response.data;
     }
   };
 
   const publish = async (data: PublicationCreateDto) => {
     if (draft.value) {
-      const response = await apiClient.dpp.productDataModelDrafts.publish(
+      const response = await apiClient.dpp.templateDrafts.publish(
         draft.value.id,
         data,
       );

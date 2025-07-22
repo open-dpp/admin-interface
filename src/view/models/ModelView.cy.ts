@@ -7,10 +7,9 @@ import {
   DataFieldDto,
   DataFieldType,
   GranularityLevel,
-  ProductDataModelDto,
   SectionDto,
   SectionType,
-  VisibilityLevel,
+  TemplateDto,
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 
@@ -134,11 +133,10 @@ describe("<ModelView />", () => {
     };
 
     // see: https://on.cypress.io/mounting-vue
-    const productDataModel: ProductDataModelDto = {
+    const templateDto: TemplateDto = {
       id: "pdm1",
       name: "Laptop neu",
       version: "1.0",
-      visibility: VisibilityLevel.PRIVATE,
       createdByUserId: "userId",
       ownedByOrganizationId: "ownedByOrganizationId",
       sections: [section1, section2, section3],
@@ -158,7 +156,7 @@ describe("<ModelView />", () => {
           row: 0,
         },
       ],
-      productDataModelId: productDataModel.id,
+      productDataModelId: templateDto.id,
       uniqueProductIdentifiers: [
         {
           uuid: "own-uuid",
@@ -184,7 +182,7 @@ describe("<ModelView />", () => {
           row: 0,
         },
       ],
-      productDataModelId: productDataModel.id,
+      productDataModelId: templateDto.id,
     };
 
     const orgaId = "orga1";
@@ -203,10 +201,10 @@ describe("<ModelView />", () => {
 
     cy.intercept(
       "GET",
-      `${API_URL}/product-data-models/${productDataModel.id}`,
+      `${API_URL}/organizations/${orgaId}/templates/${templateDto.id}`,
       {
         statusCode: 200,
-        body: productDataModel, // Mock response
+        body: templateDto, // Mock response
       },
     ).as("getProductModelData");
 

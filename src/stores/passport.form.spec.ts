@@ -8,10 +8,9 @@ import {
   GranularityLevel,
   ItemDto,
   ModelDto,
-  ProductDataModelDto,
   SectionDto,
   SectionType,
-  VisibilityLevel,
+  TemplateDto,
 } from "@open-dpp/api-client";
 
 const mocks = vi.hoisted(() => {
@@ -19,7 +18,7 @@ const mocks = vi.hoisted(() => {
     addData: vi.fn(),
     getModelById: vi.fn(),
     getItemById: vi.fn(),
-    getProductDataModelById: vi.fn(),
+    getTemplateById: vi.fn(),
   };
 });
 
@@ -34,8 +33,8 @@ vi.mock("../lib/api-client", () => ({
       items: {
         getById: mocks.getItemById,
       },
-      productDataModels: {
-        getById: mocks.getProductDataModelById,
+      templates: {
+        getById: mocks.getTemplateById,
       },
     },
   },
@@ -67,11 +66,10 @@ describe("PassportFormStore", () => {
       ],
     };
 
-    passportFormStore.productDataModel = {
+    passportFormStore.template = {
       id: "pid",
       name: "Handy",
       version: "1.0.0",
-      visibility: VisibilityLevel.PUBLIC,
       ownedByOrganizationId: "oId",
       createdByUserId: "uId",
       sections: [
@@ -270,11 +268,10 @@ describe("PassportFormStore", () => {
     },
   };
 
-  const productDataModel: ProductDataModelDto = {
+  const templateDto: TemplateDto = {
     id: "pid",
     name: "Handy",
     version: "1.0.0",
-    visibility: VisibilityLevel.PUBLIC,
     ownedByOrganizationId: "oId",
     createdByUserId: "uId",
     sections: [section1, section11, section111],
@@ -330,7 +327,7 @@ describe("PassportFormStore", () => {
   it("should getFormSchemaRepeatable", async () => {
     const passportFormStore = usePassportFormStore();
 
-    mocks.getProductDataModelById.mockResolvedValue({ data: productDataModel });
+    mocks.getTemplateById.mockResolvedValue({ data: templateDto });
     mocks.getModelById.mockResolvedValue({ data: model });
     await passportFormStore.fetchModel(model.id);
 
@@ -503,11 +500,10 @@ describe("PassportFormStore", () => {
         rowSpan: { sm: 1 },
       },
     };
-    const productDataModel: ProductDataModelDto = {
+    const templateDto: TemplateDto = {
       id: "pid",
       name: "Handy",
       version: "1.0.0",
-      visibility: VisibilityLevel.PUBLIC,
       ownedByOrganizationId: "oId",
       createdByUserId: "uId",
       sections: [section1Group],
@@ -530,7 +526,7 @@ describe("PassportFormStore", () => {
     };
 
     const passportFormStore = usePassportFormStore();
-    mocks.getProductDataModelById.mockResolvedValue({ data: productDataModel });
+    mocks.getTemplateById.mockResolvedValue({ data: templateDto });
     mocks.getModelById.mockResolvedValue({ data: model });
     await passportFormStore.fetchModel(model.id);
 
@@ -613,11 +609,10 @@ describe("PassportFormStore", () => {
         rowSpan: { sm: 1 },
       },
     };
-    const productDataModel: ProductDataModelDto = {
+    const templateDto: TemplateDto = {
       id: "pid",
       name: "Handy",
       version: "1.0.0",
-      visibility: VisibilityLevel.PUBLIC,
       ownedByOrganizationId: "oId",
       createdByUserId: "uId",
       sections: [section1Group],
@@ -639,7 +634,7 @@ describe("PassportFormStore", () => {
     };
 
     const passportFormStore = usePassportFormStore();
-    mocks.getProductDataModelById.mockResolvedValue({ data: productDataModel });
+    mocks.getTemplateById.mockResolvedValue({ data: templateDto });
     mocks.getItemById.mockResolvedValue({ data: item });
     await passportFormStore.fetchItem(modelId, item.id);
 
@@ -682,7 +677,7 @@ describe("PassportFormStore", () => {
 
   it("should add row to section", async () => {
     const passportFormStore = usePassportFormStore();
-    mocks.getProductDataModelById.mockResolvedValue({ data: productDataModel });
+    mocks.getTemplateById.mockResolvedValue({ data: templateDto });
     mocks.getModelById.mockResolvedValue({ data: model });
     await passportFormStore.fetchModel(model.id);
 

@@ -26,7 +26,7 @@ const drafts = ref<TemplateDraftGetAllDto[]>([]);
 
 onMounted(async () => {
   fetchInFlight.value = true;
-  drafts.value = (await apiClient.dpp.productDataModelDrafts.getAll()).data;
+  drafts.value = (await apiClient.dpp.templateDrafts.getAll()).data;
   fetchInFlight.value = false;
 });
 </script>
