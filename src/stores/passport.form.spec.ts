@@ -52,7 +52,7 @@ describe("PassportFormStore", () => {
       id: "id1",
       name: "my model",
       uniqueProductIdentifiers: [],
-      productDataModelId: "pid",
+      templateId: "pid",
       dataValues: [
         { value: 2, dataSectionId: "s1", dataFieldId: "field1", row: 0 },
         {
@@ -281,7 +281,7 @@ describe("PassportFormStore", () => {
     id: "id1",
     description: "desc",
     uniqueProductIdentifiers: [],
-    productDataModelId: "pid",
+    templateId: "pid",
     owner: "oId",
     name: "my model",
     dataValues: [
@@ -513,7 +513,7 @@ describe("PassportFormStore", () => {
       id: "id1",
       description: "desc",
       uniqueProductIdentifiers: [],
-      productDataModelId: "pid",
+      templateId: "pid",
       owner: "oId",
       name: "my model",
       dataValues: [
@@ -622,7 +622,7 @@ describe("PassportFormStore", () => {
     const item: ItemDto = {
       id: "id1",
       uniqueProductIdentifiers: [],
-      productDataModelId: "pid",
+      templateId: "pid",
       dataValues: [
         {
           value: undefined,

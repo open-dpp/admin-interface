@@ -17,13 +17,13 @@ describe("ItemList.vue", () => {
     const items: Array<ItemDto> = [
       {
         id: "id1",
-        productDataModelId: "1",
+        templateId: "1",
         uniqueProductIdentifiers: [{ uuid: "2", referenceId: "3" }],
         dataValues: [],
       },
       {
         id: "id2",
-        productDataModelId: "5",
+        templateId: "5",
         uniqueProductIdentifiers: [{ uuid: "6", referenceId: "7" }],
         dataValues: [],
       },
@@ -56,13 +56,13 @@ describe("ItemList.vue", () => {
     const items: Array<ItemDto> = [
       {
         id: "id1",
-        productDataModelId: "1",
+        templateId: "1",
         uniqueProductIdentifiers: [{ uuid: "2", referenceId: "3" }],
         dataValues: [],
       },
       {
         id: "id2",
-        productDataModelId: "5",
+        templateId: "5",
         uniqueProductIdentifiers: [{ uuid: "6", referenceId: "7" }],
         dataValues: [],
       },

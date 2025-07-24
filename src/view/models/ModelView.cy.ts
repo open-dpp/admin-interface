@@ -7,6 +7,7 @@ import {
   DataFieldDto,
   DataFieldType,
   GranularityLevel,
+  ModelDto,
   SectionDto,
   SectionType,
   TemplateDto,
@@ -144,7 +145,7 @@ describe("<ModelView />", () => {
 
     const uuidToOtherPassport = "uuid1";
 
-    const model = {
+    const model: ModelDto = {
       id: "someId",
       name: "My model",
       dataValues: [
@@ -156,7 +157,8 @@ describe("<ModelView />", () => {
           row: 0,
         },
       ],
-      productDataModelId: templateDto.id,
+      templateId: templateDto.id,
+      owner: "o1",
       uniqueProductIdentifiers: [
         {
           uuid: "own-uuid",
@@ -165,8 +167,10 @@ describe("<ModelView />", () => {
       ],
     };
 
-    const otherModel = {
+    const otherModel: ModelDto = {
       id: "otherId",
+      owner: "o1",
+      uniqueProductIdentifiers: [],
       name: "My other model",
       dataValues: [
         {
@@ -182,7 +186,7 @@ describe("<ModelView />", () => {
           row: 0,
         },
       ],
-      productDataModelId: templateDto.id,
+      templateId: templateDto.id,
     };
 
     const orgaId = "orga1";
@@ -206,7 +210,7 @@ describe("<ModelView />", () => {
         statusCode: 200,
         body: templateDto, // Mock response
       },
-    ).as("getProductModelData");
+    ).as("getTemplate");
 
     cy.intercept(
       "PATCH",
@@ -241,9 +245,7 @@ describe("<ModelView />", () => {
     cy.wrap(router.push(`/organizations/${orgaId}/models/${model.id}`));
 
     cy.wait("@getModel").its("response.statusCode").should("eq", 200);
-    cy.wait("@getProductModelData")
-      .its("response.statusCode")
-      .should("eq", 200);
+    cy.wait("@getTemplate").its("response.statusCode").should("eq", 200);
     cy.contains("Modellpass Informationen").should("be.visible");
     cy.contains("own-uuid").should("be.visible");
     cy.get('[data-cy="section-card-s3"]').within(() => {
@@ -274,9 +276,7 @@ describe("<ModelView />", () => {
         router.push(`/organizations/${orgaId}/models/${otherModel.id}`),
       ).then(() => {
         cy.wait("@getModel").its("response.statusCode").should("eq", 200);
-        cy.wait("@getProductModelData")
-          .its("response.statusCode")
-          .should("eq", 200);
+        cy.wait("@getTemplate").its("response.statusCode").should("eq", 200);
         cy.get('[data-cy="s1.f1.0"]').should("have.value", "otherVal1");
         cy.get('[data-cy="s1.f2.0"]').should("have.value", uuidToOtherPassport);
         cy.spy(router, "push").as("pushSpy");

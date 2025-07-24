@@ -65,7 +65,7 @@ describe("<ConnectionView />", () => {
       dataFields: [dataField3, dataField4, dataField5],
     });
 
-    const productDataModel = templateFactory.build({
+    const template = templateFactory.build({
       sections: [section1, section2, section3],
     });
 
@@ -85,7 +85,7 @@ describe("<ConnectionView />", () => {
 
     const aasConnection = aasConnectionFactory.build({
       modelId: "modelId",
-      dataModelId: productDataModel.id,
+      dataModelId: template.id,
       fieldAssignments: [fieldAssignment1, fieldAssignment2],
     });
 
@@ -116,12 +116,12 @@ describe("<ConnectionView />", () => {
 
     cy.intercept(
       "GET",
-      `${API_URL}/organizations/${orgaId}/templates/${productDataModel.id}`,
+      `${API_URL}/organizations/${orgaId}/templates/${template.id}`,
       {
         statusCode: 200,
-        body: productDataModel, // Mock response
+        body: template, // Mock response
       },
-    ).as("getProductDataModel");
+    ).as("getTemplate");
 
     cy.intercept(
       "PATCH",
@@ -145,9 +145,7 @@ describe("<ConnectionView />", () => {
 
       cy.wait("@getConnection").its("response.statusCode").should("eq", 200);
       cy.wait("@getAasProperties").its("response.statusCode").should("eq", 200);
-      cy.wait("@getProductDataModel")
-        .its("response.statusCode")
-        .should("eq", 200);
+      cy.wait("@getTemplate").its("response.statusCode").should("eq", 200);
       cy.contains("Verbindungsinformationen").should("be.visible");
       cy.get('[data-cy="aas-select-0"]').should("have.value", "p1/i1");
       cy.get('[data-cy="aas-select-1"]').should("have.value", "p2/i2");

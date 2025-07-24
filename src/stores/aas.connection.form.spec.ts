@@ -702,7 +702,7 @@ describe("IntegrationFormStore", () => {
     const model: ModelDto = {
       name: "modelName",
       id: otherModelId,
-      productDataModelId: otherTemplateDto.id,
+      templateId: otherTemplateDto.id,
       owner: "o1",
       uniqueProductIdentifiers: [],
       dataValues: [],

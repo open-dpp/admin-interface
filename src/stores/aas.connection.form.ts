@@ -238,9 +238,9 @@ export const useAasConnectionFormStore = defineStore(
 
     const switchModel = async (model: ModelDto) => {
       try {
-        if (aasConnection.value && model.productDataModelId) {
+        if (aasConnection.value && model.templateId) {
           aasConnection.value.modelId = model.id;
-          aasConnection.value.dataModelId = model.productDataModelId;
+          aasConnection.value.dataModelId = model.templateId;
           const response = await apiClient.dpp.templates.getById(
             aasConnection.value.dataModelId,
           );

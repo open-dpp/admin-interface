@@ -173,7 +173,7 @@ describe("<ItemView />", () => {
           row: 0,
         },
       ],
-      productDataModelId: templateDto.id,
+      templateId: templateDto.id,
       uniqueProductIdentifiers: [
         {
           uuid: "uuid",

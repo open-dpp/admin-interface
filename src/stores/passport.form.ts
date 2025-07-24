@@ -229,9 +229,9 @@ export const usePassportFormStore = defineStore("passport.form", () => {
   };
 
   const fetchProductDataModel = async () => {
-    if (passport.value?.productDataModelId) {
+    if (passport.value?.templateId) {
       const response = await apiClient.dpp.templates.getById(
-        passport.value.productDataModelId,
+        passport.value.templateId,
       );
       template.value = response.data;
     }
