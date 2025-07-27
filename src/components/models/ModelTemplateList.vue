@@ -6,9 +6,9 @@
     </div>
     <div>
       <AdvancedListSelector
-        v-if="productDataModels"
+        v-if="templates"
         :headers="['ID', 'Name', 'Version']"
-        :items="productDataModels"
+        :items="templates"
         :pagination="{
           rowsPerPage: 5,
         }"
@@ -22,10 +22,10 @@
       >
         <template #row="{ item }">
           <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
-            {{ (item as ProductDataModelGetAllDto).name }}
+            {{ (item as TemplateGetAllDto).name }}
           </td>
           <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
-            {{ (item as ProductDataModelGetAllDto).version }}
+            {{ (item as TemplateGetAllDto).version }}
           </td>
         </template>
       </AdvancedListSelector>
@@ -39,14 +39,14 @@ import { useModelsStore } from "../../stores/models";
 import { useIndexStore } from "../../stores";
 import AdvancedListSelector from "../lists/AdvancedListSelector.vue";
 import apiClient from "../../lib/api-client";
-import { ProductDataModelGetAllDto } from "@open-dpp/api-client";
+import { TemplateGetAllDto } from "@open-dpp/api-client";
 import Tabs from "../lists/Tabs.vue";
 
 const indexStore = useIndexStore();
 const modelsStore = useModelsStore();
 
-const productDataModels = ref<ProductDataModelGetAllDto[]>();
-const selected = ref<ProductDataModelGetAllDto[]>();
+const templates = ref<TemplateGetAllDto[]>();
+const selected = ref<TemplateGetAllDto[]>();
 
 const actions = [
   {
@@ -68,8 +68,8 @@ const actions = [
 
 onMounted(async () => {
   await modelsStore.getModels();
-  const response = await apiClient.dpp.productDataModels.getAll();
-  productDataModels.value = response.data;
+  const response = await apiClient.dpp.templates.getAll();
+  templates.value = response.data;
   const marketplaceResponse =
     await apiClient.marketplace.passportTemplates.getAll();
   console.log(marketplaceResponse);

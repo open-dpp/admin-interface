@@ -55,18 +55,11 @@ const props = defineProps<{
 const templates = ref<TemplateGetAllDto[]>();
 const router = useRouter();
 
-const onSubmit = async (
-  selectedProductDataModelId: string,
-  modelName: string,
-) => {
+const onSubmit = async (templateId: string, modelName: string) => {
   const response = await apiClient.dpp.models.create({
     name: modelName,
+    templateId,
   });
-
-  await apiClient.dpp.models.assignProductDataModel(
-    selectedProductDataModelId,
-    response.data.id,
-  );
 
   await router.push(
     `/organizations/${props.organizationId}/models/${response.data.id}`,
