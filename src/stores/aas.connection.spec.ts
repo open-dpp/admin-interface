@@ -65,9 +65,9 @@ describe("AasConnectionStore", () => {
     });
     const result = await aasConnectionStore.createConnection(mockedConnection);
     await waitFor(() =>
-      expect(apiClient.aasIntegration.createConnection).toHaveBeenCalledWith(
-        mockedConnection,
-      ),
+      expect(
+        apiClient.dpp.aasIntegration.createConnection,
+      ).toHaveBeenCalledWith(mockedConnection),
     );
     expect(result).toEqual(mockedConnection);
   });

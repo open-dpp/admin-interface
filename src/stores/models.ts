@@ -10,7 +10,7 @@ export const useModelsStore = defineStore("models", () => {
 
   const getModels = async () => {
     try {
-      const response = await apiClient.models.getModels();
+      const response = await apiClient.dpp.models.getAll();
       models.value = response.data;
     } catch (e) {
       errorHandlingStore.logErrorWithNotification(
@@ -21,12 +21,12 @@ export const useModelsStore = defineStore("models", () => {
   };
 
   const getModelById = async (id: string) => {
-    const response = await apiClient.models.getModelById(id);
+    const response = await apiClient.dpp.models.getById(id);
     return response.data;
   };
 
   const createModel = async (data: ModelCreateDto) => {
-    const response = await apiClient.models.postModel(data);
+    const response = await apiClient.dpp.models.create(data);
     return response.data;
   };
 

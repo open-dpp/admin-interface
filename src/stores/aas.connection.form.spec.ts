@@ -600,14 +600,13 @@ describe("IntegrationFormStore", () => {
     await integrationFormStore.submitModifications();
 
     await waitFor(() =>
-      expect(apiClient.aasIntegration.modifyConnection).toHaveBeenCalledWith(
-        connectionId,
-        {
-          fieldAssignments: mockedAasConnectionUpdate.fieldAssignments,
-          modelId: mockedAasConnectionUpdate.modelId,
-          name: mockedAasConnectionUpdate.name,
-        },
-      ),
+      expect(
+        apiClient.dpp.aasIntegration.modifyConnection,
+      ).toHaveBeenCalledWith(connectionId, {
+        fieldAssignments: mockedAasConnectionUpdate.fieldAssignments,
+        modelId: mockedAasConnectionUpdate.modelId,
+        name: mockedAasConnectionUpdate.name,
+      }),
     );
 
     expect(integrationFormStore.formSchema).toEqual(expectedFormSchema);

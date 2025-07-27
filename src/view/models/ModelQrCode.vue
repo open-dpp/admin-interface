@@ -12,7 +12,7 @@ const route = useRoute();
 const url = ref<string>();
 
 onMounted(async () => {
-  const response = await apiClient.models.getModelById(
+  const response = await apiClient.dpp.models.getById(
     String(route.params.modelId),
   );
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

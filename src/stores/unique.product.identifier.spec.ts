@@ -48,7 +48,7 @@ describe("UniqueProductIdentifierStore", () => {
       await uniqueProductIdentifierStore.buildLinkToReferencedProduct("uuid");
     await waitFor(() =>
       expect(
-        apiClient.uniqueProductIdentifiers.getUniqueProductIdentifierReference,
+        apiClient.dpp.uniqueProductIdentifiers.getReference,
       ).toHaveBeenCalledWith("uuid"),
     );
     expect(result).toEqual(`/organizations/orgaId/models/modelId/items/refId`);
@@ -71,7 +71,7 @@ describe("UniqueProductIdentifierStore", () => {
       await uniqueProductIdentifierStore.buildLinkToReferencedProduct("uuid");
     await waitFor(() =>
       expect(
-        apiClient.uniqueProductIdentifiers.getUniqueProductIdentifierReference,
+        apiClient.dpp.uniqueProductIdentifiers.getReference,
       ).toHaveBeenCalledWith("uuid"),
     );
     expect(result).toEqual(`/organizations/orgaId/models/refId`);

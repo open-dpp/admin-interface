@@ -59,11 +59,11 @@ const onSubmit = async (
   selectedProductDataModelId: string,
   modelName: string,
 ) => {
-  const response = await apiClient.models.postModel({
+  const response = await apiClient.dpp.models.create({
     name: modelName,
   });
 
-  await apiClient.models.assignProductDataModelToModel(
+  await apiClient.dpp.models.assignProductDataModel(
     selectedProductDataModelId,
     response.data.id,
   );
@@ -80,7 +80,7 @@ const cl = async () => {
 };
 
 onMounted(async () => {
-  const response = await apiClient.productDataModels.getAll();
+  const response = await apiClient.dpp.productDataModels.getAll();
   productDataModels.value = response.data;
 });
 </script>

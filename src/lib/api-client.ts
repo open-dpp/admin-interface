@@ -1,8 +1,12 @@
-import { OpenDppApiClient } from "@open-dpp/api-client";
-import { API_URL } from "../const";
+import { API_URL, MARKETPLACE_URL } from "../const";
+import { OpenDppClient } from "@open-dpp/api-client";
 
-const apiClient = new OpenDppApiClient({
-  baseURL: API_URL,
+const apiClient = new OpenDppClient({
+  dpp: {
+    baseURL: API_URL,
+  },
+  marketplace: {
+    baseURL: MARKETPLACE_URL,
+  },
 });
-
 export default apiClient;

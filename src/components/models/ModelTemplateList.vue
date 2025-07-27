@@ -1,12 +1,35 @@
 <template>
-  <div>
-    <AdvancedListSelector
-      v-if="productDataModels"
-      :headers="['ID', 'Name', 'Version']"
-      :items="productDataModels"
-      :row-actions="actions"
-      :rows-per-page="5"
-    />
+  <div class="flex flex-col gap-4">
+    <div>Modellpassvorlagen</div>
+    <div>
+      <Tabs />
+    </div>
+    <div>
+      <AdvancedListSelector
+        v-if="productDataModels"
+        :headers="['ID', 'Name', 'Version']"
+        :items="productDataModels"
+        :pagination="{
+          rowsPerPage: 5,
+        }"
+        :row-actions="actions"
+        :selected="selected"
+        :selection="{
+          multiple: false,
+        }"
+        :show-options="true"
+        @update-selected-items="selected = $event"
+      >
+        <template #row="{ item }">
+          <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
+            {{ (item as ProductDataModelGetAllDto).name }}
+          </td>
+          <td class="px-3 py-4 text-sm whitespace-nowrap text-gray-500">
+            {{ (item as ProductDataModelGetAllDto).version }}
+          </td>
+        </template>
+      </AdvancedListSelector>
+    </div>
   </div>
 </template>
 
@@ -17,11 +40,13 @@ import { useIndexStore } from "../../stores";
 import AdvancedListSelector from "../lists/AdvancedListSelector.vue";
 import apiClient from "../../lib/api-client";
 import { ProductDataModelGetAllDto } from "@open-dpp/api-client";
+import Tabs from "../lists/Tabs.vue";
 
 const indexStore = useIndexStore();
 const modelsStore = useModelsStore();
 
 const productDataModels = ref<ProductDataModelGetAllDto[]>();
+const selected = ref<ProductDataModelGetAllDto[]>();
 
 const actions = [
   {
@@ -43,7 +68,10 @@ const actions = [
 
 onMounted(async () => {
   await modelsStore.getModels();
-  const response = await apiClient.productDataModels.getAll();
+  const response = await apiClient.dpp.productDataModels.getAll();
   productDataModels.value = response.data;
+  const marketplaceResponse =
+    await apiClient.marketplace.passportTemplates.getAll();
+  console.log(marketplaceResponse);
 });
 </script>

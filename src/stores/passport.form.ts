@@ -219,11 +219,11 @@ export const usePassportFormStore = defineStore("passport.form", () => {
       const dataValuesToCreate = generateDataValues(sectionId);
       const response =
         granularityLevel.value === GranularityLevel.MODEL
-          ? await apiClient.models.addModelData(
+          ? await apiClient.dpp.models.addData(
               passport.value.id,
               dataValuesToCreate,
             )
-          : await apiClient.items.addItemData(
+          : await apiClient.dpp.items.addData(
               modelId.value,
               passport.value.id,
               dataValuesToCreate,
@@ -234,17 +234,16 @@ export const usePassportFormStore = defineStore("passport.form", () => {
 
   const fetchProductDataModel = async () => {
     if (passport.value?.productDataModelId) {
-      const response =
-        await apiClient.productDataModels.getProductDataModelById(
-          passport.value.productDataModelId,
-        );
+      const response = await apiClient.dpp.productDataModels.getById(
+        passport.value.productDataModelId,
+      );
       productDataModel.value = response.data;
     }
   };
 
   const fetchModel = async (id: string) => {
     fetchInFlight.value = true;
-    const response = await apiClient.models.getModelById(id);
+    const response = await apiClient.dpp.models.getById(id);
     granularityLevel.value = GranularityLevel.MODEL;
     passport.value = response.data;
     modelId.value = id;
@@ -264,7 +263,7 @@ export const usePassportFormStore = defineStore("passport.form", () => {
 
   const fetchItem = async (modelIdToFetch: string, id: string) => {
     fetchInFlight.value = true;
-    const response = await apiClient.items.getItem(modelIdToFetch, id);
+    const response = await apiClient.dpp.items.getById(modelIdToFetch, id);
     granularityLevel.value = GranularityLevel.ITEM;
     passport.value = {
       ...response.data,
@@ -285,11 +284,11 @@ export const usePassportFormStore = defineStore("passport.form", () => {
       );
       const response =
         granularityLevel.value === GranularityLevel.MODEL
-          ? await apiClient.models.updateModelData(
+          ? await apiClient.dpp.models.modifyData(
               passport.value.id,
               dataValueModifications,
             )
-          : await apiClient.items.updateItemData(
+          : await apiClient.dpp.items.modifyData(
               modelId.value,
               passport.value.id,
               dataValueModifications,

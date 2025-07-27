@@ -218,7 +218,7 @@ export const useAasConnectionFormStore = defineStore(
             })
             .filter((a) => a !== undefined);
 
-          const response = await apiClient.aasIntegration.modifyConnection(
+          const response = await apiClient.dpp.aasIntegration.modifyConnection(
             aasConnection.value.id,
             {
               name: aasConnection.value.name,
@@ -241,10 +241,9 @@ export const useAasConnectionFormStore = defineStore(
         if (aasConnection.value && model.productDataModelId) {
           aasConnection.value.modelId = model.id;
           aasConnection.value.dataModelId = model.productDataModelId;
-          const response =
-            await apiClient.productDataModels.getProductDataModelById(
-              aasConnection.value.dataModelId,
-            );
+          const response = await apiClient.dpp.productDataModels.getById(
+            aasConnection.value.dataModelId,
+          );
           const productDataModel = response.data;
           await updateProductDataModelOptions(productDataModel);
           formSchema.value = formSchema.value.map((schemaItem: unknown) => {
@@ -301,12 +300,12 @@ export const useAasConnectionFormStore = defineStore(
 
     const fetchConnection = async (id: string) => {
       fetchInFlight.value = true;
-      const response = await apiClient.aasIntegration.getConnection(id);
+      const response = await apiClient.dpp.aasIntegration.getConnection(id);
       aasConnection.value = response.data;
 
       if (aasConnection.value) {
         const propertiesResponse =
-          await apiClient.aasIntegration.getPropertiesOfAas(
+          await apiClient.dpp.aasIntegration.getPropertiesOfAas(
             aasConnection.value.aasType,
           );
         const properties = propertiesResponse.data;
@@ -321,7 +320,7 @@ export const useAasConnectionFormStore = defineStore(
           })),
         }));
         const productDataModelResponse =
-          await apiClient.productDataModels.getProductDataModelById(
+          await apiClient.dpp.productDataModels.getById(
             aasConnection.value.dataModelId,
           );
         await updateProductDataModelOptions(productDataModelResponse.data);

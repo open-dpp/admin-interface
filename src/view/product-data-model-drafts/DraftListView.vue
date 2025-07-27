@@ -4,8 +4,8 @@
       <DraftsList v-if="drafts.length > 0" :drafts="drafts" />
       <EmptyState
         v-else
-        button-label="Neuen Produktpass designen"
         :button-link="`/organizations/${indexStore.selectedOrganization}/data-model-drafts/create`"
+        button-label="Neuen Produktpass designen"
       />
     </div>
   </section>
@@ -26,7 +26,7 @@ const drafts = ref<ProductDataModelDraftGetAllDto[]>([]);
 
 onMounted(async () => {
   fetchInFlight.value = true;
-  drafts.value = (await apiClient.productDataModelDrafts.getAll()).data;
+  drafts.value = (await apiClient.dpp.productDataModelDrafts.getAll()).data;
   fetchInFlight.value = false;
 });
 </script>

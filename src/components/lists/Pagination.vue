@@ -3,16 +3,24 @@
     class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6"
   >
     <div class="flex flex-1 justify-between sm:hidden">
-      <a
+      <button
         class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        href="#"
-        >Previous</a
+        @click="
+          currentPage === 0 ? () => {} : emits('page-changed', currentPage - 1)
+        "
       >
-      <a
+        Previous
+      </button>
+      <button
         class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
-        href="#"
-        >Next</a
+        @click="
+          currentPage === totalPages - 1
+            ? () => {}
+            : emits('page-changed', currentPage + 1)
+        "
       >
+        Next
+      </button>
     </div>
     <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
       <div>
@@ -40,7 +48,7 @@
           class="isolate inline-flex -space-x-px rounded-md shadow-xs"
         >
           <button
-            class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+            class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0 hover:cursor-pointer"
             @click="
               currentPage === 0
                 ? () => {}
@@ -50,56 +58,32 @@
             <span class="sr-only">Previous</span>
             <ChevronLeftIcon aria-hidden="true" class="size-5" />
           </button>
-          <!-- Current: "z-10 bg-indigo-600 text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600", Default: "text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0" -->
           <button
             v-for="(action, index) in actions"
             :key="index"
             :aria-current="action.page === currentPage ? 'page' : undefined"
             :class="{
-              'bg-indigo-600 focus-visible:outline-indigo-600':
+              'bg-indigo-600 text-white focus-visible:outline-indigo-600':
                 action.page === currentPage,
+              'text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50':
+                action.page !== currentPage,
             }"
-            class="relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 hover:cursor-pointer"
+            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 hover:cursor-pointer"
             @click="emits('page-changed', action.page)"
           >
             {{ action.page + 1 }}
           </button>
-          <a
-            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-            href="#"
-            >2</a
-          >
-          <a
-            class="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-            href="#"
-            >3</a
-          >
-          <span
-            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-gray-300 ring-inset focus:outline-offset-0"
-            >...</span
-          >
-          <a
-            class="relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
-            href="#"
-            >8</a
-          >
-          <a
-            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-            href="#"
-            >9</a
-          >
-          <a
-            class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-            href="#"
-            >10</a
-          >
-          <a
-            class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
-            href="#"
+          <button
+            class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0 hover:cursor-pointer"
+            @click="
+              currentPage === totalPages - 1
+                ? () => {}
+                : emits('page-changed', currentPage + 1)
+            "
           >
             <span class="sr-only">Next</span>
             <ChevronRightIcon aria-hidden="true" class="size-5" />
-          </a>
+          </button>
         </nav>
       </div>
     </div>
@@ -138,19 +122,31 @@ const actions = computed<
       },
     ];
   }
-  if (props.currentPage === 0) {
-    return [
-      {
-        label: String(props.currentPage),
-        page: props.currentPage,
-      },
-    ];
+
+  const result: Array<{ label: string; page: number }> = [];
+  const maxPagesToShow = 5; // Current page + 2 before + 2 after
+
+  // Calculate start and end page numbers
+  let startPage = Math.max(0, props.currentPage - 2);
+  let endPage = Math.min(totalPages.value - 1, props.currentPage + 2);
+
+  // Adjust if we're at the beginning or end
+  if (props.currentPage < 2) {
+    // If we're at the beginning, show more pages after
+    endPage = Math.min(totalPages.value - 1, startPage + maxPagesToShow - 1);
+  } else if (props.currentPage > totalPages.value - 3) {
+    // If we're at the end, show more pages before
+    startPage = Math.max(0, endPage - maxPagesToShow + 1);
   }
-  return [
-    {
-      label: String(props.currentPage),
-      page: props.currentPage,
-    },
-  ];
+
+  // Create page objects
+  for (let i = startPage; i <= endPage; i++) {
+    result.push({
+      label: String(i),
+      page: i,
+    });
+  }
+
+  return result;
 });
 </script>

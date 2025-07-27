@@ -121,7 +121,7 @@ const organization = ref<OrganizationDto>();
 
 const inviteUserToOrg = async () => {
   if (userEmailToAdd.value) {
-    const response = await apiClient.organizations.inviteUser(
+    const response = await apiClient.dpp.organizations.inviteUser(
       userEmailToAdd.value,
       props.organizationId,
     );
@@ -133,7 +133,9 @@ const inviteUserToOrg = async () => {
 };
 
 const fetchOrganization = async () => {
-  const response = await apiClient.organizations.getById(props.organizationId);
+  const response = await apiClient.dpp.organizations.getById(
+    props.organizationId,
+  );
   organization.value = response.data;
 };
 

@@ -12,7 +12,7 @@ const route = useRoute();
 const url = ref<string>();
 
 onMounted(async () => {
-  const response = await apiClient.items.getItem(
+  const response = await apiClient.dpp.items.getById(
     String(route.params.modelId),
     String(route.params.itemId),
   );
