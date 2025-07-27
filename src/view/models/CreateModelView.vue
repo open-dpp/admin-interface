@@ -24,7 +24,7 @@
           <button
             class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             type="button"
-            @click="cl"
+            @click="onSubmit"
           >
             Modelpass erstellen
           </button>
@@ -66,14 +66,12 @@ const onSubmit = async (templateId: string, modelName: string) => {
   );
 };
 
-const cl = async () => {
-  await axiosIns.get(
-    `https://marketplace.open-dpp.localhost:20080/organizations/${indexStore.selectedOrganization}/templates/passports`,
-  );
-};
-
 onMounted(async () => {
   const response = await apiClient.dpp.templates.getAll();
   templates.value = response.data;
+
+  await axiosIns.get(
+    `https://marketplace.open-dpp.localhost:20080/organizations/${indexStore.selectedOrganization}/templates/passports`,
+  );
 });
 </script>

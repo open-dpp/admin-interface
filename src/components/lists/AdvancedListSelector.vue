@@ -203,7 +203,11 @@
 <script generic="T extends AdvancedListItem" lang="ts" setup>
 import { computed, ref } from "vue";
 import { AdvancedListItem } from "./AdvancedListItem.interface";
-import { EllipsisVerticalIcon, FunnelIcon, MagnifyingGlassIcon } from "@heroicons/vue/16/solid";
+import {
+  EllipsisVerticalIcon,
+  FunnelIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/vue/16/solid";
 import Dropdown from "../Dropdown.vue";
 import Pagination from "./Pagination.vue";
 
