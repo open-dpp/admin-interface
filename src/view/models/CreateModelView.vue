@@ -55,7 +55,10 @@ const props = defineProps<{
 const templates = ref<TemplateGetAllDto[]>();
 const router = useRouter();
 
-const onSubmit = async (templateId: string, modelName: string) => {
+const onSubmit = async () => {
+  const templateId = "";
+  const modelName = "";
+
   const response = await apiClient.dpp.models.create({
     name: modelName,
     templateId,
