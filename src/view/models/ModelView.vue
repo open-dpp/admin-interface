@@ -26,7 +26,7 @@
     <PassportForm
       v-if="
         modelFormStore.passport &&
-        modelFormStore.productDataModel &&
+        modelFormStore.template &&
         !modelFormStore.fetchInFlight
       "
     />

@@ -16,16 +16,16 @@
 </template>
 
 <script lang="ts" setup>
-import { ProductDataModelDraftGetAllDto } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 import ListHeader from "../lists/ListHeader.vue";
 import { computed } from "vue";
 import SimpleTable from "../lists/SimpleTable.vue";
+import { TemplateDraftGetAllDto } from "@open-dpp/api-client";
 
 const indexStore = useIndexStore();
 
 const props = defineProps<{
-  drafts: ProductDataModelDraftGetAllDto[];
+  drafts: TemplateDraftGetAllDto[];
 }>();
 
 const rows = computed(() => {

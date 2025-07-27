@@ -91,13 +91,13 @@
                 placeholder="E-Mail"
                 type="text"
               />
-              <button
-                class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              <BaseButton
+                variant="primary"
                 type="button"
                 @click="inviteUserToOrg"
               >
                 User hinzufügen
-              </button>
+              </BaseButton>
             </div>
           </dd>
         </div>
@@ -111,6 +111,7 @@ import { onMounted, ref } from "vue";
 import { OrganizationDto } from "@open-dpp/api-client";
 import apiClient from "../../lib/api-client";
 import { UserCircleIcon } from "@heroicons/vue/20/solid";
+import BaseButton from "../../components/BaseButton.vue";
 
 const props = defineProps<{
   organizationId: string;

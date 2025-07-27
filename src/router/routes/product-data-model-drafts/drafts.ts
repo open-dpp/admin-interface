@@ -31,8 +31,7 @@ export const draftBreadcrumbs = async (to: RouteLocationNormalizedGeneric) => {
 export const DRAFT: RouteRecordRaw = {
   path: "",
   name: "Draft",
-  component: () =>
-    import("../../../view/product-data-model-drafts/DraftView.vue"),
+  component: () => import("../../../view/template-drafts/DraftView.vue"),
   beforeEnter: async (to: RouteLocationNormalizedGeneric) => {
     const layoutStore = useLayoutStore();
     layoutStore.breadcrumbs = await draftBreadcrumbs(to);
@@ -42,8 +41,7 @@ export const DRAFT: RouteRecordRaw = {
 export const DRAFT_LIST: RouteRecordRaw = {
   path: "",
   name: "Drafts",
-  component: () =>
-    import("../../../view/product-data-model-drafts/DraftListView.vue"),
+  component: () => import("../../../view/template-drafts/DraftListView.vue"),
   beforeEnter: (to: RouteLocationNormalizedGeneric) => {
     const layoutStore = useLayoutStore();
     layoutStore.breadcrumbs = draftListBreadcrumbs(to);
@@ -54,8 +52,7 @@ export const DRAFT_CREATE: RouteRecordRaw = {
   path: "create",
   name: "DraftsCreate",
   props: true,
-  component: () =>
-    import("../../../view/product-data-model-drafts/CreateDraftView.vue"),
+  component: () => import("../../../view/template-drafts/CreateDraftView.vue"),
   beforeEnter: (to: RouteLocationNormalizedGeneric) => {
     const layoutStore = useLayoutStore();
     layoutStore.breadcrumbs = [

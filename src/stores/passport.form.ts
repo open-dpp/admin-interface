@@ -4,8 +4,8 @@ import {
   DataValueDto,
   GranularityLevel,
   PassportDto,
-  ProductDataModelDto,
   SectionDto,
+  TemplateDto,
   UniqueProductIdentifierDto,
 } from "@open-dpp/api-client";
 import apiClient from "../lib/api-client";
@@ -57,7 +57,7 @@ export const usePassportFormStore = defineStore("passport.form", () => {
   const granularityLevel = ref<GranularityLevel>(GranularityLevel.MODEL);
   const modelId = ref<string>();
   const passport = ref<PassportDto & { name: string }>();
-  const productDataModel = ref<ProductDataModelDto>();
+  const template = ref<TemplateDto>();
   const fetchInFlight = ref<boolean>(false);
 
   const VALUE_FOR_OTHER_GRANULARITY_LEVEL = {
@@ -70,9 +70,7 @@ export const usePassportFormStore = defineStore("passport.form", () => {
   };
 
   const getDataOfSection = (sectionId: string): DataValueDto[] => {
-    const section = productDataModel.value?.sections.find(
-      (s) => s.id === sectionId,
-    );
+    const section = template.value?.sections.find((s) => s.id === sectionId);
     if (!section) {
       return [];
     }
@@ -104,7 +102,7 @@ export const usePassportFormStore = defineStore("passport.form", () => {
   };
 
   const findSectionById = (sectionId: string) => {
-    return productDataModel.value?.sections.find((s) => s.id === sectionId);
+    return template.value?.sections.find((s) => s.id === sectionId);
   };
 
   const getFormSchemaRepeatable = (
@@ -193,9 +191,7 @@ export const usePassportFormStore = defineStore("passport.form", () => {
     const dataValuesOfSection = getDataOfSection(sectionId);
 
     const maxRow = maxBy(dataValuesOfSection, "row")?.row;
-    const section = productDataModel.value?.sections.find(
-      (s) => s.id === sectionId,
-    );
+    const section = template.value?.sections.find((s) => s.id === sectionId);
     const dataValuesToCreate = [];
     if (!section) {
       return [];
@@ -233,11 +229,11 @@ export const usePassportFormStore = defineStore("passport.form", () => {
   };
 
   const fetchProductDataModel = async () => {
-    if (passport.value?.productDataModelId) {
-      const response = await apiClient.dpp.productDataModels.getById(
-        passport.value.productDataModelId,
+    if (passport.value?.templateId) {
+      const response = await apiClient.dpp.templates.getById(
+        passport.value.templateId,
       );
-      productDataModel.value = response.data;
+      template.value = response.data;
     }
   };
 
@@ -304,7 +300,7 @@ export const usePassportFormStore = defineStore("passport.form", () => {
     getUUID,
     granularityLevel,
     passport,
-    productDataModel,
+    template,
     fetchInFlight,
     getValueForOtherGranularityLevel,
     fetchModel,

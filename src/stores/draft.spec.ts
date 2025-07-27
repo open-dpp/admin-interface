@@ -7,8 +7,8 @@ import {
   DataFieldType,
   GranularityLevel,
   LayoutDto,
-  ProductDataModelDraftDto,
   SectionType,
+  TemplateDraftDto,
   VisibilityLevel,
 } from "@open-dpp/api-client";
 
@@ -29,16 +29,18 @@ const mocks = vi.hoisted(() => {
 vi.mock("../lib/api-client", () => ({
   default: {
     setActiveOrganizationId: vi.fn(),
-    productDataModelDrafts: {
-      getById: mocks.getDraftId,
-      addSection: mocks.addSection,
-      addDataField: mocks.addDataField,
-      deleteSection: mocks.deleteSection,
-      deleteDataField: mocks.deleteDataField,
-      modifySection: mocks.modifySection,
-      modifyDataField: mocks.modifyDataField,
-      publish: mocks.publish,
-      create: mocks.create,
+    dpp: {
+      templateDrafts: {
+        getById: mocks.getDraftId,
+        addSection: mocks.addSection,
+        addDataField: mocks.addDataField,
+        deleteSection: mocks.deleteSection,
+        deleteDataField: mocks.deleteDataField,
+        modifySection: mocks.modifySection,
+        modifyDataField: mocks.modifyDataField,
+        publish: mocks.publish,
+        create: mocks.create,
+      },
     },
   },
 }));
@@ -78,7 +80,7 @@ describe("DraftStore", () => {
     },
   };
 
-  const draft: ProductDataModelDraftDto = {
+  const draft: TemplateDraftDto = {
     id: "draftId",
     name: "My draft",
     version: "1.0.0",
@@ -96,7 +98,7 @@ describe("DraftStore", () => {
     };
     await draftStore.createDraft(createDto);
     await waitFor(() =>
-      expect(apiClient.dpp.productDataModelDrafts.create).toHaveBeenCalledWith(
+      expect(apiClient.dpp.templateDrafts.create).toHaveBeenCalledWith(
         createDto,
       ),
     );
@@ -108,7 +110,7 @@ describe("DraftStore", () => {
     mocks.getDraftId.mockResolvedValue({ data: draft });
     await draftStore.fetchDraft(draft.id);
     await waitFor(() =>
-      expect(apiClient.dpp.productDataModelDrafts.getById).toHaveBeenCalledWith(
+      expect(apiClient.dpp.templateDrafts.getById).toHaveBeenCalledWith(
         draft.id,
       ),
     );
@@ -132,9 +134,10 @@ describe("DraftStore", () => {
     };
     await draftStore.addSection(newSection);
     await waitFor(() =>
-      expect(
-        apiClient.dpp.productDataModelDrafts.addSection,
-      ).toHaveBeenCalledWith(draft.id, newSection),
+      expect(apiClient.dpp.templateDrafts.addSection).toHaveBeenCalledWith(
+        draft.id,
+        newSection,
+      ),
     );
     expect(draftStore.draft).toEqual(draft);
   });
@@ -155,9 +158,11 @@ describe("DraftStore", () => {
     };
     await draftStore.modifySection(section.id, modifySection);
     await waitFor(() =>
-      expect(
-        apiClient.dpp.productDataModelDrafts.modifySection,
-      ).toHaveBeenCalledWith(draft.id, section.id, modifySection),
+      expect(apiClient.dpp.templateDrafts.modifySection).toHaveBeenCalledWith(
+        draft.id,
+        section.id,
+        modifySection,
+      ),
     );
     expect(draftStore.draft).toEqual(draft);
   });
@@ -180,9 +185,11 @@ describe("DraftStore", () => {
     };
     await draftStore.addDataField(sectionId, newDataField);
     await waitFor(() =>
-      expect(
-        apiClient.dpp.productDataModelDrafts.addDataField,
-      ).toHaveBeenCalledWith(draft.id, sectionId, newDataField),
+      expect(apiClient.dpp.templateDrafts.addDataField).toHaveBeenCalledWith(
+        draft.id,
+        sectionId,
+        newDataField,
+      ),
     );
     expect(draftStore.draft).toEqual(draft);
   });
@@ -194,9 +201,10 @@ describe("DraftStore", () => {
     const sectionId = "sectionId";
     await draftStore.deleteSection(sectionId);
     await waitFor(() =>
-      expect(
-        apiClient.dpp.productDataModelDrafts.deleteSection,
-      ).toHaveBeenCalledWith(draft.id, sectionId),
+      expect(apiClient.dpp.templateDrafts.deleteSection).toHaveBeenCalledWith(
+        draft.id,
+        sectionId,
+      ),
     );
     expect(draftStore.draft).toEqual(draft);
   });
@@ -208,9 +216,11 @@ describe("DraftStore", () => {
     const dataFieldId = section.dataFields[0].id;
     await draftStore.deleteDataField(dataFieldId);
     await waitFor(() =>
-      expect(
-        apiClient.dpp.productDataModelDrafts.deleteDataField,
-      ).toHaveBeenCalledWith(draft.id, section.id, dataFieldId),
+      expect(apiClient.dpp.templateDrafts.deleteDataField).toHaveBeenCalledWith(
+        draft.id,
+        section.id,
+        dataFieldId,
+      ),
     );
     expect(draftStore.draft).toEqual(draft);
   });
@@ -232,9 +242,12 @@ describe("DraftStore", () => {
     };
     await draftStore.modifyDataField(dataFieldId, modification);
     await waitFor(() =>
-      expect(
-        apiClient.dpp.productDataModelDrafts.modifyDataField,
-      ).toHaveBeenCalledWith(draft.id, section.id, dataFieldId, modification),
+      expect(apiClient.dpp.templateDrafts.modifyDataField).toHaveBeenCalledWith(
+        draft.id,
+        section.id,
+        dataFieldId,
+        modification,
+      ),
     );
     expect(draftStore.draft).toEqual(draft);
   });
@@ -246,7 +259,7 @@ describe("DraftStore", () => {
     const publishRequest = { visibility: VisibilityLevel.PRIVATE };
     await draftStore.publish(publishRequest);
     await waitFor(() =>
-      expect(apiClient.dpp.productDataModelDrafts.publish).toHaveBeenCalledWith(
+      expect(apiClient.dpp.templateDrafts.publish).toHaveBeenCalledWith(
         draft.id,
         publishRequest,
       ),

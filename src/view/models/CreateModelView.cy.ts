@@ -17,20 +17,17 @@ describe("<CreateModelVew />", () => {
 
     const orgaId = "orgaId";
 
-    cy.intercept(
-      "GET",
-      `${API_URL}/product-data-models?organization=${orgaId}`,
-      {
-        statusCode: 200,
-        body: [laptopModel, phoneModel], // Mock response
-      },
-    ).as("getProductDataModels");
+    cy.intercept("GET", `${API_URL}/organizations/${orgaId}/templates`, {
+      statusCode: 200,
+      body: [laptopModel, phoneModel], // Mock response
+    }).as("getTemplates");
 
     const modelId = "mid1";
     cy.intercept("POST", `${API_URL}/organizations/${orgaId}/models`, {
       statusCode: 201,
       body: { id: modelId }, // Mock response
     }).as("createModel");
+
     cy.intercept(
       "GET",
       `${API_URL}/organizations/${orgaId}/models/${modelId}`,
@@ -38,16 +35,16 @@ describe("<CreateModelVew />", () => {
         statusCode: 201,
         body: { id: modelId }, // Mock response
       },
-    ).as("getModel");
+    );
 
     cy.intercept(
       "POST",
-      `${API_URL}/organizations/${orgaId}/models/${modelId}/product-data-models/${phoneModel.id}`,
+      `${API_URL}/organizations/${orgaId}/models/${modelId}/templates/${phoneModel.id}`,
       {
         statusCode: 200,
         body: { id: modelId, productDataModelId: "p1" }, // Mock response
       },
-    ).as("assignProductDataModel");
+    ).as("assignTemplate");
 
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);
@@ -57,9 +54,7 @@ describe("<CreateModelVew />", () => {
       props: { organizationId: orgaId },
       router,
     });
-    cy.wait("@getProductDataModels")
-      .its("response.statusCode")
-      .should("eq", 200);
+    cy.wait("@getTemplates").its("response.statusCode").should("eq", 200);
     cy.get('[data-cy="name"]').type("My first model");
     cy.get('[data-cy="productDataModelId"]').select(
       `${phoneModel.name} ${phoneModel.version}`,
@@ -68,9 +63,7 @@ describe("<CreateModelVew />", () => {
     cy.wait("@createModel")
       .its("request.body")
       .should("deep.equal", { name: "My first model" });
-    cy.wait("@assignProductDataModel")
-      .its("response.statusCode")
-      .should("eq", 200);
+    cy.wait("@assignTemplate").its("response.statusCode").should("eq", 200);
     cy.get("@pushSpy").should(
       "have.been.calledWith",
       `/organizations/${orgaId}/models/${modelId}`,

@@ -19,9 +19,11 @@ const mocks = vi.hoisted(() => {
 vi.mock("../lib/api-client", () => ({
   default: {
     setActiveOrganizationId: vi.fn(),
-    aasIntegration: {
-      getAllConnections: mocks.getAllConnections,
-      createConnection: mocks.createConnection,
+    dpp: {
+      aasIntegration: {
+        getAllConnections: mocks.getAllConnections,
+        createConnection: mocks.createConnection,
+      },
     },
   },
 }));

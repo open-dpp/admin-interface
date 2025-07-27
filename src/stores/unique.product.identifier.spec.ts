@@ -10,16 +10,17 @@ import apiClient from "../lib/api-client";
 
 const mocks = vi.hoisted(() => {
   return {
-    getUniqueProductIdentifierReference: vi.fn(),
+    getReference: vi.fn(),
   };
 });
 
 vi.mock("../lib/api-client", () => ({
   default: {
     setActiveOrganizationId: vi.fn(),
-    uniqueProductIdentifiers: {
-      getUniqueProductIdentifierReference:
-        mocks.getUniqueProductIdentifierReference,
+    dpp: {
+      uniqueProductIdentifiers: {
+        getReference: mocks.getReference,
+      },
     },
   },
 }));
@@ -41,7 +42,7 @@ describe("UniqueProductIdentifierStore", () => {
         granularityLevel: GranularityLevel.ITEM,
       };
 
-    mocks.getUniqueProductIdentifierReference.mockResolvedValue({
+    mocks.getReference.mockResolvedValue({
       data: mockedUniqueProductIdentifierReference,
     });
     const result =
@@ -64,7 +65,7 @@ describe("UniqueProductIdentifierStore", () => {
         granularityLevel: GranularityLevel.MODEL,
       };
 
-    mocks.getUniqueProductIdentifierReference.mockResolvedValue({
+    mocks.getReference.mockResolvedValue({
       data: mockedUniqueProductIdentifierReference,
     });
     const result =

@@ -7,8 +7,8 @@ import {
   AasPropertyDto,
   GranularityLevel,
   ModelDto,
-  ProductDataModelDto,
   SectionType,
+  TemplateDto,
 } from "@open-dpp/api-client";
 import { useErrorHandlingStore } from "./error.handling";
 
@@ -238,10 +238,10 @@ export const useAasConnectionFormStore = defineStore(
 
     const switchModel = async (model: ModelDto) => {
       try {
-        if (aasConnection.value && model.productDataModelId) {
+        if (aasConnection.value && model.templateId) {
           aasConnection.value.modelId = model.id;
-          aasConnection.value.dataModelId = model.productDataModelId;
-          const response = await apiClient.dpp.productDataModels.getById(
+          aasConnection.value.dataModelId = model.templateId;
+          const response = await apiClient.dpp.templates.getById(
             aasConnection.value.dataModelId,
           );
           const productDataModel = response.data;
@@ -275,11 +275,9 @@ export const useAasConnectionFormStore = defineStore(
       }
     };
 
-    const updateProductDataModelOptions = async (
-      productDataModel: ProductDataModelDto,
-    ) => {
+    const updateProductDataModelOptions = async (templateDto: TemplateDto) => {
       if (aasConnection.value) {
-        productDataModelOptions.value = productDataModel.sections
+        productDataModelOptions.value = templateDto.sections
           .filter(
             (s) =>
               (s.granularityLevel === granularityLevel ||
@@ -319,10 +317,9 @@ export const useAasConnectionFormStore = defineStore(
             property: prop.property,
           })),
         }));
-        const productDataModelResponse =
-          await apiClient.dpp.productDataModels.getById(
-            aasConnection.value.dataModelId,
-          );
+        const productDataModelResponse = await apiClient.dpp.templates.getById(
+          aasConnection.value.dataModelId,
+        );
         await updateProductDataModelOptions(productDataModelResponse.data);
       }
       initializeFormData();

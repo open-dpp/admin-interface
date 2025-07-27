@@ -7,10 +7,9 @@ import {
   DataFieldType,
   GranularityLevel,
   ItemDto,
-  ProductDataModelDto,
   SectionDto,
   SectionType,
-  VisibilityLevel,
+  TemplateDto,
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 import ItemView from "./ItemView.vue";
@@ -135,11 +134,10 @@ describe("<ItemView />", () => {
     };
 
     // see: https://on.cypress.io/mounting-vue
-    const productDataModel: ProductDataModelDto = {
+    const templateDto: TemplateDto = {
       id: "pdm1",
       name: "Laptop neu",
       version: "1.0",
-      visibility: VisibilityLevel.PRIVATE,
       createdByUserId: "userId",
       ownedByOrganizationId: "ownedByOrganizationId",
       sections: [section1, section2, section3],
@@ -150,7 +148,7 @@ describe("<ItemView />", () => {
         { value: "val1", dataFieldId: "f1", dataSectionId: "s1", row: 0 },
         { value: "val2", dataFieldId: "f2", dataSectionId: "s1", row: 0 },
       ],
-      productDataModelId: productDataModel.id,
+      productDataModelId: templateDto.id,
       uniqueProductIdentifiers: [
         {
           uuid: "uuid",
@@ -175,7 +173,7 @@ describe("<ItemView />", () => {
           row: 0,
         },
       ],
-      productDataModelId: productDataModel.id,
+      templateId: templateDto.id,
       uniqueProductIdentifiers: [
         {
           uuid: "uuid",
@@ -199,14 +197,10 @@ describe("<ItemView />", () => {
       },
     ).as("getItem");
 
-    cy.intercept(
-      "GET",
-      `${API_URL}/product-data-models/${productDataModel.id}`,
-      {
-        statusCode: 200,
-        body: productDataModel, // Mock response
-      },
-    ).as("getProductModelData");
+    cy.intercept("GET", `${API_URL}/templates/${templateDto.id}`, {
+      statusCode: 200,
+      body: templateDto, // Mock response
+    }).as("getProductModelData");
 
     cy.intercept(
       "PATCH",

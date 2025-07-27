@@ -6,7 +6,7 @@ import { API_URL } from "../../const";
 import {
   DataFieldType,
   GranularityLevel,
-  ProductDataModelDraftDto,
+  TemplateDraftDto,
   SectionType,
 } from "@open-dpp/api-client";
 
@@ -53,7 +53,7 @@ describe("<Layout />", () => {
       },
     };
 
-    const draft: ProductDataModelDraftDto = {
+    const draft: TemplateDraftDto = {
       id: "draftId",
       name: "My draft",
       version: "1.0.0",
@@ -63,18 +63,14 @@ describe("<Layout />", () => {
       ownedByOrganizationId: "u2",
     };
 
-    cy.intercept(
-      "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts`,
-      {
-        statusCode: 200,
-        body: [{ id: draft.id, name: draft.name }], // Mock response
-      },
-    ).as("getDrafts");
+    cy.intercept("GET", `${API_URL}/organizations/${orgaId}/template-drafts`, {
+      statusCode: 200,
+      body: [{ id: draft.id, name: draft.name }], // Mock response
+    }).as("getDrafts");
 
     cy.intercept(
       "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}`,
       {
         statusCode: 200,
         body: draft, // Mock response
