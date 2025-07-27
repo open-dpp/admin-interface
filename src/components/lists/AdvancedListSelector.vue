@@ -146,7 +146,6 @@
                       />
                       <svg
                         class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25"
-                        fill="none"
                         viewBox="0 0 14 14"
                       >
                         <path
