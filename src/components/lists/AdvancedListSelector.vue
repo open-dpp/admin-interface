@@ -74,7 +74,8 @@
                 selection &&
                 selection.multiple &&
                 selected &&
-                selected.length > 0
+                selected.length > 0 &&
+                selection.multipleActions
               "
               class="absolute top-0 left-14 flex h-12 items-center space-x-3 bg-white sm:left-12"
             >
@@ -82,13 +83,13 @@
                 class="inline-flex items-center rounded-sm bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
                 type="button"
               >
-                Bulk edit
+                Alle bearbeiten
               </button>
               <button
                 class="inline-flex items-center rounded-sm bg-white px-2 py-1 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:bg-white"
                 type="button"
               >
-                Delete all
+                Alle löschen
               </button>
             </div>
             <table class="min-w-full table-fixed divide-y divide-gray-300">
@@ -112,6 +113,13 @@
                     </div>
                   </th>
                   <th
+                    v-if="!hideIdColumn"
+                    class="min-w-48 py-3.5 pr-3 text-left text-sm font-semibold text-gray-900"
+                    scope="col"
+                  >
+                    ID
+                  </th>
+                  <th
                     v-for="(header, index) in headers"
                     :key="index"
                     class="min-w-48 py-3.5 pr-3 text-left text-sm font-semibold text-gray-900"
@@ -126,60 +134,63 @@
               </thead>
               <tbody class="divide-y divide-gray-200 bg-white">
                 <tr
-                  v-for="item in itemsOfPage"
+                  v-for="(item, itemIndex) in itemsOfPage"
                   :key="item.id"
-                  :class="[isSelected(item) && 'bg-gray-50']"
+                  :class="[
+                    isSelected(item) && 'bg-gray-50',
+                    selection && 'hover:bg-gray-50 hover:cursor-pointer',
+                  ]"
+                  @click="selection ? toggleSelectedItem(item) : () => {}"
                 >
-                  <td v-if="selection" class="relative px-7 sm:w-12 sm:px-6">
-                    <div
-                      v-if="isSelected(item)"
-                      class="absolute inset-y-0 left-0 w-0.5 bg-indigo-600"
-                    ></div>
-                    <div
-                      class="group absolute top-1/2 left-4 -mt-2 grid size-4 grid-cols-1"
-                    >
-                      <input
-                        :checked="isSelected(item)"
-                        class="col-start-1 row-start-1 appearance-none rounded-sm border border-gray-300 bg-white checked:border-indigo-600 checked:bg-indigo-600 indeterminate:border-indigo-600 indeterminate:bg-indigo-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:border-gray-300 disabled:bg-gray-100 disabled:checked:bg-gray-100 forced-colors:appearance-auto"
-                        type="checkbox"
-                        @click.prevent="toggleSelectedItem(item)"
-                      />
-                      <svg
-                        class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25"
-                        viewBox="0 0 14 14"
-                      >
-                        <path
-                          class="opacity-0 group-has-checked:opacity-100"
-                          d="M3 8L6 11L11 3.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          class="opacity-0 group-has-indeterminate:opacity-100"
-                          d="M3 7H11"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </div>
+                  <td v-if="selection" class="px-7 sm:w-12 sm:px-6">
+                    <input
+                      :checked="isSelected(item)"
+                      :value="isSelected(item)"
+                      class="rounded-sm"
+                      type="checkbox"
+                      @input="toggleSelectedItem(item)"
+                      @click.stop
+                    />
                   </td>
                   <td
+                    v-if="!hideIdColumn"
                     :class="[
                       'py-4 pr-3 text-sm font-medium whitespace-nowrap',
                       isSelected(item) ? 'text-indigo-600' : 'text-gray-900',
                     ]"
                   >
-                    {{ item.id }} {{ isSelected(item) }}
+                    {{ item.id }}
                   </td>
                   <slot :item="item" name="row" />
                   <td
+                    v-if="itemActions && itemActions.length > 0"
                     class="py-4 pr-4 pl-3 text-right text-sm font-medium whitespace-nowrap sm:pr-3"
                   >
-                    <a class="text-indigo-600 hover:text-indigo-900" href="#">
-                      Edit<span class="sr-only">, {{ item.id }}</span>
-                    </a>
+                    <Dropdown
+                      :icon="EllipsisVerticalIcon"
+                      :items="
+                        itemActions.map((action) => {
+                          return { text: action.text, icon: action.icon };
+                        })
+                      "
+                      :position="
+                        pagination && rowsPerPage / 2 > itemIndex
+                          ? 'top'
+                          : 'bottom'
+                      "
+                      title="Aktionen"
+                      @item-clicked="
+                        (index) => emits('item-action', item.id, index)
+                      "
+                    />
+                  </td>
+                </tr>
+                <tr v-if="filteredItems.length === 0">
+                  <td
+                    :colspan="headers.length + (selection ? 1 : 0)"
+                    class="py-4 text-center w-full h-full"
+                  >
+                    Keine Elemente gefunden
                   </td>
                 </tr>
               </tbody>
@@ -200,7 +211,7 @@
 </template>
 
 <script generic="T extends AdvancedListItem" lang="ts" setup>
-import { computed, ref } from "vue";
+import { computed, type FunctionalComponent, ref } from "vue";
 import { AdvancedListItem } from "./AdvancedListItem.interface";
 import {
   EllipsisVerticalIcon,
@@ -217,10 +228,10 @@ const defaults = {
 const props = defineProps<{
   headers: string[];
   items: Array<T>;
-  rowActions: {
-    name: string;
-    actionLinkBuilder: (row: Record<string, string>) => string;
-  }[];
+  itemActions?: Array<{
+    text: string;
+    icon?: FunctionalComponent;
+  }>;
   pagination?:
     | boolean
     | {
@@ -228,6 +239,7 @@ const props = defineProps<{
       };
   selection?: {
     multiple?: boolean;
+    multipleActions?: boolean;
   };
   searchable?: boolean;
   search?: string;
@@ -236,17 +248,21 @@ const props = defineProps<{
   title?: string;
   subtitle?: string;
   showOptions?: boolean;
+  hideIdColumn?: boolean;
 }>();
 
 const emits = defineEmits<{
   (e: "update-selected-items", item: T[]): void;
   (e: "update-search", value: string): void;
+  (e: "item-action", itemId: string, actionIndex: number): void;
 }>();
 
 const page = ref<number>(0);
 
 const headers = computed(() =>
-  props.rowActions.length > 0 ? [...props.headers, "Aktionen"] : props.headers,
+  props.itemActions && props.itemActions.length > 0
+    ? [...props.headers, "Aktionen"]
+    : props.headers,
 );
 
 const rowsPerPage = computed(() => {
@@ -256,29 +272,29 @@ const rowsPerPage = computed(() => {
   return props.pagination?.rowsPerPage ?? defaults.rowsPerPage;
 });
 
-const itemsOfPage = computed(() => {
-  if (props.pagination) {
-    return props.items.slice(
-      page.value * rowsPerPage.value,
-      (page.value + 1) * rowsPerPage.value,
-    );
-  }
-  return props.items;
-});
-
 const selectedItems = computed(() => {
   return props.selected ?? [];
 });
 
 const filteredItems = computed(() => {
   if (props.search === undefined) {
-    return itemsOfPage.value;
+    return props.items;
   }
-  return itemsOfPage.value.filter((item) =>
+  return props.items.filter((item) =>
     (item as unknown as { id: string; name: string }).name.includes(
       props.search ?? "",
     ),
   );
+});
+
+const itemsOfPage = computed(() => {
+  if (props.pagination) {
+    return filteredItems.value.slice(
+      page.value * rowsPerPage.value,
+      (page.value + 1) * rowsPerPage.value,
+    );
+  }
+  return filteredItems.value;
 });
 
 const isSelected = (item: T) => {
@@ -298,7 +314,7 @@ const toggleSelectedItem = (item: T) => {
     } else {
       selected.push(item);
     }
-    emits("update-selected-items", [item]);
+    emits("update-selected-items", selected);
   } else {
     if (isSelected(item)) {
       emits("update-selected-items", []);

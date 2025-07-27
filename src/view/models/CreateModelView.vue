@@ -12,6 +12,7 @@
       <div class="flex items-center">
         <div class="flex-auto">
           <form-kit
+            v-model="name"
             data-cy="name"
             help="Geben Sie Ihrem Modellpass einen Namen"
             label="Name"
@@ -22,7 +23,7 @@
         </div>
         <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
           <button
-            class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 hover:cursor-pointer"
             type="button"
             @click="onSubmit"
           >
@@ -31,7 +32,17 @@
         </div>
       </div>
       <div>
-        <ModelTemplateList />
+        <ModelTemplateList
+          :is-marketplace-selected="isMarketplaceSelected"
+          :selected="selectedTemplate ? [selectedTemplate] : []"
+          :show-tabs="true"
+          @update-selected-items="
+            (items) => (selectedTemplate = items[0] ? items[0] : null)
+          "
+          @update-is-marketplace-selected="
+            (isSelected) => (isMarketplaceSelected = isSelected)
+          "
+        />
       </div>
     </div>
   </div>
@@ -41,27 +52,44 @@
 import { onMounted, ref } from "vue";
 import apiClient from "../../lib/api-client";
 import { useRouter } from "vue-router";
-import { TemplateGetAllDto } from "@open-dpp/api-client";
 import ModelTemplateList from "../../components/models/ModelTemplateList.vue";
 import axiosIns from "../../lib/axios";
 import { useIndexStore } from "../../stores";
+import { useNotificationStore } from "../../stores/notification";
+import { TemplateGetAllDto } from "@open-dpp/api-client";
 
+const router = useRouter();
 const indexStore = useIndexStore();
+const notificationStore = useNotificationStore();
 
 const props = defineProps<{
   organizationId: string;
 }>();
 
-const templates = ref<TemplateGetAllDto[]>();
-const router = useRouter();
+const name = ref<string>("");
+const selectedTemplate = ref<TemplateGetAllDto | null>(null);
+const isMarketplaceSelected = ref<boolean>(false);
 
 const onSubmit = async () => {
-  const templateId = "";
-  const modelName = "";
+  if (!name.value) {
+    notificationStore.addErrorNotification("Bitte geben Sie einen Namen ein.");
+    return;
+  }
+  if (!selectedTemplate.value) {
+    notificationStore.addErrorNotification(
+      "Bitte wählen Sie eine Vorlage aus.",
+    );
+    return;
+  }
 
   const response = await apiClient.dpp.models.create({
-    name: modelName,
-    templateId,
+    name: name.value,
+    templateId: isMarketplaceSelected.value
+      ? undefined
+      : selectedTemplate.value.id,
+    marketplaceResourceId: isMarketplaceSelected.value
+      ? selectedTemplate.value.id
+      : undefined,
   });
 
   await router.push(
@@ -70,9 +98,6 @@ const onSubmit = async () => {
 };
 
 onMounted(async () => {
-  const response = await apiClient.dpp.templates.getAll();
-  templates.value = response.data;
-
   await axiosIns.get(
     `https://marketplace.open-dpp.localhost:20080/organizations/${indexStore.selectedOrganization}/templates/passports`,
   );

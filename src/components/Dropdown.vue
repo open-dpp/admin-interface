@@ -2,7 +2,8 @@
   <Menu as="div" class="relative inline-block text-left">
     <div class="h-full">
       <MenuButton
-        class="h-full flex items-center rounded-full bg-gray-100 text-gray-600 hover:text-black focus:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-100 px-3 py-1 hover:cursor-pointer"
+        class="h-full flex items-center rounded-full text-gray-600 hover:text-black focus:outline-hidden focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-100 px-3 py-1 hover:cursor-pointer"
+        @click.stop
       >
         <span class="sr-only">Open options</span>
         <component :is="icon" aria-hidden="true" class="size-5" />
@@ -18,7 +19,10 @@
       leave-to-class="transform opacity-0 scale-95"
     >
       <MenuItems
-        class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden"
+        :class="[
+          'absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden',
+          position === 'bottom' ? 'bottom-full' : 'top-full',
+        ]"
       >
         <div class="px-4 py-2 text-xl font-bold">{{ title }}</div>
         <div class="py-1">
@@ -27,14 +31,14 @@
             :key="index"
             v-slot="{ active }"
           >
-            <a
+            <button
               :class="[
                 active
                   ? 'bg-gray-100 text-gray-900 outline-hidden'
                   : 'text-gray-700',
-                'group flex items-center px-4 py-2 text-sm',
+                'group flex items-center px-4 py-2 text-sm w-full hover:cursor-pointer',
               ]"
-              href="#"
+              @click="emits('item-clicked', index)"
             >
               <component
                 :is="item.icon"
@@ -46,7 +50,7 @@
                 aria-hidden="true"
               />
               {{ item.text }}
-            </a>
+            </button>
           </MenuItem>
         </div>
       </MenuItems>
@@ -65,5 +69,10 @@ defineProps<{
     icon?: FunctionalComponent;
     text: string;
   }>;
+  position?: "top" | "bottom";
+}>();
+
+const emits = defineEmits<{
+  (e: "item-clicked", index: number): void;
 }>();
 </script>

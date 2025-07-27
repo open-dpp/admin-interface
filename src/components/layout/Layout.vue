@@ -329,7 +329,11 @@ import SelectOrganization from "../organizations/SelectOrganization.vue";
 import RingLoader from "../RingLoader.vue";
 import { useLayoutStore } from "../../stores/layout";
 import NotificationHandler from "../notifications/NotificationHandler.vue";
-import { ChartBarIcon, LinkIcon } from "@heroicons/vue/16/solid";
+import {
+  ChartBarIcon,
+  LinkIcon,
+  Squares2X2Icon,
+} from "@heroicons/vue/16/solid";
 import { useProfileStore } from "../../stores/profile";
 
 const route = useRoute();
@@ -389,6 +393,12 @@ const unfilteredNavigation = computed<Array<MenuItemInterface>>(() => [
     to: "/organizations",
     icon: BuildingOfficeIcon,
     show: () => indexStore.selectedOrganization === null,
+  },
+  {
+    name: "Marktplatz",
+    to: "/marketplace",
+    icon: Squares2X2Icon,
+    show: () => indexStore.selectedOrganization !== null,
   },
 ]);
 const navigation = computed<Array<MenuItemInterface>>(() =>
