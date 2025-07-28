@@ -27,12 +27,12 @@
         <p class="text-sm text-gray-700">
           Zeigt
           {{ " " }}
-          <span class="font-medium">{{ currentPage * itemsPerPage }}</span>
+          <span class="font-medium">{{ currentPage * itemsPerPage + 1 }}</span>
           {{ " " }}
           bis
           {{ " " }}
           <span class="font-medium">{{
-            currentPage * itemsPerPage + itemsPerPage
+            Math.min((currentPage + 1) * itemsPerPage, totalItems)
           }}</span>
           {{ " " }}
           von

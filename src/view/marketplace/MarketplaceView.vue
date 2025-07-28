@@ -19,20 +19,10 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import ModelTemplateList from "../../components/models/ModelTemplateList.vue";
-import axiosIns from "../../lib/axios";
-import { useIndexStore } from "../../stores";
 import { TemplateGetAllDto } from "@open-dpp/api-client";
-
-const indexStore = useIndexStore();
 
 const selectedTemplate = ref<TemplateGetAllDto | null>(null);
 const isMarketplaceSelected = ref<boolean>(true);
-
-onMounted(async () => {
-  await axiosIns.get(
-    `https://marketplace.open-dpp.localhost:20080/organizations/${indexStore.selectedOrganization}/templates/passports`,
-  );
-});
 </script>

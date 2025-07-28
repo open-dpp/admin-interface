@@ -21,7 +21,7 @@
       <MenuItems
         :class="[
           'absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-hidden',
-          position === 'bottom' ? 'bottom-full' : 'top-full',
+          position === 'above' ? 'bottom-full' : 'top-full',
         ]"
       >
         <div class="px-4 py-2 text-xl font-bold">{{ title }}</div>
@@ -69,7 +69,7 @@ defineProps<{
     icon?: FunctionalComponent;
     text: string;
   }>;
-  position?: "top" | "bottom";
+  position?: "above" | "below";
 }>();
 
 const emits = defineEmits<{

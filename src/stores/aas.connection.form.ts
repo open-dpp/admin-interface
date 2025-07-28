@@ -79,7 +79,7 @@ export const useAasConnectionFormStore = defineStore(
       }[]
     >([]);
 
-    const productDataModelOptions = ref<
+    const templateOptions = ref<
       {
         group: string;
         options: {
@@ -143,7 +143,7 @@ export const useAasConnectionFormStore = defineStore(
                 label: `Feld aus dem Produktdatenmodell`,
                 placeholder: "Wählen Sie ein Feld aus dem Produktdatenmodell", // Add this line
                 name: dppFieldId(index),
-                options: productDataModelOptions.value,
+                options: templateOptions.value,
                 "data-cy": `dpp-select-${index}`,
               },
             ],
@@ -244,8 +244,8 @@ export const useAasConnectionFormStore = defineStore(
           const response = await apiClient.dpp.templates.getById(
             aasConnection.value.dataModelId,
           );
-          const productDataModel = response.data;
-          await updateProductDataModelOptions(productDataModel);
+          const template = response.data;
+          await updateTemplateOptions(template);
           formSchema.value = formSchema.value.map((schemaItem: unknown) => {
             return isFieldAssignmentRow(schemaItem)
               ? newFieldAssignmentRow(schemaItem.rowIndex)
@@ -256,7 +256,7 @@ export const useAasConnectionFormStore = defineStore(
               if (key.startsWith("dpp") && value) {
                 const { sectionId, dataFieldId } =
                   dataFieldDropdownValueToDppId(value);
-                const foundValue = productDataModel.sections
+                const foundValue = template.sections
                   .find((s) => s.id === sectionId)
                   ?.dataFields.find((f) => f.id === dataFieldId);
                 if (!foundValue) {
@@ -275,9 +275,9 @@ export const useAasConnectionFormStore = defineStore(
       }
     };
 
-    const updateProductDataModelOptions = async (templateDto: TemplateDto) => {
+    const updateTemplateOptions = async (templateDto: TemplateDto) => {
       if (aasConnection.value) {
-        productDataModelOptions.value = templateDto.sections
+        templateOptions.value = templateDto.sections
           .filter(
             (s) =>
               (s.granularityLevel === granularityLevel ||
@@ -317,10 +317,10 @@ export const useAasConnectionFormStore = defineStore(
             property: prop.property,
           })),
         }));
-        const productDataModelResponse = await apiClient.dpp.templates.getById(
+        const templateResponse = await apiClient.dpp.templates.getById(
           aasConnection.value.dataModelId,
         );
-        await updateProductDataModelOptions(productDataModelResponse.data);
+        await updateTemplateOptions(templateResponse.data);
       }
       initializeFormData();
       initializeFormSchema();
