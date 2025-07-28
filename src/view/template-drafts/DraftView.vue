@@ -55,7 +55,7 @@
 import { computed, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { useDraftStore } from "../../stores/draft";
-import { SectionDto, Sector, VisibilityLevel } from "@open-dpp/api-client";
+import { SectionDto, VisibilityLevel } from "@open-dpp/api-client";
 import PublishDraftButton from "../../components/template-drafts/PublishDraftButton.vue";
 import { useNotificationStore } from "../../stores/notification";
 import { useIndexStore } from "../../stores";
@@ -95,9 +95,7 @@ const fetchData = async () => {
 };
 
 const onPublish = async (visibility: VisibilityLevel) => {
-  const sectors =
-    visibility === VisibilityLevel.PUBLIC ? [Sector.BATTERY] : undefined;
-  await draftStore.publish({ visibility, sectors });
+  await draftStore.publish({ visibility });
   notificationStore.addSuccessNotification(
     "Ihr Entwurf wurde erfolgreich veröffentlicht. Sie können nun darauf basierend Modelle anlegen.",
     {

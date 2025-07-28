@@ -266,7 +266,7 @@ describe("DraftStore", () => {
     await waitFor(() =>
       expect(apiClient.dpp.templateDrafts.publish).toHaveBeenCalledWith(
         draft.id,
-        publishRequest,
+        { ...publishRequest, sectors: draft.sectors },
       ),
     );
     expect(draftStore.draft).toEqual(draft);
