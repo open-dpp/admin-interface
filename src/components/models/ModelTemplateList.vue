@@ -41,13 +41,10 @@
 
 <script lang="ts" setup>
 import { onMounted, ref, watch } from "vue";
-import { useModelsStore } from "../../stores/models";
 import AdvancedListSelector from "../lists/AdvancedListSelector.vue";
 import apiClient from "../../lib/api-client";
 import { TemplateGetAllDto } from "@open-dpp/api-client";
 import Tabs from "../lists/Tabs.vue";
-
-const modelsStore = useModelsStore();
 
 const props = defineProps<{
   selected: TemplateGetAllDto[];
@@ -72,7 +69,6 @@ watch(
 );
 
 onMounted(async () => {
-  await modelsStore.getModels();
   const response = await apiClient.dpp.templates.getAll();
   localTemplates.value = response.data;
   const marketplaceResponse =

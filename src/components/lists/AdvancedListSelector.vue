@@ -150,6 +150,7 @@
                       type="checkbox"
                       @input="toggleSelectedItem(item)"
                       @click.stop
+                      :data-cy="`list-item-checkbox-${item.id}`"
                     />
                   </td>
                   <td

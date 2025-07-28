@@ -49,17 +49,14 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue";
+import { ref } from "vue";
 import apiClient from "../../lib/api-client";
 import { useRouter } from "vue-router";
 import ModelTemplateList from "../../components/models/ModelTemplateList.vue";
-import axiosIns from "../../lib/axios";
-import { useIndexStore } from "../../stores";
 import { useNotificationStore } from "../../stores/notification";
 import { TemplateGetAllDto } from "@open-dpp/api-client";
 
 const router = useRouter();
-const indexStore = useIndexStore();
 const notificationStore = useNotificationStore();
 
 const props = defineProps<{
@@ -96,10 +93,4 @@ const onSubmit = async () => {
     `/organizations/${props.organizationId}/models/${response.data.id}`,
   );
 };
-
-onMounted(async () => {
-  await axiosIns.get(
-    `https://marketplace.open-dpp.localhost:20080/organizations/${indexStore.selectedOrganization}/templates/passports`,
-  );
-});
 </script>

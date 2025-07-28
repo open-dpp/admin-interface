@@ -1,6 +1,6 @@
 import { createMemoryHistory, createRouter } from "vue-router";
 
-import { API_URL } from "../../const";
+import { API_URL, MARKETPLACE_URL } from "../../const";
 import { routes } from "../../router";
 import CreateModelView from "./CreateModelView.vue";
 import { useIndexStore } from "../../stores";
@@ -14,6 +14,11 @@ describe("<CreateModelVew />", () => {
   it("creates model with selected product data model", () => {
     const laptopModel = { name: "Laptop neu", id: "id1", version: "1.0.0" };
     const phoneModel = { name: "Handy", id: "id2", version: "1.2.0" };
+    const phoneModelMarketplace = {
+      name: "Handy Market",
+      id: "id2",
+      version: "1.2.0",
+    };
 
     const orgaId = "orgaId";
 
@@ -21,6 +26,11 @@ describe("<CreateModelVew />", () => {
       statusCode: 200,
       body: [laptopModel, phoneModel], // Mock response
     }).as("getTemplates");
+
+    cy.intercept("GET", `${MARKETPLACE_URL}/templates/passports`, {
+      statusCode: 200,
+      body: [phoneModelMarketplace], // Mock response
+    });
 
     const modelId = "mid1";
     cy.intercept("POST", `${API_URL}/organizations/${orgaId}/models`, {
@@ -37,15 +47,6 @@ describe("<CreateModelVew />", () => {
       },
     );
 
-    cy.intercept(
-      "POST",
-      `${API_URL}/organizations/${orgaId}/models/${modelId}/templates/${phoneModel.id}`,
-      {
-        statusCode: 200,
-        body: { id: modelId, productDataModelId: "p1" }, // Mock response
-      },
-    ).as("assignTemplate");
-
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);
     cy.wrap(router.push(`/organizations/${orgaId}/models/create`));
@@ -56,14 +57,12 @@ describe("<CreateModelVew />", () => {
     });
     cy.wait("@getTemplates").its("response.statusCode").should("eq", 200);
     cy.get('[data-cy="name"]').type("My first model");
-    cy.get('[data-cy="productDataModelId"]').select(
-      `${phoneModel.name} ${phoneModel.version}`,
-    );
-    cy.contains("button", "Erstellen").click();
-    cy.wait("@createModel")
-      .its("request.body")
-      .should("deep.equal", { name: "My first model" });
-    cy.wait("@assignTemplate").its("response.statusCode").should("eq", 200);
+    cy.get('[data-cy="list-item-checkbox-' + laptopModel.id + '"]').click();
+    cy.contains("button", "Modelpass erstellen").click();
+    cy.wait("@createModel").its("request.body").should("deep.equal", {
+      name: "My first model",
+      templateId: laptopModel.id,
+    });
     cy.get("@pushSpy").should(
       "have.been.calledWith",
       `/organizations/${orgaId}/models/${modelId}`,
