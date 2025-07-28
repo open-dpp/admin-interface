@@ -6,9 +6,9 @@ import {
   DataFieldDto,
   DataFieldType,
   GranularityLevel,
-  ProductDataModelDraftDto,
   SectionDto,
   SectionType,
+  TemplateDraftDto,
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 import DraftView from "./DraftView.vue";
@@ -65,7 +65,7 @@ describe("<DraftView />", () => {
     granularityLevel: GranularityLevel.ITEM,
   };
 
-  const draft: ProductDataModelDraftDto = {
+  const draft: TemplateDraftDto = {
     id: "draftId",
     name: "My draft",
     version: "1.0.0",
@@ -97,7 +97,7 @@ describe("<DraftView />", () => {
 
     cy.intercept(
       "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}`,
       {
         statusCode: 200,
         body: draft, // Mock response
@@ -106,7 +106,7 @@ describe("<DraftView />", () => {
 
     cy.intercept(
       "POST",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections`,
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}/sections`,
       {
         statusCode: 200,
         body: {
@@ -159,7 +159,7 @@ describe("<DraftView />", () => {
 
     cy.intercept(
       "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}`,
       {
         statusCode: 200,
         body: draft, // Mock response
@@ -170,7 +170,7 @@ describe("<DraftView />", () => {
 
     cy.intercept(
       "PATCH",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}`,
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}/sections/${section.id}`,
       {
         statusCode: 200,
         body: {
@@ -182,7 +182,7 @@ describe("<DraftView />", () => {
 
     cy.intercept(
       "DELETE",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}`,
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}/sections/${section.id}`,
       {
         statusCode: 200,
         body: {
@@ -262,7 +262,7 @@ describe("<DraftView />", () => {
 
         cy.intercept(
           "GET",
-          `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+          `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}`,
           {
             statusCode: 200,
             body: draft,
@@ -271,7 +271,7 @@ describe("<DraftView />", () => {
 
         cy.intercept(
           "POST",
-          `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}/data-fields`,
+          `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}/sections/${section.id}/data-fields`,
           {
             statusCode: 200,
             body: {
@@ -367,7 +367,7 @@ describe("<DraftView />", () => {
 
     cy.intercept(
       "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}`,
       {
         statusCode: 200,
         body: draft, // Mock response
@@ -376,7 +376,7 @@ describe("<DraftView />", () => {
 
     cy.intercept(
       "POST",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections`,
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}/sections`,
       {
         statusCode: 200,
         body: {
@@ -388,7 +388,7 @@ describe("<DraftView />", () => {
 
     cy.intercept(
       "POST",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${repeatableSection.id}/data-fields`,
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}/sections/${repeatableSection.id}/data-fields`,
       {
         statusCode: 200,
         body: {
@@ -454,7 +454,7 @@ describe("<DraftView />", () => {
 
     cy.intercept(
       "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}`,
       {
         statusCode: 200,
         body: draft,
@@ -463,7 +463,7 @@ describe("<DraftView />", () => {
 
     cy.intercept(
       "PATCH",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}/data-fields/${dataFieldToModify.id}`,
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}/sections/${section.id}/data-fields/${dataFieldToModify.id}`,
       {
         statusCode: 200,
         body: {
@@ -513,7 +513,7 @@ describe("<DraftView />", () => {
 
     cy.intercept(
       "GET",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}`,
       {
         statusCode: 200,
         body: draft,
@@ -522,7 +522,7 @@ describe("<DraftView />", () => {
 
     cy.intercept(
       "DELETE",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}/data-fields/${dataFieldToDelete.id}`,
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}/sections/${section.id}/data-fields/${dataFieldToDelete.id}`,
       {
         statusCode: 200,
         body: {
@@ -627,7 +627,7 @@ describe("<DraftView />", () => {
   //
   //   cy.intercept(
   //     "GET",
-  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+  //     `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}`,
   //     {
   //       statusCode: 200,
   //       body: draftNested, // Mock response
@@ -672,7 +672,7 @@ describe("<DraftView />", () => {
   //   const orgaId = "orgaId";
   //   cy.intercept(
   //     "GET",
-  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+  //     `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}`,
   //     {
   //       statusCode: 200,
   //       body: draft, // Mock response
@@ -681,7 +681,7 @@ describe("<DraftView />", () => {
   //
   //   cy.intercept(
   //     "POST",
-  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/publish`,
+  //     `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}/publish`,
   //     {
   //       statusCode: 200,
   //       body: draft, // Mock response
@@ -723,7 +723,7 @@ describe("<DraftView />", () => {
   //   const orgaId = "orgaId";
   //   cy.intercept(
   //     "GET",
-  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+  //     `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}`,
   //     {
   //       statusCode: 200,
   //       body: draft, // Mock response
@@ -751,7 +751,7 @@ describe("<DraftView />", () => {
   //   const orgaId = "orgaId";
   //   cy.intercept(
   //     "GET",
-  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+  //     `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}`,
   //     {
   //       statusCode: 200,
   //       body: draft, // Mock response
@@ -781,7 +781,7 @@ describe("<DraftView />", () => {
   //
   //   cy.intercept(
   //     "GET",
-  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+  //     `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}`,
   //     {
   //       statusCode: 200,
   //       body: draft, // Mock response
@@ -790,7 +790,7 @@ describe("<DraftView />", () => {
   //
   //   cy.intercept(
   //     "POST",
-  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}/data-fields`,
+  //     `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}/sections/${section.id}/data-fields`,
   //     {
   //       statusCode: 200,
   //       body: draft, // Mock response
@@ -826,7 +826,7 @@ describe("<DraftView />", () => {
   //   const dataFieldIdToDelete = section.dataFields[0].id;
   //   cy.intercept(
   //     "GET",
-  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}`,
+  //     `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}`,
   //     {
   //       statusCode: 200,
   //       body: draft, // Mock response
@@ -835,7 +835,7 @@ describe("<DraftView />", () => {
   //
   //   cy.intercept(
   //     "DELETE",
-  //     `${API_URL}/organizations/${orgaId}/product-data-model-drafts/${draft.id}/sections/${section.id}/data-fields/${dataFieldIdToDelete}`,
+  //     `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}/sections/${section.id}/data-fields/${dataFieldIdToDelete}`,
   //     {
   //       statusCode: 200,
   //       body: draft, // Mock response

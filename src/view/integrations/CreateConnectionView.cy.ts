@@ -13,8 +13,8 @@ const router = createRouter({
 
 describe("<CreateConnectionView />", () => {
   it("creates connection with selected model", () => {
-    const model1 = { id: "m1", name: "Model 1", productDataModelId: "dm1" };
-    const model2 = { id: "m2", name: "Model 2", productDataModelId: "dm2" };
+    const model1 = { id: "m1", name: "Model 1", templateId: "dm1" };
+    const model2 = { id: "m2", name: "Model 2", templateId: "dm2" };
 
     const orgaId = "orgaId";
 
@@ -55,7 +55,7 @@ describe("<CreateConnectionView />", () => {
         name: "My first connection",
         aasType: AssetAdministrationShellType.Semitrailer,
         modelId: model2.id,
-        dataModelId: model2.productDataModelId,
+        dataModelId: model2.templateId,
         fieldAssignments: [],
       };
       cy.expectDeepEqualWithDiff(request.body, expected);

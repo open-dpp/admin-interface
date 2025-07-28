@@ -16,14 +16,10 @@ describe("<CreateDraftView />", () => {
     const draftName = "My draft";
     const draftId = "draftId";
 
-    cy.intercept(
-      "POST",
-      `${API_URL}/organizations/${orgaId}/product-data-model-drafts`,
-      {
-        statusCode: 201,
-        body: { id: draftId, name: draftName }, // Mock response
-      },
-    ).as("createDraft");
+    cy.intercept("POST", `${API_URL}/organizations/${orgaId}/template-drafts`, {
+      statusCode: 201,
+      body: { id: draftId, name: draftName }, // Mock response
+    }).as("createDraft");
 
     const indexStore = useIndexStore();
     indexStore.selectOrganization(orgaId);

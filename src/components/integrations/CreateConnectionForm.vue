@@ -74,11 +74,11 @@ const create = async (formFields: unknown) => {
     })
     .parse(formFields);
   const model = modelsStore.models.find((m) => m.id === fields.modelId);
-  if (model && model.productDataModelId) {
+  if (model && model.templateId) {
     const aasConnection = await aasConnectionStore.createConnection({
       name: fields.name,
       modelId: model.id,
-      dataModelId: model.productDataModelId,
+      dataModelId: model.templateId,
       aasType: fields.aasType,
       fieldAssignments: [],
     });

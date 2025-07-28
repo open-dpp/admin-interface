@@ -9,16 +9,15 @@ import {
   DataFieldType,
   GranularityLevel,
   ModelDto,
-  ProductDataModelDto,
   SectionType,
-  VisibilityLevel,
+  TemplateDto,
 } from "@open-dpp/api-client";
 import apiClient from "../lib/api-client";
 import { waitFor } from "@testing-library/vue";
 
 const mocks = vi.hoisted(() => {
   return {
-    getProductDataModelById: vi.fn(),
+    getTemplateById: vi.fn(),
     getConnection: vi.fn(),
     getPropertiesOfAas: vi.fn(),
     modifyConnection: vi.fn(),
@@ -29,16 +28,18 @@ const mocks = vi.hoisted(() => {
 vi.mock("../lib/api-client", () => ({
   default: {
     setActiveOrganizationId: vi.fn(),
-    aasIntegration: {
-      getConnection: mocks.getConnection,
-      getPropertiesOfAas: mocks.getPropertiesOfAas,
-      modifyConnection: mocks.modifyConnection,
-    },
-    models: {
-      getModelById: mocks.getModelById,
-    },
-    productDataModels: {
-      getProductDataModelById: mocks.getProductDataModelById,
+    dpp: {
+      aasIntegration: {
+        getConnection: mocks.getConnection,
+        getPropertiesOfAas: mocks.getPropertiesOfAas,
+        modifyConnection: mocks.modifyConnection,
+      },
+      models: {
+        getById: mocks.getModelById,
+      },
+      templates: {
+        getById: mocks.getTemplateById,
+      },
     },
   },
 }));
@@ -123,11 +124,10 @@ describe("IntegrationFormStore", () => {
     },
   ];
 
-  const productDataModel: ProductDataModelDto = {
+  const templateDto: TemplateDto = {
     id: "dataModelId",
     name: "Test Product Data Model",
     version: "1.0.0",
-    visibility: VisibilityLevel.PRIVATE,
     createdByUserId: "userId",
     ownedByOrganizationId: "orgaId",
     sections: [
@@ -240,11 +240,10 @@ describe("IntegrationFormStore", () => {
     ],
   };
 
-  const otherProductDataModel: ProductDataModelDto = {
+  const otherTemplateDto: TemplateDto = {
     id: "other-dataModelId",
     name: "Other Test Product Data Model",
     version: "1.0.0",
-    visibility: VisibilityLevel.PRIVATE,
     createdByUserId: "userId",
     ownedByOrganizationId: "orgaId",
     sections: [
@@ -357,7 +356,7 @@ describe("IntegrationFormStore", () => {
     ],
   };
 
-  const selectOptionsOfOtherProductDataModel = [
+  const selectOptionsOfOtherTemplate = [
     {
       group: "Section 0",
       options: [
@@ -391,7 +390,7 @@ describe("IntegrationFormStore", () => {
     },
   ];
 
-  const selectOptionsOfProductDataModel = [
+  const selectOptionsOfTemplate = [
     {
       group: "Section 0",
       options: [
@@ -488,7 +487,7 @@ describe("IntegrationFormStore", () => {
               label: labelDpp,
               placeholder: placeHolderDpp,
               name: `dpp-${0}`,
-              options: selectOptionsOfProductDataModel,
+              options: selectOptionsOfTemplate,
               "data-cy": "dpp-select-0",
               required: true,
             },
@@ -524,7 +523,7 @@ describe("IntegrationFormStore", () => {
               label: labelDpp,
               placeholder: placeHolderDpp,
               name: `dpp-${1}`,
-              options: selectOptionsOfProductDataModel,
+              options: selectOptionsOfTemplate,
               "data-cy": "dpp-select-1",
               required: true,
             },
@@ -537,8 +536,8 @@ describe("IntegrationFormStore", () => {
   it("should initialize formSchema and formData correctly", async () => {
     const integrationFormStore = useAasConnectionFormStore();
 
-    mocks.getProductDataModelById.mockResolvedValue({
-      data: productDataModel,
+    mocks.getTemplateById.mockResolvedValue({
+      data: templateDto,
     });
     mocks.getConnection.mockResolvedValue({ data: aasConnection });
     mocks.getPropertiesOfAas.mockResolvedValue({ data: mockedProperties });
@@ -587,8 +586,8 @@ describe("IntegrationFormStore", () => {
     mocks.getConnection.mockResolvedValue({
       data: aasConnection,
     });
-    mocks.getProductDataModelById.mockResolvedValue({
-      data: productDataModel,
+    mocks.getTemplateById.mockResolvedValue({
+      data: templateDto,
     });
     mocks.getPropertiesOfAas.mockResolvedValue({ data: mockedProperties });
     mocks.modifyConnection.mockResolvedValue({
@@ -600,14 +599,13 @@ describe("IntegrationFormStore", () => {
     await integrationFormStore.submitModifications();
 
     await waitFor(() =>
-      expect(apiClient.aasIntegration.modifyConnection).toHaveBeenCalledWith(
-        connectionId,
-        {
-          fieldAssignments: mockedAasConnectionUpdate.fieldAssignments,
-          modelId: mockedAasConnectionUpdate.modelId,
-          name: mockedAasConnectionUpdate.name,
-        },
-      ),
+      expect(
+        apiClient.dpp.aasIntegration.modifyConnection,
+      ).toHaveBeenCalledWith(connectionId, {
+        fieldAssignments: mockedAasConnectionUpdate.fieldAssignments,
+        modelId: mockedAasConnectionUpdate.modelId,
+        name: mockedAasConnectionUpdate.name,
+      }),
     );
 
     expect(integrationFormStore.formSchema).toEqual(expectedFormSchema);
@@ -622,8 +620,8 @@ describe("IntegrationFormStore", () => {
   it("should add field assignment", async () => {
     const integrationFormStore = useAasConnectionFormStore();
 
-    mocks.getProductDataModelById.mockResolvedValue({
-      data: productDataModel,
+    mocks.getTemplateById.mockResolvedValue({
+      data: templateDto,
     });
     mocks.getConnection.mockResolvedValue({ data: aasConnection });
     mocks.getPropertiesOfAas.mockResolvedValue({ data: mockedProperties });
@@ -660,7 +658,7 @@ describe("IntegrationFormStore", () => {
                 label: labelDpp,
                 name: `dpp-${2}`,
                 placeholder: placeHolderDpp,
-                options: selectOptionsOfProductDataModel,
+                options: selectOptionsOfTemplate,
                 "data-cy": "dpp-select-2",
                 required: true,
               },
@@ -682,13 +680,13 @@ describe("IntegrationFormStore", () => {
   it("should switch model", async () => {
     const integrationFormStore = useAasConnectionFormStore();
 
-    mocks.getProductDataModelById.mockImplementation((id: string) =>
-      id === productDataModel.id
+    mocks.getTemplateById.mockImplementation((id: string) =>
+      id === templateDto.id
         ? {
-            data: productDataModel,
+            data: templateDto,
           }
         : {
-            data: otherProductDataModel,
+            data: otherTemplateDto,
           },
     );
     const otherModelId = "otherModelId";
@@ -697,14 +695,14 @@ describe("IntegrationFormStore", () => {
     mocks.getModelById.mockResolvedValue({
       data: {
         modelId: otherModelId,
-        productDataModelId: otherProductDataModel.id,
+        templateId: otherTemplateDto.id,
       },
     });
     await integrationFormStore.fetchConnection(connectionId);
     const model: ModelDto = {
       name: "modelName",
       id: otherModelId,
-      productDataModelId: otherProductDataModel.id,
+      templateId: otherTemplateDto.id,
       owner: "o1",
       uniqueProductIdentifiers: [],
       dataValues: [],
@@ -739,7 +737,7 @@ describe("IntegrationFormStore", () => {
                 label: labelDpp,
                 placeholder: placeHolderDpp,
                 name: `dpp-${0}`,
-                options: selectOptionsOfOtherProductDataModel,
+                options: selectOptionsOfOtherTemplate,
                 "data-cy": "dpp-select-0",
                 required: true,
               },
@@ -775,7 +773,7 @@ describe("IntegrationFormStore", () => {
                 label: labelDpp,
                 placeholder: placeHolderDpp,
                 name: `dpp-${1}`,
-                options: selectOptionsOfOtherProductDataModel,
+                options: selectOptionsOfOtherTemplate,
                 "data-cy": "dpp-select-1",
                 required: true,
               },

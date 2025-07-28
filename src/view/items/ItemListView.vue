@@ -43,12 +43,14 @@ const buttonLabel = "Neuen Artikelpass hinzufügen";
 const items = ref<ItemDto[]>([]);
 
 const fetchItems = async () => {
-  const response = await apiClient.items.getItems(String(route.params.modelId));
+  const response = await apiClient.dpp.items.getAll(
+    String(route.params.modelId),
+  );
   items.value = response.data;
 };
 
 const onAdd = async () => {
-  await apiClient.items.createItem(String(route.params.modelId));
+  await apiClient.dpp.items.create(String(route.params.modelId));
   await fetchItems();
 };
 

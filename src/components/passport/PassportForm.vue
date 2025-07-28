@@ -1,10 +1,7 @@
 <template>
-  <div
-    v-if="passportFormStore.productDataModel"
-    class="mb-4 grid grid-cols-1 gap-4"
-  >
+  <div v-if="passportFormStore.template" class="mb-4 grid grid-cols-1 gap-4">
     <div
-      v-for="section of passportFormStore.productDataModel.sections.filter(
+      v-for="section of passportFormStore.template.sections.filter(
         (s) => s.parentId === undefined,
       )"
       :key="section.id"

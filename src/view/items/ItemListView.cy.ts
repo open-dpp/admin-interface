@@ -24,14 +24,14 @@ describe("<ItemListView />", () => {
             referenceId: "refId",
           },
         ],
-        productDataModelId: "",
+        templateId: "",
       },
     ];
     const modelId = "someId";
     const orgaId = "orgaId";
     const modelDto: ModelDto = {
       id: modelId,
-      productDataModelId: "",
+      templateId: "",
       name: "Test Model",
       dataValues: [],
       uniqueProductIdentifiers: [

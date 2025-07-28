@@ -44,10 +44,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ProductDataModelGetAllDto } from "@open-dpp/api-client";
+import { TemplateGetAllDto } from "@open-dpp/api-client";
 
-const props = defineProps<{ productDataModels: ProductDataModelGetAllDto[] }>();
-const selectableDataModels = props.productDataModels.map((p) => ({
+const props = defineProps<{ templates: TemplateGetAllDto[] }>();
+const selectableDataModels = props.templates.map((p) => ({
   label: `${p.name} ${p.version}`,
   value: p.id,
 }));

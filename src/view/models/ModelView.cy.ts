@@ -7,10 +7,10 @@ import {
   DataFieldDto,
   DataFieldType,
   GranularityLevel,
-  ProductDataModelDto,
+  ModelDto,
   SectionDto,
   SectionType,
-  VisibilityLevel,
+  TemplateDto,
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 
@@ -134,11 +134,10 @@ describe("<ModelView />", () => {
     };
 
     // see: https://on.cypress.io/mounting-vue
-    const productDataModel: ProductDataModelDto = {
+    const templateDto: TemplateDto = {
       id: "pdm1",
       name: "Laptop neu",
       version: "1.0",
-      visibility: VisibilityLevel.PRIVATE,
       createdByUserId: "userId",
       ownedByOrganizationId: "ownedByOrganizationId",
       sections: [section1, section2, section3],
@@ -146,7 +145,7 @@ describe("<ModelView />", () => {
 
     const uuidToOtherPassport = "uuid1";
 
-    const model = {
+    const model: ModelDto = {
       id: "someId",
       name: "My model",
       dataValues: [
@@ -158,7 +157,8 @@ describe("<ModelView />", () => {
           row: 0,
         },
       ],
-      productDataModelId: productDataModel.id,
+      templateId: templateDto.id,
+      owner: "o1",
       uniqueProductIdentifiers: [
         {
           uuid: "own-uuid",
@@ -167,8 +167,10 @@ describe("<ModelView />", () => {
       ],
     };
 
-    const otherModel = {
+    const otherModel: ModelDto = {
       id: "otherId",
+      owner: "o1",
+      uniqueProductIdentifiers: [],
       name: "My other model",
       dataValues: [
         {
@@ -184,7 +186,7 @@ describe("<ModelView />", () => {
           row: 0,
         },
       ],
-      productDataModelId: productDataModel.id,
+      templateId: templateDto.id,
     };
 
     const orgaId = "orga1";
@@ -203,12 +205,12 @@ describe("<ModelView />", () => {
 
     cy.intercept(
       "GET",
-      `${API_URL}/product-data-models/${productDataModel.id}`,
+      `${API_URL}/organizations/${orgaId}/templates/${templateDto.id}`,
       {
         statusCode: 200,
-        body: productDataModel, // Mock response
+        body: templateDto, // Mock response
       },
-    ).as("getProductModelData");
+    ).as("getTemplate");
 
     cy.intercept(
       "PATCH",
@@ -243,9 +245,7 @@ describe("<ModelView />", () => {
     cy.wrap(router.push(`/organizations/${orgaId}/models/${model.id}`));
 
     cy.wait("@getModel").its("response.statusCode").should("eq", 200);
-    cy.wait("@getProductModelData")
-      .its("response.statusCode")
-      .should("eq", 200);
+    cy.wait("@getTemplate").its("response.statusCode").should("eq", 200);
     cy.contains("Modellpass Informationen").should("be.visible");
     cy.contains("own-uuid").should("be.visible");
     cy.get('[data-cy="section-card-s3"]').within(() => {
@@ -276,9 +276,7 @@ describe("<ModelView />", () => {
         router.push(`/organizations/${orgaId}/models/${otherModel.id}`),
       ).then(() => {
         cy.wait("@getModel").its("response.statusCode").should("eq", 200);
-        cy.wait("@getProductModelData")
-          .its("response.statusCode")
-          .should("eq", 200);
+        cy.wait("@getTemplate").its("response.statusCode").should("eq", 200);
         cy.get('[data-cy="s1.f1.0"]').should("have.value", "otherVal1");
         cy.get('[data-cy="s1.f2.0"]').should("have.value", uuidToOtherPassport);
         cy.spy(router, "push").as("pushSpy");

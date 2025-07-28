@@ -6,6 +6,7 @@ import { useLayoutStore } from "../stores/layout";
 import { AUTH_ROUTES } from "./routes/auth";
 import { ORGANIZATION_ROUTES } from "./routes/organizations";
 import { useIndexStore } from "../stores";
+import { MARKETPLACE_ROUTES } from "./routes/marketplace";
 
 // const MODE = import.meta.env.MODE;
 
@@ -25,6 +26,7 @@ export const routes: RouteRecordRaw[] = [
   },
   ...AUTH_ROUTES,
   ...ORGANIZATION_ROUTES,
+  ...MARKETPLACE_ROUTES,
 ];
 
 export const router = createRouter({

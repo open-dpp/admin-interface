@@ -12,7 +12,7 @@ export const useAasConnectionStore = defineStore("aas-integration", () => {
   const errorHandlingStore = useErrorHandlingStore();
   const fetchConnections = async () => {
     try {
-      const response = await apiClient.aasIntegration.getAllConnections();
+      const response = await apiClient.dpp.aasIntegration.getAllConnections();
       aasConnections.value = response.data;
     } catch (error) {
       errorHandlingStore.logErrorWithNotification(
@@ -23,7 +23,7 @@ export const useAasConnectionStore = defineStore("aas-integration", () => {
   };
 
   const createConnection = async (data: CreateAasConnectionDto) => {
-    const response = await apiClient.aasIntegration.createConnection(data);
+    const response = await apiClient.dpp.aasIntegration.createConnection(data);
     return response.data;
   };
 
