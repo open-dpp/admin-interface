@@ -78,6 +78,7 @@ jobs:
           VITE_API_ROOT: "http://localhost"
           VITE_KEYCLOAK_ROOT: "http://localhost"
           VITE_VIEW_ROOT_URL: "http://localhost"
+          VITE_MARKETPLACE_ROOT: "http://localhost"
 
       # Step 5: Upload Cypress artifacts (optional)
       - name: Upload Cypress Artifacts
