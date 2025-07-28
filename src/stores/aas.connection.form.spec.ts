@@ -356,7 +356,7 @@ describe("IntegrationFormStore", () => {
     ],
   };
 
-  const selectOptionsOfOtherProductDataModel = [
+  const selectOptionsOfOtherTemplate = [
     {
       group: "Section 0",
       options: [
@@ -390,7 +390,7 @@ describe("IntegrationFormStore", () => {
     },
   ];
 
-  const selectOptionsOfProductDataModel = [
+  const selectOptionsOfTemplate = [
     {
       group: "Section 0",
       options: [
@@ -487,7 +487,7 @@ describe("IntegrationFormStore", () => {
               label: labelDpp,
               placeholder: placeHolderDpp,
               name: `dpp-${0}`,
-              options: selectOptionsOfProductDataModel,
+              options: selectOptionsOfTemplate,
               "data-cy": "dpp-select-0",
               required: true,
             },
@@ -523,7 +523,7 @@ describe("IntegrationFormStore", () => {
               label: labelDpp,
               placeholder: placeHolderDpp,
               name: `dpp-${1}`,
-              options: selectOptionsOfProductDataModel,
+              options: selectOptionsOfTemplate,
               "data-cy": "dpp-select-1",
               required: true,
             },
@@ -658,7 +658,7 @@ describe("IntegrationFormStore", () => {
                 label: labelDpp,
                 name: `dpp-${2}`,
                 placeholder: placeHolderDpp,
-                options: selectOptionsOfProductDataModel,
+                options: selectOptionsOfTemplate,
                 "data-cy": "dpp-select-2",
                 required: true,
               },
@@ -695,7 +695,7 @@ describe("IntegrationFormStore", () => {
     mocks.getModelById.mockResolvedValue({
       data: {
         modelId: otherModelId,
-        productDataModelId: otherTemplateDto.id,
+        templateId: otherTemplateDto.id,
       },
     });
     await integrationFormStore.fetchConnection(connectionId);
@@ -737,7 +737,7 @@ describe("IntegrationFormStore", () => {
                 label: labelDpp,
                 placeholder: placeHolderDpp,
                 name: `dpp-${0}`,
-                options: selectOptionsOfOtherProductDataModel,
+                options: selectOptionsOfOtherTemplate,
                 "data-cy": "dpp-select-0",
                 required: true,
               },
@@ -773,7 +773,7 @@ describe("IntegrationFormStore", () => {
                 label: labelDpp,
                 placeholder: placeHolderDpp,
                 name: `dpp-${1}`,
-                options: selectOptionsOfOtherProductDataModel,
+                options: selectOptionsOfOtherTemplate,
                 "data-cy": "dpp-select-1",
                 required: true,
               },

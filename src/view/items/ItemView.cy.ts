@@ -142,13 +142,13 @@ describe("<ItemView />", () => {
       ownedByOrganizationId: "ownedByOrganizationId",
       sections: [section1, section2, section3],
     };
-    const item = {
+    const item: ItemDto = {
       id: "someId",
       dataValues: [
         { value: "val1", dataFieldId: "f1", dataSectionId: "s1", row: 0 },
         { value: "val2", dataFieldId: "f2", dataSectionId: "s1", row: 0 },
       ],
-      productDataModelId: templateDto.id,
+      templateId: templateDto.id,
       uniqueProductIdentifiers: [
         {
           uuid: "uuid",

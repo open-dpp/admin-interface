@@ -48,10 +48,7 @@
         <Dropdown
           v-if="sortable"
           :icon="FunnelIcon"
-          :items="[
-            { text: 'Suchen', icon: MagnifyingGlassIcon },
-            { text: 'Version' },
-          ]"
+          :items="[{ text: 'Version' }]"
           title="Sortieren"
         />
         <Dropdown
@@ -145,12 +142,12 @@
                   <td v-if="selection" class="px-7 sm:w-12 sm:px-6">
                     <input
                       :checked="isSelected(item)"
+                      :data-cy="`list-item-checkbox-${item.id}`"
                       :value="isSelected(item)"
                       class="rounded-sm"
                       type="checkbox"
                       @input="toggleSelectedItem(item)"
                       @click.stop
-                      :data-cy="`list-item-checkbox-${item.id}`"
                     />
                   </td>
                   <td
@@ -176,8 +173,8 @@
                       "
                       :position="
                         pagination && rowsPerPage / 2 > itemIndex
-                          ? 'top'
-                          : 'bottom'
+                          ? 'below'
+                          : 'above'
                       "
                       title="Aktionen"
                       @item-clicked="
@@ -282,8 +279,10 @@ const filteredItems = computed(() => {
     return props.items;
   }
   return props.items.filter((item) =>
-    (item as unknown as { id: string; name: string }).name.includes(
-      props.search ?? "",
+    Object.values(item).some((value) =>
+      String(value)
+        .toLowerCase()
+        .includes((props.search ?? "").toLowerCase()),
     ),
   );
 });
@@ -306,7 +305,7 @@ const isSelected = (item: T) => {
 
 const toggleSelectedItem = (item: T) => {
   if (props.selection?.multiple) {
-    const selected = props.selected ?? [];
+    const selected = [...(props.selected ?? [])];
     if (isSelected(item)) {
       const index = selected.findIndex(
         (selectedItem) => selectedItem.id === item.id,
