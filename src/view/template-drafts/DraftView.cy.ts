@@ -8,6 +8,7 @@ import {
   GranularityLevel,
   SectionDto,
   SectionType,
+  Sector,
   TemplateDraftDto,
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
@@ -68,6 +69,8 @@ describe("<DraftView />", () => {
   const draft: TemplateDraftDto = {
     id: "draftId",
     name: "My draft",
+    description: "My description",
+    sectors: [Sector.BATTERY],
     version: "1.0.0",
     publications: [],
     sections: [section, repeatableSection],
@@ -125,7 +128,7 @@ describe("<DraftView />", () => {
     cy.mountWithPinia(DraftView, { router });
 
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-    cy.contains(`Produktpass Design ${draft.name}`).should("be.visible");
+    cy.contains(`Passvorlagen Entwurf ${draft.name}`).should("be.visible");
     cy.contains(`Version ${draft.version}`).should("be.visible");
     cy.contains("button", "Hinzufügen").click();
     cy.contains(`Knoten hinzufügen`).should("be.visible");

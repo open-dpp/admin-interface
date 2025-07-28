@@ -5,7 +5,7 @@
       <EmptyState
         v-else
         :button-link="`/organizations/${indexStore.selectedOrganization}/data-model-drafts/create`"
-        button-label="Neuen Produktpass designen"
+        button-label="Neue Passvorlage entwerfen"
       />
     </div>
   </section>

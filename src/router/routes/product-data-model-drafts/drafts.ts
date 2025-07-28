@@ -4,7 +4,7 @@ import { useDraftStore } from "../../../stores/draft";
 
 const draftListBreadcrumbs = (to: RouteLocationNormalizedGeneric) => [
   {
-    name: "Produktpass Designs",
+    name: "Passvorlagen Entwürfe",
     route: DRAFT_LIST,
     params: to.params,
   },

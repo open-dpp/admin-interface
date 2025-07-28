@@ -39,8 +39,8 @@ describe("<DraftListView />", () => {
     cy.spy(router, "push").as("pushSpy");
 
     cy.wait("@getDrafts").its("response.statusCode").should("eq", 200);
-    cy.contains("Produktpass Designs").should("be.visible");
-    cy.contains("Alle Produktpass Designs").should("be.visible");
+    cy.contains("Passvorlagen Entwürfe").should("be.visible");
+    cy.contains("Alle Passvorlagen Entwürfe").should("be.visible");
     drafts.forEach((d, index) => {
       const testId = `row-${index}`;
       const row = cy.get(`[data-cy="${testId}"]`);
@@ -51,7 +51,7 @@ describe("<DraftListView />", () => {
         `/organizations/${orgaId}/data-model-drafts/${d.id}`,
       );
     });
-    cy.contains("Produktpass designen").click();
+    cy.contains("Passvorlage entwerfen").click();
     cy.get("@pushSpy").should(
       "have.been.calledWith",
       `/organizations/${orgaId}/data-model-drafts/create`,
@@ -73,8 +73,8 @@ describe("<DraftListView />", () => {
     cy.mountWithPinia(DraftListView, { router });
 
     cy.wait("@getDrafts").its("response.statusCode").should("eq", 200);
-    cy.contains("Neuen Produktpass designen").should("be.visible");
-    cy.contains("button", "Produktpass designen").click();
+    cy.contains("Neue Passvorlage entwerfen").should("be.visible");
+    cy.contains("button", "Passvorlage entwerfen").click();
     cy.get("@pushSpy").should(
       "have.been.calledWith",
       `/organizations/${orgaId}/data-model-drafts/create`,

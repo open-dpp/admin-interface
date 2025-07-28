@@ -365,7 +365,7 @@ const unfilteredNavigation = computed<Array<MenuItemInterface>>(() => [
     show: () => indexStore.selectedOrganization !== null,
   },
   {
-    name: "Produktpass Designer",
+    name: "Passvorlagen Entwürfe",
     to: `/organizations/${indexStore.selectedOrganization}/data-model-drafts`,
     icon: Square3Stack3DIcon,
     show: () => indexStore.selectedOrganization !== null,

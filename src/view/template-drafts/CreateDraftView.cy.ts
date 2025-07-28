@@ -4,6 +4,7 @@ import { API_URL } from "../../const";
 import { routes } from "../../router";
 import CreateDraftView from "./CreateDraftView.vue";
 import { useIndexStore } from "../../stores";
+import { Sector } from "@open-dpp/api-client";
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -13,12 +14,16 @@ const router = createRouter({
 describe("<CreateDraftView />", () => {
   it("creates draft", () => {
     const orgaId = "orgaId";
-    const draftName = "My draft";
+    const createDraftDto = {
+      name: "my draft",
+      description: "my description",
+      sectors: [Sector.BATTERY, Sector.ELECTRONICS],
+    };
     const draftId = "draftId";
 
     cy.intercept("POST", `${API_URL}/organizations/${orgaId}/template-drafts`, {
       statusCode: 201,
-      body: { id: draftId, name: draftName }, // Mock response
+      body: { id: draftId, ...createDraftDto }, // Mock response
     }).as("createDraft");
 
     const indexStore = useIndexStore();
@@ -28,11 +33,21 @@ describe("<CreateDraftView />", () => {
     cy.mountWithPinia(CreateDraftView, {
       router,
     });
-    cy.get('[data-cy="name"]').type(draftName);
+    cy.get('[data-cy="name"]').type(createDraftDto.name);
+    cy.get('[data-cy="description"]').type(createDraftDto.description);
+    const valuesToSelect = ["Batterie", "Elektronik"];
+
+    valuesToSelect.forEach((value) => {
+      cy.get(".formkit-options")
+        .contains("label", value)
+        .find('input[type="checkbox"]')
+        .check({ force: true });
+    });
+
     cy.contains("button", "Erstellen").click();
     cy.wait("@createDraft")
       .its("request.body")
-      .should("deep.equal", { name: draftName });
+      .should("deep.equal", createDraftDto);
 
     cy.get("@pushSpy").should(
       "have.been.calledWith",
