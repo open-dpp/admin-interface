@@ -1,10 +1,10 @@
 <template>
   <div class="">
     <ListHeader
-      title="Produktpass Designs"
-      description="Alle Produktpass Designs."
+      title="Passvorlagen Entwürfe"
+      description="Alle Passvorlagen Entwürfe."
       :creation-link="`/organizations/${indexStore.selectedOrganization}/data-model-drafts/create`"
-      creation-label="Produktpass designen"
+      creation-label="Passvorlage entwerfen"
     />
     <SimpleTable
       :headers="['Name']"

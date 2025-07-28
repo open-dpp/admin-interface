@@ -8,6 +8,7 @@ import {
   GranularityLevel,
   LayoutDto,
   SectionType,
+  Sector,
   TemplateDraftDto,
   VisibilityLevel,
 } from "@open-dpp/api-client";
@@ -83,6 +84,8 @@ describe("DraftStore", () => {
   const draft: TemplateDraftDto = {
     id: "draftId",
     name: "My draft",
+    description: "Draft desc",
+    sectors: [Sector.BATTERY],
     version: "1.0.0",
     publications: [],
     sections: [section],
@@ -95,6 +98,8 @@ describe("DraftStore", () => {
     mocks.create.mockResolvedValue({ data: draft });
     const createDto = {
       name: "My draft",
+      description: "My draft description",
+      sectors: [Sector.BATTERY],
     };
     await draftStore.createDraft(createDto);
     await waitFor(() =>

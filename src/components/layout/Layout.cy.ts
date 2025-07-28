@@ -6,8 +6,9 @@ import { API_URL } from "../../const";
 import {
   DataFieldType,
   GranularityLevel,
-  TemplateDraftDto,
   SectionType,
+  Sector,
+  TemplateDraftDto,
 } from "@open-dpp/api-client";
 
 const router = createRouter({
@@ -56,6 +57,8 @@ describe("<Layout />", () => {
     const draft: TemplateDraftDto = {
       id: "draftId",
       name: "My draft",
+      description: "desc",
+      sectors: [Sector.TRADE],
       version: "1.0.0",
       publications: [],
       sections: [section],
@@ -86,7 +89,7 @@ describe("<Layout />", () => {
     });
     cy.get('[data-cy="openSidebar"]').click();
     cy.get('[data-cy="sidebar"]').within(() => {
-      cy.contains("Produktpass Designer").click();
+      cy.contains("Passvorlagen Entwürfe").click();
       cy.get("@pushSpy").should(
         "have.been.calledWith",
         `/organizations/${orgaId}/data-model-drafts`,
