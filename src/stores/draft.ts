@@ -5,13 +5,13 @@ import {
   DataFieldDraftCreateDto,
   DataFieldDraftUpdateDto,
   LayoutDto,
-  PublicationCreateDto,
   ResponsiveConfigDto,
   SectionDraftCreateDto,
   SectionDraftUpdateDto,
   SectionDto,
   TemplateDraftCreateDto,
   TemplateDraftDto,
+  VisibilityLevel,
 } from "@open-dpp/api-client";
 
 export const useDraftStore = defineStore("draft", () => {
@@ -127,11 +127,11 @@ export const useDraftStore = defineStore("draft", () => {
     }
   };
 
-  const publish = async (data: PublicationCreateDto) => {
+  const publish = async (data: { visibility: VisibilityLevel }) => {
     if (draft.value) {
       const response = await apiClient.dpp.templateDrafts.publish(
         draft.value.id,
-        data,
+        { ...data, sectors: draft.value.sectors },
       );
       draft.value = response.data;
     }
