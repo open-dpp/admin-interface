@@ -32,7 +32,6 @@ import {
   DataFieldDto,
   DataFieldType,
   GranularityLevel,
-  LayoutDto,
 } from "@open-dpp/api-client";
 import { useDraftStore } from "../../stores/draft";
 import { z } from "zod/v4";
@@ -45,7 +44,6 @@ const props = defineProps<{
   type: DataFieldType;
   parentId?: string;
   parentGranularityLevel?: GranularityLevel;
-  layout: LayoutDto;
   id?: string;
 }>();
 
@@ -189,14 +187,12 @@ const onSubmit = async () => {
   if (dataFieldToModify.value) {
     await draftStore.modifyDataField(dataFieldToModify.value.id, {
       name: data.name,
-      layout: dataFieldToModify.value.layout,
       options: data.options ?? undefined,
     });
   } else if (props.parentId) {
     await draftStore.addDataField(props.parentId, {
       type: props.type,
       name: data.name,
-      layout: props.layout,
       granularityLevel: data.granularityLevel,
       options: data.options ?? undefined,
     });

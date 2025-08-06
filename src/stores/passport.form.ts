@@ -3,14 +3,13 @@ import { ref } from "vue";
 import {
   DataValueDto,
   GranularityLevel,
-  PassportDto,
+  ProductPassportDataDto,
   SectionDto,
   TemplateDto,
   UniqueProductIdentifierDto,
 } from "@open-dpp/api-client";
 import apiClient from "../lib/api-client";
 import { assign, keys, maxBy, minBy, pick } from "lodash";
-import { generateClassesForLayout } from "../lib/layout";
 
 type FormKitSchemaNode =
   | string // Text content
@@ -56,7 +55,7 @@ function dataValueIdToDataValue(
 export const usePassportFormStore = defineStore("passport.form", () => {
   const granularityLevel = ref<GranularityLevel>(GranularityLevel.MODEL);
   const modelId = ref<string>();
-  const passport = ref<PassportDto & { name: string }>();
+  const passport = ref<ProductPassportDataDto & { name: string }>();
   const template = ref<TemplateDto>();
   const fetchInFlight = ref<boolean>(false);
 
@@ -148,7 +147,6 @@ export const usePassportFormStore = defineStore("passport.form", () => {
         children.push({
           $cmp: "FakeField",
           props: {
-            className: generateClassesForLayout(dataField.layout),
             dataCy: dataValueId(section.id, dataField.id, row),
             placeholder: getValueForOtherGranularityLevel(),
             label: dataField!.name,
@@ -169,7 +167,6 @@ export const usePassportFormStore = defineStore("passport.form", () => {
             name: dataValueIdFromDataValue(dataValue),
             label: dataField!.name,
             validation: "required",
-            className: generateClassesForLayout(dataField.layout),
             options: dataField.options,
           },
         });
@@ -180,7 +177,7 @@ export const usePassportFormStore = defineStore("passport.form", () => {
       {
         $el: "div",
         attrs: {
-          class: `grid gap-1 items-center ${generateClassesForLayout(section.layout)}`,
+          class: `grid gap-1 items-center`,
         },
         children: children,
       },

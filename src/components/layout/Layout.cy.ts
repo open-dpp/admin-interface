@@ -35,23 +35,10 @@ describe("<Layout />", () => {
           name: "Processor",
           type: DataFieldType.TEXT_FIELD,
           options: {},
-          layout: {
-            colStart: { sm: 1 },
-            colSpan: { sm: 1 },
-            rowStart: { sm: 1 },
-            rowSpan: { sm: 1 },
-          },
           granularityLevel: GranularityLevel.MODEL,
         },
       ],
       subSections: [],
-      layout: {
-        cols: { sm: 3 },
-        colSpan: { sm: 1 },
-        colStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-      },
     };
 
     const draft: TemplateDraftDto = {

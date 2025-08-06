@@ -28,12 +28,6 @@ describe("<ItemView />", () => {
       options: {
         min: 24,
       },
-      layout: {
-        colStart: { sm: 1 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
       granularityLevel: GranularityLevel.ITEM,
     };
     const dataField2: DataFieldDto = {
@@ -42,12 +36,6 @@ describe("<ItemView />", () => {
       name: "Neuer Title 2",
       options: {
         min: 2,
-      },
-      layout: {
-        colStart: { sm: 2 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
       },
       granularityLevel: GranularityLevel.ITEM,
     };
@@ -59,12 +47,6 @@ describe("<ItemView />", () => {
       options: {
         min: 2,
       },
-      layout: {
-        colStart: { sm: 2 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
       granularityLevel: GranularityLevel.MODEL,
     };
 
@@ -75,13 +57,6 @@ describe("<ItemView />", () => {
       parentId: undefined,
       subSections: ["s1-1"],
       dataFields: [dataField1, dataField2, dataField3],
-      layout: {
-        cols: { sm: 3 },
-        colStart: { sm: 1 },
-        colSpan: { sm: 3 },
-        rowSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-      },
     };
 
     const dataField21: DataFieldDto = {
@@ -90,12 +65,6 @@ describe("<ItemView />", () => {
       name: "Größe",
       options: {
         min: 24,
-      },
-      layout: {
-        colStart: { sm: 1 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
       },
       granularityLevel: GranularityLevel.ITEM,
     };
@@ -107,13 +76,6 @@ describe("<ItemView />", () => {
       parentId: "s1",
       subSections: [],
       dataFields: [dataField21],
-      layout: {
-        cols: { sm: 3 },
-        colStart: { sm: 1 },
-        colSpan: { sm: 3 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
       granularityLevel: GranularityLevel.ITEM,
     };
 
@@ -123,13 +85,6 @@ describe("<ItemView />", () => {
       name: "Footprints",
       subSections: [],
       dataFields: [dataField21],
-      layout: {
-        cols: { sm: 3 },
-        colStart: { sm: 1 },
-        colSpan: { sm: 3 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
       granularityLevel: GranularityLevel.MODEL,
     };
 

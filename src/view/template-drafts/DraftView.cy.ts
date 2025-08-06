@@ -25,25 +25,12 @@ describe("<DraftView />", () => {
     id: "s1",
     name: "Tech Specs",
     type: SectionType.GROUP,
-    layout: {
-      cols: { sm: 3 },
-      colStart: { sm: 1 },
-      colSpan: { sm: 1 },
-      rowStart: { sm: 1 },
-      rowSpan: { sm: 1 },
-    },
     dataFields: [
       {
         id: "d1",
         name: "Processor",
         type: DataFieldType.TEXT_FIELD,
         options: {},
-        layout: {
-          colStart: { sm: 1 },
-          colSpan: { sm: 1 },
-          rowStart: { sm: 1 },
-          rowSpan: { sm: 1 },
-        },
         granularityLevel: GranularityLevel.MODEL,
       },
     ],
@@ -54,13 +41,6 @@ describe("<DraftView />", () => {
     id: "s2",
     name: "Materials",
     type: SectionType.REPEATABLE,
-    layout: {
-      cols: { sm: 3 },
-      colStart: { sm: 1 },
-      colSpan: { sm: 1 },
-      rowStart: { sm: 1 },
-      rowSpan: { sm: 1 },
-    },
     dataFields: [],
     subSections: [],
     granularityLevel: GranularityLevel.ITEM,
@@ -88,13 +68,6 @@ describe("<DraftView />", () => {
       type: SectionType.REPEATABLE,
       dataFields: [],
       subSections: [],
-      layout: {
-        cols: { sm: 3 },
-        colStart: { sm: 1 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
       granularityLevel: GranularityLevel.MODEL,
     };
 
@@ -137,9 +110,6 @@ describe("<DraftView />", () => {
     cy.contains("li", "Textfeld").should("not.exist");
     cy.contains("li", "Repeater").click();
     cy.get('[data-cy="name"]').type(newSectionName);
-    cy.get('[data-cy="select-col-number"]').select(
-      sectionToCreate.layout.cols.sm.toFixed(),
-    );
     cy.get('[data-cy="select-granularity-level"]').select(
       sectionToCreate.granularityLevel,
     );
@@ -148,7 +118,6 @@ describe("<DraftView />", () => {
       const expected = {
         name: newSectionName,
         type: SectionType.REPEATABLE,
-        layout: sectionToCreate.layout,
         granularityLevel: GranularityLevel.MODEL,
       };
       cy.expectDeepEqualWithDiff(request.body, expected);
@@ -220,7 +189,6 @@ describe("<DraftView />", () => {
     cy.wait("@patchSection").then(({ request }) => {
       const expected = {
         name: newSectionName,
-        layout: section.layout,
       };
       cy.expectDeepEqualWithDiff(request.body, expected);
     });
@@ -254,12 +222,6 @@ describe("<DraftView />", () => {
           type: type,
           name: "Processor",
           options: {},
-          layout: {
-            colStart: { sm: 2 },
-            rowStart: { sm: 1 },
-            colSpan: { sm: 1 },
-            rowSpan: { sm: 1 },
-          },
           granularityLevel: GranularityLevel.ITEM,
         };
 
@@ -314,12 +276,6 @@ describe("<DraftView />", () => {
           const expected = {
             name: dataFieldToCreate.name,
             type: type,
-            layout: {
-              colSpan: { sm: 1 },
-              colStart: { sm: 3 },
-              rowStart: { sm: 1 },
-              rowSpan: { sm: 1 },
-            },
             granularityLevel: GranularityLevel.ITEM,
           };
           cy.expectDeepEqualWithDiff(request.body, expected);
@@ -343,13 +299,6 @@ describe("<DraftView />", () => {
       type: SectionType.GROUP,
       dataFields: [],
       subSections: [],
-      layout: {
-        cols: { sm: 3 },
-        colStart: { sm: 1 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
       granularityLevel: GranularityLevel.ITEM,
     };
     const newDataFieldName = "New Data Field";
@@ -359,12 +308,6 @@ describe("<DraftView />", () => {
       type: DataFieldType.TEXT_FIELD,
       name: newDataFieldName,
       options: {},
-      layout: {
-        colStart: { sm: 2 },
-        rowStart: { sm: 1 },
-        colSpan: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
       granularityLevel: GranularityLevel.ITEM,
     };
 
@@ -419,16 +362,12 @@ describe("<DraftView />", () => {
     cy.get('[data-cy="s2-0"]').click();
     cy.contains("li", "Gruppierung").click();
     cy.get('[data-cy="name"]').type(newSectionName);
-    cy.get('[data-cy="select-col-number"]').select(
-      sectionToCreate.layout.cols.sm.toFixed(),
-    );
     cy.get('[data-cy="select-granularity-level"]').should("not.exist");
     cy.get('[data-cy="submit"]').click();
     cy.wait("@createSection").then(({ request }) => {
       const expected = {
         name: newSectionName,
         type: sectionToCreate.type,
-        layout: sectionToCreate.layout,
         granularityLevel: GranularityLevel.ITEM,
         parentSectionId: sectionToCreate.parentId,
       };
@@ -444,7 +383,6 @@ describe("<DraftView />", () => {
       const expected = {
         name: newDataFieldName,
         type: DataFieldType.TEXT_FIELD,
-        layout: dataFieldToCreate.layout,
         granularityLevel: GranularityLevel.ITEM,
       };
       cy.expectDeepEqualWithDiff(request.body, expected);
@@ -504,7 +442,6 @@ describe("<DraftView />", () => {
     cy.wait("@modifyDataField").then(({ request }) => {
       const expected = {
         name: newFieldName,
-        layout: dataFieldToModify.layout,
       };
       cy.expectDeepEqualWithDiff(request.body, expected);
     });

@@ -77,25 +77,12 @@ describe("PassportFormStore", () => {
           id: "s1",
           name: "Tech Specs",
           type: SectionType.GROUP,
-          layout: {
-            cols: { sm: 3 },
-            colStart: { sm: 1 },
-            colSpan: { sm: 1 },
-            rowStart: { sm: 1 },
-            rowSpan: { sm: 1 },
-          },
           dataFields: [
             {
               id: "field1",
               type: DataFieldType.TEXT_FIELD,
               name: "Processor",
               options: {},
-              layout: {
-                colStart: { sm: 1 },
-                colSpan: { sm: 1 },
-                rowStart: { sm: 1 },
-                rowSpan: { sm: 1 },
-              },
               granularityLevel: GranularityLevel.MODEL,
             },
             {
@@ -103,12 +90,6 @@ describe("PassportFormStore", () => {
               type: DataFieldType.TEXT_FIELD,
               name: "RAM",
               options: {},
-              layout: {
-                colStart: { sm: 2 },
-                colSpan: { sm: 1 },
-                rowStart: { sm: 1 },
-                rowSpan: { sm: 1 },
-              },
               granularityLevel: GranularityLevel.MODEL,
             },
           ],
@@ -118,25 +99,12 @@ describe("PassportFormStore", () => {
           id: "s1-1",
           name: "Sub Tech Specs",
           type: SectionType.GROUP,
-          layout: {
-            cols: { sm: 5 },
-            colStart: { sm: 1 },
-            colSpan: { sm: 1 },
-            rowStart: { sm: 1 },
-            rowSpan: { sm: 1 },
-          },
           dataFields: [
             {
               id: "field3",
               type: DataFieldType.TEXT_FIELD,
               name: "Processor",
               options: {},
-              layout: {
-                colStart: { sm: 1 },
-                colSpan: { sm: 1 },
-                rowStart: { sm: 1 },
-                rowSpan: { sm: 1 },
-              },
               granularityLevel: GranularityLevel.MODEL,
             },
             {
@@ -144,12 +112,6 @@ describe("PassportFormStore", () => {
               type: DataFieldType.TEXT_FIELD,
               name: "RAM",
               options: {},
-              layout: {
-                colStart: { sm: 2 },
-                colSpan: { sm: 1 },
-                rowStart: { sm: 1 },
-                rowSpan: { sm: 1 },
-              },
               granularityLevel: GranularityLevel.MODEL,
             },
           ],
@@ -180,12 +142,6 @@ describe("PassportFormStore", () => {
     type: DataFieldType.TEXT_FIELD,
     name: "Processor",
     options: {},
-    layout: {
-      colStart: { sm: 1 },
-      colSpan: { sm: 1 },
-      rowStart: { sm: 1 },
-      rowSpan: { sm: 1 },
-    },
     granularityLevel: GranularityLevel.MODEL,
   };
 
@@ -199,13 +155,6 @@ describe("PassportFormStore", () => {
     name: "Tech Specs",
     dataFields: [dataFieldS1F1],
     subSections: [section11Id],
-    layout: {
-      cols: { sm: 3 },
-      colStart: { sm: 1 },
-      colSpan: { sm: 1 },
-      rowStart: { sm: 1 },
-      rowSpan: { sm: 1 },
-    },
   };
 
   const section11: SectionDto = {
@@ -215,13 +164,6 @@ describe("PassportFormStore", () => {
     name: "Dimensions",
     dataFields: [],
     subSections: ["s1-1-1"],
-    layout: {
-      cols: { sm: 5 },
-      colStart: { sm: 1 },
-      colSpan: { sm: 1 },
-      rowStart: { sm: 1 },
-      rowSpan: { sm: 1 },
-    },
   };
 
   const dataFieldS111F1: DataFieldDto = {
@@ -229,12 +171,6 @@ describe("PassportFormStore", () => {
     type: DataFieldType.TEXT_FIELD,
     name: "Amount",
     options: {},
-    layout: {
-      colStart: { sm: 1 },
-      colSpan: { sm: 1 },
-      rowStart: { sm: 1 },
-      rowSpan: { sm: 1 },
-    },
     granularityLevel: GranularityLevel.MODEL,
   };
 
@@ -243,12 +179,6 @@ describe("PassportFormStore", () => {
     type: DataFieldType.TEXT_FIELD,
     name: "Unit",
     options: {},
-    layout: {
-      colStart: { sm: 2 },
-      colSpan: { sm: 1 },
-      rowStart: { sm: 1 },
-      rowSpan: { sm: 1 },
-    },
     granularityLevel: GranularityLevel.MODEL,
   };
 
@@ -259,13 +189,6 @@ describe("PassportFormStore", () => {
     name: "Single Dimension",
     dataFields: [dataFieldS111F1, dataFieldS111F2],
     subSections: [],
-    layout: {
-      cols: { sm: 8 },
-      colStart: { sm: 1 },
-      colSpan: { sm: 1 },
-      rowStart: { sm: 1 },
-      rowSpan: { sm: 1 },
-    },
   };
 
   const templateDto: TemplateDto = {
@@ -464,12 +387,6 @@ describe("PassportFormStore", () => {
       type: DataFieldType.TEXT_FIELD,
       name: "Amount",
       options: {},
-      layout: {
-        colStart: { sm: 1 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
       granularityLevel: GranularityLevel.MODEL,
     };
     const dataFieldS1Item: DataFieldDto = {
@@ -477,12 +394,6 @@ describe("PassportFormStore", () => {
       type: DataFieldType.TEXT_FIELD,
       name: "PCF",
       options: {},
-      layout: {
-        colStart: { sm: 2 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
       granularityLevel: GranularityLevel.ITEM,
     };
     const section1Group: SectionDto = {
@@ -492,13 +403,6 @@ describe("PassportFormStore", () => {
       name: "Tech Specs",
       dataFields: [dataFieldS1Model, dataFieldS1Item],
       subSections: [],
-      layout: {
-        cols: { sm: 3 },
-        colStart: { sm: 1 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
     };
     const templateDto: TemplateDto = {
       id: "pid",
@@ -573,12 +477,6 @@ describe("PassportFormStore", () => {
       type: DataFieldType.TEXT_FIELD,
       name: "Amount",
       options: {},
-      layout: {
-        colStart: { sm: 1 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
       granularityLevel: GranularityLevel.MODEL,
     };
     const dataFieldS1Item: DataFieldDto = {
@@ -586,12 +484,6 @@ describe("PassportFormStore", () => {
       type: DataFieldType.TEXT_FIELD,
       name: "PCF",
       options: {},
-      layout: {
-        colStart: { sm: 2 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
       granularityLevel: GranularityLevel.ITEM,
     };
     const section1Group: SectionDto = {
@@ -601,13 +493,6 @@ describe("PassportFormStore", () => {
       name: "Tech Specs",
       dataFields: [dataFieldS1Model, dataFieldS1Item],
       subSections: [],
-      layout: {
-        cols: { sm: 3 },
-        colStart: { sm: 1 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
     };
     const templateDto: TemplateDto = {
       id: "pid",

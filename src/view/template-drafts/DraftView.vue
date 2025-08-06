@@ -17,14 +17,6 @@
         </div>
       </div>
     </div>
-    <AddNode
-      :layout="{
-        colSpan: { sm: 1 },
-        rowSpan: { sm: 1 },
-        colStart: { sm: 1 },
-        rowStart: { sm: 1 },
-      }"
-    />
     <div v-if="draftStore.draft" class="grid grid-cols-1 gap-4">
       <div
         v-for="section of rootSections"
@@ -59,7 +51,6 @@ import { SectionDto, VisibilityLevel } from "@open-dpp/api-client";
 import PublishDraftButton from "../../components/template-drafts/PublishDraftButton.vue";
 import { useNotificationStore } from "../../stores/notification";
 import { useIndexStore } from "../../stores";
-import AddNode from "../../components/template-drafts/AddNode.vue";
 import DraftSidebar from "../../components/template-drafts/DraftSidebar.vue";
 import SectionDraft from "../../components/template-drafts/SectionDraft.vue";
 import BaseSectionHeader from "../../components/BaseSectionHeader.vue";
@@ -80,7 +71,6 @@ const draftSidebarStore = useDraftSidebarStore();
 const onEditSectionClicked = (section: SectionDto) => {
   draftSidebarStore.open(SidebarContentType.SECTION_FORM, {
     type: section.type,
-    layout: section.layout,
     id: section.id,
   });
 };

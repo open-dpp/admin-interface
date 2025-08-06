@@ -30,7 +30,6 @@
 import { ref, watch } from "vue";
 import {
   GranularityLevel,
-  LayoutDto,
   SectionDto,
   SectionType,
 } from "@open-dpp/api-client";
@@ -44,7 +43,6 @@ const props = defineProps<{
   type: SectionType;
   parentId?: string;
   parentGranularityLevel?: GranularityLevel;
-  layout: LayoutDto;
   id?: string;
 }>();
 
@@ -57,13 +55,8 @@ const modelDialogStore = useModelDialogStore();
 
 const formSchemaFromType = (
   type: SectionType,
-  showColumnSelect: boolean,
   existingGranularityLevel: GranularityLevel | undefined,
 ) => {
-  const colOptions = Object.fromEntries(
-    Array.from({ length: 12 }, (_, i) => [i + 1, (i + 1).toString()]),
-  );
-
   const granularityOptions = {
     [GranularityLevel.MODEL]: "Produktmodellebene",
     [GranularityLevel.ITEM]: "Artikelebene",
@@ -76,16 +69,6 @@ const formSchemaFromType = (
     label: "Name des Abschnitts",
     "data-cy": "name",
   });
-
-  if (showColumnSelect) {
-    dataSectionFormkitSchema.push({
-      $formkit: "select",
-      name: "cols",
-      label: "Spaltenanzahl",
-      options: colOptions,
-      "data-cy": "select-col-number",
-    });
-  }
 
   if (!existingGranularityLevel && type === SectionType.REPEATABLE) {
     dataSectionFormkitSchema.push({
@@ -105,24 +88,17 @@ watch(
     const dataSection = newId ? draftStore.findSectionById(newId) : undefined;
     formSchema.value = formSchemaFromType(
       newType,
-      dataSection === undefined,
       dataSection?.granularityLevel ?? props.parentGranularityLevel,
     );
     if (dataSection) {
       sectionToModify.value = dataSection;
       formData.value = {
         name: sectionToModify.value.name,
-        cols: sectionToModify.value.layout.cols.sm,
         granularityLevel: sectionToModify.value.granularityLevel,
       };
     }
   },
   { immediate: true }, // Optional: to run the watcher immediately when the component mounts
-);
-
-const numberFromString = z.preprocess(
-  (val) => (typeof val === "string" ? Number(val) : val),
-  z.number(),
 );
 
 const onDelete = async () => {
@@ -145,7 +121,6 @@ const onSubmit = async () => {
   const data = z
     .object({
       name: z.string(),
-      cols: numberFromString,
       granularityLevel: z.enum(GranularityLevel).optional(),
     })
     .parse({
@@ -155,14 +130,12 @@ const onSubmit = async () => {
   if (sectionToModify.value) {
     await draftStore.modifySection(sectionToModify.value.id, {
       name: data.name,
-      layout: { ...sectionToModify.value.layout, cols: { sm: data.cols } },
     });
   } else {
     await draftStore.addSection({
       type: props.type,
       name: data.name,
       parentSectionId: props.parentId,
-      layout: { cols: { sm: data.cols }, ...props.layout },
       granularityLevel: data.granularityLevel,
     });
   }

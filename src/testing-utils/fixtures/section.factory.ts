@@ -12,12 +12,6 @@ export const dataFieldFactory = Factory.define<DataFieldDto>(
     id: `field-${sequence}`,
     name: `Field ${sequence}`,
     type: DataFieldType.TEXT_FIELD,
-    layout: {
-      colStart: { sm: sequence },
-      rowStart: { sm: 1 },
-      colSpan: { sm: 1 },
-      rowSpan: { sm: 1 },
-    },
     granularityLevel: GranularityLevel.ITEM,
   }),
 );
@@ -34,13 +28,6 @@ export const sectionFactory = Factory.define<
   name: `Section ${sequence}`,
   type: SectionType.GROUP,
   subSections: [],
-  layout: {
-    colStart: { sm: 1 },
-    rowStart: { sm: 1 },
-    colSpan: { sm: 1 },
-    rowSpan: { sm: 1 },
-    cols: { sm: 3 },
-  },
   dataFields: dataFieldFactory.buildList(
     transientParams.numberOfDataFields ?? 2,
   ),

@@ -14,18 +14,16 @@ import {
   useDraftSidebarStore,
 } from "../../stores/draftSidebar";
 import { PlusCircleIcon } from "@heroicons/vue/24/outline";
-import { GranularityLevel, LayoutDto } from "@open-dpp/api-client";
+import { GranularityLevel } from "@open-dpp/api-client";
 
 const props = defineProps<{
   parentId?: string;
   parentGranularityLevel?: GranularityLevel;
-  layout: LayoutDto;
 }>();
 
 const open = () => {
   draftSidebarStore.open(SidebarContentType.ITEM_SELECTION, {
     parentId: props.parentId,
-    layout: props.layout,
     parentGranularityLevel: props.parentGranularityLevel,
   });
 };

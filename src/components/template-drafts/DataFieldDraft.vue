@@ -1,5 +1,5 @@
 <template>
-  <div :class="[generateClassesForLayout(dataField.layout)]">
+  <div>
     <input
       v-if="
         props.dataField.type === DataFieldType.TEXT_FIELD ||
@@ -24,7 +24,6 @@
 
 <script lang="ts" setup>
 import { DataFieldDto, DataFieldType } from "@open-dpp/api-client";
-import { generateClassesForLayout } from "../../lib/layout";
 import {
   SidebarContentType,
   useDraftSidebarStore,
@@ -37,7 +36,6 @@ const draftSidebarStore = useDraftSidebarStore();
 const onClicked = () => {
   draftSidebarStore.open(SidebarContentType.DATA_FIELD_FORM, {
     type: props.dataField.type,
-    layout: props.dataField.layout,
     id: props.dataField.id,
   });
 };

@@ -53,7 +53,6 @@ import {
 import {
   DataFieldType,
   GranularityLevel,
-  LayoutDto,
   SectionType,
 } from "@open-dpp/api-client";
 import {
@@ -72,7 +71,6 @@ const selectedType = ref<string>(SectionType.GROUP);
 const props = defineProps<{
   parentId?: string;
   parentGranularityLevel?: GranularityLevel;
-  layout: LayoutDto;
 }>();
 
 const draftSidebarStore = useDraftSidebarStore();
@@ -150,7 +148,6 @@ const onSelect = (type: string, sidebarType: SidebarContentType) => {
   draftSidebarStore.setContentWithProps(sidebarType, {
     type,
     parentId: props.parentId,
-    layout: props.layout,
     parentGranularityLevel: props.parentGranularityLevel,
   });
 };
