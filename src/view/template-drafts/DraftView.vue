@@ -18,12 +18,19 @@
       </div>
     </div>
     <div v-if="draftStore.draft" class="grid grid-cols-1 gap-4">
-      <div class="flex">
-        <BaseButton
-          v-if="currentSections.parentSection"
-          @click="navigateBackToParent"
-          >Zurück</BaseButton
-        >
+      <div class="flex items-center">
+        <div class="flex" v-if="!currentSections.isRootLevel">
+          <BaseButton
+            v-if="currentSections.parentSection"
+            @click="navigateBackToParent"
+            >Zur Startseite</BaseButton
+          >
+          <BaseButton
+            v-if="currentSections.parentSection?.parentId"
+            @click="navigateBackToParent"
+            >Zurück zu {{ currentSections.parentSection.name }}</BaseButton
+          >
+        </div>
         <AddSection
           :parent-granularity-level="
             currentSections.parentSection?.granularityLevel
@@ -103,7 +110,11 @@ const currentSections = computed(() => {
   const currentSubSections =
     draftStore.draft?.sections.filter((s) => s.parentId === foundSection?.id) ??
     [];
-  return { parentSection: foundSection, subSections: currentSubSections };
+  return {
+    isRootLevel: !foundSection,
+    parentSection: foundSection,
+    subSections: currentSubSections,
+  };
 });
 
 const onEditSectionClicked = (section: SectionDto) => {

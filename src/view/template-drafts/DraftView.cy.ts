@@ -392,7 +392,7 @@ describe("<DraftView />", () => {
       };
       cy.expectDeepEqualWithDiff(request.body, expected);
     });
-    cy.contains("Zurück").click();
+    cy.contains("Zur Startseite").click();
     actionsOfSection = cy.get(
       `[data-cy="actions-section-${repeatableSection.id}"]`,
     );

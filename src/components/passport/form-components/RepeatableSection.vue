@@ -8,10 +8,12 @@
       <div
         :data-cy="`row-${index}`"
         v-if="rowInEditMode !== index"
-        class="flex"
+        class="flex justify-between items-center"
       >
-        <div>Reihe {{ index }}</div>
-        <BaseButton @click="rowInEditMode = index">Editieren</BaseButton>
+        <div>Datenreihe {{ index }}</div>
+        <BaseButton variant="primary" @click="rowInEditMode = index"
+          >Editieren</BaseButton
+        >
       </div>
       <SectionForm
         :data-cy="`row-${index}`"

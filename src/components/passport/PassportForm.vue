@@ -3,10 +3,13 @@
     v-if="passportFormStore.productPassport"
     class="mb-4 grid grid-cols-1 gap-4"
   >
-    <div v-if="!currentSections.isRootLevel" class="flex">
-      <div>Reihe {{ row }}</div>
-      <BaseButton @click="navigateBackToHome">Zur Startseite</BaseButton>
+    <div v-if="!currentSections.isRootLevel" class="flex items-center gap-2">
+      <div>Datenreihe {{ row }}</div>
+      <BaseButton variant="primary" @click="navigateBackToHome"
+        >Zur Startseite</BaseButton
+      >
       <BaseButton
+        variant="primary"
         v-if="currentSections.parentSection"
         @click="navigateBackToParent"
         >Zurück zu {{ currentSections.parentSection.name }}</BaseButton

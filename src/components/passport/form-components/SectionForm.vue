@@ -1,5 +1,11 @@
 <template>
-  <FormKit v-model="formData" :actions="false" type="form" @submit="onSubmit">
+  <FormKit
+    v-if="Object.keys(formData).length > 0"
+    v-model="formData"
+    :actions="false"
+    type="form"
+    @submit="onSubmit"
+  >
     <FormKitSchema
       v-if="formSchema"
       :library="{
@@ -12,21 +18,24 @@
     />
     <FormKit label="Speichern" type="submit" />
   </FormKit>
-  <ul>
-    <li
+  <h3 class="text-base/7 font-semibold text-gray-900">
+    Weiterführende Abschnitte
+  </h3>
+  <div class="flex">
+    <BaseButton
       v-for="subSection in passportFormStore.findSubSections(section.id)"
       :key="subSection.id"
-    >
-      <div class="flex">
-        {{ subSection.name }}
-        <BaseButton
-          :data-cy="`edit-subsection-${subSection.id}`"
-          @click="onEditSubsection(subSection.id)"
-          >Editieren</BaseButton
-        >
+      variant="primary"
+      :data-cy="`edit-subsection-${subSection.id}`"
+      @click="onEditSubsection(subSection.id)"
+      ><div class="flex items-center gap-2">
+        <FolderIcon class="size-5 shrink-0 text-white" aria-hidden="true" />
+        <div class="text-sm/6 font-medium text-white">
+          {{ subSection.name }}
+        </div>
       </div>
-    </li>
-  </ul>
+    </BaseButton>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -44,6 +53,7 @@ import { useNotificationStore } from "../../../stores/notification";
 import { useErrorHandlingStore } from "../../../stores/error.handling";
 import BaseButton from "../../BaseButton.vue";
 import { useRouter } from "vue-router";
+import { FolderIcon } from "@heroicons/vue/24/outline";
 
 const props = defineProps<{
   section: DataSectionDto;
