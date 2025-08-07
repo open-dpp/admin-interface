@@ -6,11 +6,11 @@ import { routes } from "../../router";
 import {
   DataFieldDto,
   DataFieldType,
+  DataSectionDto,
   GranularityLevel,
   ModelDto,
-  SectionDto,
+  ProductPassportDto,
   SectionType,
-  TemplateDto,
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
 
@@ -49,14 +49,31 @@ describe("<ModelView />", () => {
       },
       granularityLevel: GranularityLevel.ITEM,
     };
+    const uuidToOtherPassport = "uuid1";
 
-    const section1: SectionDto = {
+    const section1: DataSectionDto = {
       id: "s1",
       type: SectionType.GROUP,
       name: "Technische Spezifikation",
       parentId: undefined,
       subSections: ["s1-1"],
       dataFields: [dataField1, dataField2, dataField3],
+      dataValues: [{ f1: "val1", f2: uuidToOtherPassport }],
+    };
+
+    const section1OtherPassport: DataSectionDto = {
+      id: "s1",
+      type: SectionType.GROUP,
+      name: "Technische Spezifikation",
+      parentId: undefined,
+      subSections: ["s1-1"],
+      dataFields: [dataField1, dataField2, dataField3],
+      dataValues: [
+        {
+          f1: "otherVal1",
+          f2: uuidToOtherPassport,
+        },
+      ],
     };
 
     const dataField21: DataFieldDto = {
@@ -69,7 +86,7 @@ describe("<ModelView />", () => {
       granularityLevel: GranularityLevel.MODEL,
     };
 
-    const section2 = {
+    const section2: DataSectionDto = {
       id: "s2",
       type: SectionType.REPEATABLE,
       name: "Dimensions",
@@ -77,43 +94,36 @@ describe("<ModelView />", () => {
       subSections: [],
       dataFields: [dataField21],
       granularityLevel: GranularityLevel.MODEL,
+      dataValues: [],
     };
 
-    const section3: SectionDto = {
+    const section3: DataSectionDto = {
       id: "s3",
       type: SectionType.REPEATABLE,
       name: "Footprints",
       subSections: [],
       dataFields: [dataField21],
       granularityLevel: GranularityLevel.ITEM,
+      dataValues: [],
     };
 
     // see: https://on.cypress.io/mounting-vue
-    const templateDto: TemplateDto = {
+    const productPassportDto: ProductPassportDto = {
       id: "pdm1",
       name: "Laptop neu",
-      version: "1.0",
-      createdByUserId: "userId",
-      ownedByOrganizationId: "ownedByOrganizationId",
-      sections: [section1, section2, section3],
+      description: "Laptop neu desc",
+      dataSections: [section1, section2, section3],
     };
 
-    const uuidToOtherPassport = "uuid1";
+    const otherProductPassportDto: ProductPassportDto = {
+      id: "pdm1",
+      name: "Other Laptop",
+      description: "Other Laptop",
+      dataSections: [section1OtherPassport, section2, section3],
+    };
 
-    const model: ModelDto = {
+    const model = {
       id: "someId",
-      name: "My model",
-      dataValues: [
-        { value: "val1", dataFieldId: "f1", dataSectionId: "s1", row: 0 },
-        {
-          value: uuidToOtherPassport,
-          dataFieldId: "f2",
-          dataSectionId: "s1",
-          row: 0,
-        },
-      ],
-      templateId: templateDto.id,
-      owner: "o1",
       uniqueProductIdentifiers: [
         {
           uuid: "own-uuid",
@@ -122,26 +132,14 @@ describe("<ModelView />", () => {
       ],
     };
 
-    const otherModel: ModelDto = {
+    const otherModel = {
       id: "otherId",
-      owner: "o1",
-      uniqueProductIdentifiers: [],
-      name: "My other model",
-      dataValues: [
+      uniqueProductIdentifiers: [
         {
-          value: "otherVal1",
-          dataFieldId: "f1",
-          dataSectionId: "s1",
-          row: 0,
-        },
-        {
-          value: uuidToOtherPassport,
-          dataFieldId: "f2",
-          dataSectionId: "s1",
-          row: 0,
+          uuid: "other-uuid",
+          referenceId: "otherId",
         },
       ],
-      templateId: templateDto.id,
     };
 
     const orgaId = "orga1";
@@ -158,14 +156,16 @@ describe("<ModelView />", () => {
       },
     ).as("getModel");
 
-    cy.intercept(
-      "GET",
-      `${API_URL}/organizations/${orgaId}/templates/${templateDto.id}`,
-      {
+    cy.intercept("GET", `${API_URL}/product-passports/*`, (req) => {
+      const uuid = req.url.split("/").pop();
+      req.reply({
         statusCode: 200,
-        body: templateDto, // Mock response
-      },
-    ).as("getTemplate");
+        body:
+          uuid === model.uniqueProductIdentifiers[0].uuid
+            ? productPassportDto
+            : otherProductPassportDto,
+      }); // Mock response
+    }).as("getTemplate");
 
     cy.intercept(
       "PATCH",
@@ -207,15 +207,18 @@ describe("<ModelView />", () => {
       cy.contains("Wird auf Artikelebene gesetzt").should("be.visible");
       cy.contains("Speichern").should("not.exist");
     });
-    cy.get('[data-cy="s1.f1.0"]').should("have.value", "val1");
-    cy.get('[data-cy="s1.f2.0"]').should("have.value", uuidToOtherPassport);
-    cy.get('[data-cy="s1.f3.0"]').should(
-      "contain.text",
-      "Wird auf Artikelebene gesetzt",
-    );
-    cy.get('[data-cy="s1.f1.0"]').type("add1");
-    cy.get('[data-cy="s1.f2.0"]').type("add2");
-    cy.contains("button", "Speichern").click();
+    const section1Card = cy.get('[data-cy="section-card-s1"]');
+    section1Card.within(() => {
+      cy.get('[data-cy="f1"]').should("have.value", "val1");
+      cy.get('[data-cy="f2"]').should("have.value", uuidToOtherPassport);
+      cy.get('[data-cy="f3"]').should(
+        "contain.text",
+        "Wird auf Artikelebene gesetzt",
+      );
+      cy.get('[data-cy="f1"]').type("add1");
+      cy.get('[data-cy="f2"]').type("add2");
+      cy.contains("button", "Speichern").click();
+    });
     cy.wait("@updateData").then((interceptor) => {
       expect(interceptor.request.body).to.deep.equal([
         {
@@ -232,11 +235,17 @@ describe("<ModelView />", () => {
       ).then(() => {
         cy.wait("@getModel").its("response.statusCode").should("eq", 200);
         cy.wait("@getTemplate").its("response.statusCode").should("eq", 200);
-        cy.get('[data-cy="s1.f1.0"]').should("have.value", "otherVal1");
-        cy.get('[data-cy="s1.f2.0"]').should("have.value", uuidToOtherPassport);
+        let section1Card = cy.get('[data-cy="section-card-s1"]');
+        section1Card.within(() => {
+          cy.get('[data-cy="f1"]').should("have.value", "otherVal1");
+          cy.get('[data-cy="f2"]').should("have.value", uuidToOtherPassport);
+        });
         cy.spy(router, "push").as("pushSpy");
-        cy.contains("Referenz nicht gesetzt").should("be.visible");
-        cy.get('[data-cy="Visit s1.f2.0"]').click();
+        cy.contains("other-uuid").should("be.visible");
+        section1Card = cy.get('[data-cy="section-card-s1"]');
+        section1Card.within(() => {
+          cy.get('[data-cy="Visit f2"]').click();
+        });
         cy.wait("@getUniqueProductIdentifierReference")
           .its("response.statusCode")
           .should("eq", 200);

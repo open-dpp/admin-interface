@@ -8,7 +8,6 @@ import {
   DataValueDto,
   GranularityLevel,
   ItemDto,
-  ModelDto,
   ProductPassportDto,
   SectionType,
 } from "@open-dpp/api-client";
@@ -18,7 +17,6 @@ const mocks = vi.hoisted(() => {
     addData: vi.fn(),
     getModelById: vi.fn(),
     getItemById: vi.fn(),
-    getTemplateById: vi.fn(),
     getProductPassportById: vi.fn(),
   };
 });
@@ -33,9 +31,6 @@ vi.mock("../lib/api-client", () => ({
       },
       items: {
         getById: mocks.getItemById,
-      },
-      templates: {
-        getById: mocks.getTemplateById,
       },
       productPassports: {
         getById: mocks.getProductPassportById,
@@ -165,7 +160,7 @@ describe("PassportFormStore", () => {
     name: "Dimensions",
     dataFields: [],
     subSections: ["s1-1-1"],
-    dataValues: [{}],
+    dataValues: [],
   };
 
   const dataFieldS111F1: DataFieldDto = {
@@ -210,51 +205,9 @@ describe("PassportFormStore", () => {
     dataSections: [section1, section11, section111],
   };
 
-  const model: ModelDto = {
+  const model = {
     id: "id1",
-    description: "desc",
     uniqueProductIdentifiers: [{ uuid: "uuid1", referenceId: "id1" }],
-    templateId: "pid",
-    owner: "oId",
-    name: "my model",
-    dataValues: [
-      {
-        value: 2,
-        dataSectionId: section1.id,
-        dataFieldId: dataFieldS1F1.id,
-        row: 0,
-      },
-      {
-        value: 7,
-        dataSectionId: section111.id,
-        dataFieldId: dataFieldS111F1.id,
-        row: 0,
-      },
-      {
-        value: 9,
-        dataSectionId: section111.id,
-        dataFieldId: dataFieldS111F2.id,
-        row: 0,
-      },
-      {
-        value: 2,
-        dataSectionId: section1.id,
-        dataFieldId: dataFieldS1F1.id,
-        row: 1,
-      },
-      {
-        value: 7,
-        dataSectionId: section111.id,
-        dataFieldId: dataFieldS111F1.id,
-        row: 1,
-      },
-      {
-        value: 9,
-        dataSectionId: section111.id,
-        dataFieldId: dataFieldS111F2.id,
-        row: 1,
-      },
-    ],
   };
 
   it("should getFormSchema", async () => {
@@ -279,7 +232,7 @@ describe("PassportFormStore", () => {
       name: "Tech Specs",
       dataFields: [dataFieldS1Model, dataFieldS1Item],
       subSections: [],
-      dataValues: [{}],
+      dataValues: [],
     };
     const productPassportDto: ProductPassportDto = {
       id: "pid",
@@ -290,18 +243,7 @@ describe("PassportFormStore", () => {
 
     const model = {
       id: "id1",
-      description: "desc",
-      uniqueProductIdentifiers: [],
-      templateId: "pid",
-      owner: "oId",
-      name: "my model",
-      dataValues: [
-        {
-          dataSectionId: section1Group.id,
-          dataFieldId: dataFieldS1Model.id,
-          row: 0,
-        },
-      ],
+      uniqueProductIdentifiers: [{ uuid: "uuid1", referenceId: "id1" }],
     };
 
     const passportFormStore = usePassportFormStore();
@@ -365,7 +307,7 @@ describe("PassportFormStore", () => {
       name: "Tech Specs",
       dataFields: [dataFieldS1Model, dataFieldS1Item],
       subSections: [],
-      dataValues: [{}],
+      dataValues: [],
     };
     const productPassportDto: ProductPassportDto = {
       id: "pid",
@@ -456,9 +398,6 @@ describe("PassportFormStore", () => {
         row: 2,
       },
     ];
-    mocks.addData.mockResolvedValue({
-      data: { ...model, dataValues: [...model.dataValues, expected] },
-    });
     await passportFormStore.addRowToSection(section1.id);
 
     expect(mocks.addData).toHaveBeenCalledWith(model.id, expected);

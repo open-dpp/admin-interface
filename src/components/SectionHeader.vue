@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { DataSectionDto, SectionDto, SectionType } from "@open-dpp/api-client";
+import { DataSectionDto, SectionType } from "@open-dpp/api-client";
 import { usePassportFormStore } from "../stores/passport.form";
 import BaseSectionHeader from "./BaseSectionHeader.vue";
 import { computed } from "vue";
