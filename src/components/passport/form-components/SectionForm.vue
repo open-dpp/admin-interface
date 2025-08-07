@@ -58,7 +58,7 @@ const formData = ref<DataValues>({});
 const formSchema = ref();
 
 watch(
-  () => passportFormStore.passport?.dataValues, // The store property to watch
+  [() => props.section, () => passportFormStore.productPassport?.id], // The store property to watch
   () => {
     formSchema.value = passportFormStore.getFormSchema(props.section);
     formData.value = passportFormStore.getFormData(
@@ -67,7 +67,7 @@ watch(
       props.row,
     );
   },
-  { immediate: true, deep: true }, // Optional: to run the watcher immediately when the component mounts
+  { immediate: true }, // Optional: to run the watcher immediately when the component mounts
 );
 
 const onEditSubsection = (subSectionId: string) => {

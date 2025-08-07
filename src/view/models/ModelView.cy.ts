@@ -8,7 +8,6 @@ import {
   DataFieldType,
   DataSectionDto,
   GranularityLevel,
-  ModelDto,
   ProductPassportDto,
   SectionType,
 } from "@open-dpp/api-client";

@@ -6,18 +6,21 @@
           Artikelpass Informationen
         </h3>
       </div>
-      <div v-if="itemFormStore.passport" class="border-t border-gray-100">
+      <div
+        v-if="productPassportStore.productPassport"
+        class="border-t border-gray-100"
+      >
         <dl class="divide-y divide-gray-100">
           <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-sm font-medium text-gray-900">ID</dt>
             <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-              {{ itemFormStore.getUUID() }}
+              {{ productPassportStore.getUUID() }}
             </dd>
           </div>
           <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-sm font-medium text-gray-900">Name</dt>
             <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-              {{ itemFormStore.passport.name }}
+              {{ productPassportStore.productPassport.name }}
             </dd>
           </div>
         </dl>
@@ -25,9 +28,8 @@
     </div>
     <PassportForm
       v-if="
-        itemFormStore.passport &&
-        itemFormStore.template &&
-        !itemFormStore.fetchInFlight
+        productPassportStore.productPassport &&
+        !productPassportStore.fetchInFlight
       "
     />
   </div>
@@ -40,12 +42,12 @@ import PassportForm from "../../components/passport/PassportForm.vue";
 import { usePassportFormStore } from "../../stores/passport.form";
 
 const route = useRoute();
-const itemFormStore = usePassportFormStore();
+const productPassportStore = usePassportFormStore();
 
 watch(
   () => [route.params.modelId, route.params.itemId], // The store property to watch
   async () => {
-    await itemFormStore.fetchItem(
+    await productPassportStore.fetchItem(
       String(route.params.modelId),
       String(route.params.itemId),
     );
