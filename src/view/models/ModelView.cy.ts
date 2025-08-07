@@ -9,9 +9,13 @@ import {
   DataSectionDto,
   GranularityLevel,
   ProductPassportDto,
-  SectionType,
 } from "@open-dpp/api-client";
 import { useIndexStore } from "../../stores";
+import {
+  dataFieldFactory,
+  dataSectionFactory,
+  productPassportFactory,
+} from "../../testing-utils/fixtures/product-passport.factory";
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -20,106 +24,59 @@ const router = createRouter({
 
 describe("<ModelView />", () => {
   it("renders model form and modify its data", () => {
-    const dataField1: DataFieldDto = {
-      id: "f1",
-      type: DataFieldType.TEXT_FIELD,
-      name: "Prozessor",
-      options: {
-        min: 24,
-      },
-      granularityLevel: GranularityLevel.MODEL,
-    };
-    const dataField2: DataFieldDto = {
+    const dataField1 = dataFieldFactory.build({ id: "f1" });
+    const dataField2 = dataFieldFactory.build({
       id: "f2",
       type: DataFieldType.PRODUCT_PASSPORT_LINK,
-      name: "Neuer Title 2",
-      options: {
-        min: 2,
-      },
-      granularityLevel: GranularityLevel.MODEL,
-    };
-
-    const dataField3: DataFieldDto = {
+    });
+    const dataField3: DataFieldDto = dataFieldFactory.build({
       id: "f3",
-      type: DataFieldType.TEXT_FIELD,
-      name: "Neuer Title 3 auf Itemebene",
-      options: {
-        min: 2,
-      },
       granularityLevel: GranularityLevel.ITEM,
-    };
+    });
     const uuidToOtherPassport = "uuid1";
 
-    const section1: DataSectionDto = {
-      id: "s1",
-      type: SectionType.GROUP,
-      name: "Technische Spezifikation",
-      parentId: undefined,
-      subSections: ["s1-1"],
-      dataFields: [dataField1, dataField2, dataField3],
-      dataValues: [{ f1: "val1", f2: uuidToOtherPassport }],
-    };
+    const section1 = dataSectionFactory
+      .addDataField(dataField1)
+      .addDataField(dataField2)
+      .addDataField(dataField3)
+      .addDataValue(dataField1.id, "val1")
+      .addDataValue(dataField2.id, uuidToOtherPassport)
+      .build({ id: "s1", subSections: ["s1-1"] });
 
-    const section1OtherPassport: DataSectionDto = {
-      id: "s1",
-      type: SectionType.GROUP,
-      name: "Technische Spezifikation",
-      parentId: undefined,
-      subSections: ["s1-1"],
-      dataFields: [dataField1, dataField2, dataField3],
-      dataValues: [
-        {
-          f1: "otherVal1",
-          f2: uuidToOtherPassport,
-        },
-      ],
-    };
+    const section1OtherPassport = dataSectionFactory
+      .addDataField(dataField1)
+      .addDataField(dataField2)
+      .addDataField(dataField3)
+      .addDataValue(dataField1.id, "otherVal1")
+      .addDataValue(dataField2.id, uuidToOtherPassport)
+      .build({ id: "s1", subSections: ["s1-1"] });
 
-    const dataField21: DataFieldDto = {
-      id: "f1-1",
-      type: DataFieldType.TEXT_FIELD,
-      name: "Größe",
-      options: {
-        min: 24,
-      },
-      granularityLevel: GranularityLevel.MODEL,
-    };
+    const dataField21: DataFieldDto = dataFieldFactory.build({ id: "f1-1" });
 
-    const section2: DataSectionDto = {
-      id: "s2",
-      type: SectionType.REPEATABLE,
-      name: "Dimensions",
-      parentId: "s1",
-      subSections: [],
-      dataFields: [dataField21],
-      granularityLevel: GranularityLevel.MODEL,
-      dataValues: [],
-    };
+    const section2: DataSectionDto = dataSectionFactory
+      .addDataField(dataField21)
+      .build({ id: "s2", parentId: "s1" });
+    const dataField31: DataFieldDto = dataFieldFactory.build({ id: "f3-1" });
 
-    const section3: DataSectionDto = {
-      id: "s3",
-      type: SectionType.REPEATABLE,
-      name: "Footprints",
-      subSections: [],
-      dataFields: [dataField21],
-      granularityLevel: GranularityLevel.ITEM,
-      dataValues: [],
-    };
+    const section3: DataSectionDto = dataSectionFactory
+      .addDataField(dataField31)
+      .build({
+        id: "s3",
+        granularityLevel: GranularityLevel.ITEM,
+      });
 
     // see: https://on.cypress.io/mounting-vue
-    const productPassportDto: ProductPassportDto = {
-      id: "pdm1",
-      name: "Laptop neu",
-      description: "Laptop neu desc",
-      dataSections: [section1, section2, section3],
-    };
+    const productPassportDto: ProductPassportDto = productPassportFactory
+      .addDataSection(section1)
+      .addDataSection(section2)
+      .addDataSection(section3)
+      .build({ name: "Laptop neu" });
 
-    const otherProductPassportDto: ProductPassportDto = {
-      id: "pdm1",
-      name: "Other Laptop",
-      description: "Other Laptop",
-      dataSections: [section1OtherPassport, section2, section3],
-    };
+    const otherProductPassportDto: ProductPassportDto = productPassportFactory
+      .addDataSection(section1OtherPassport)
+      .addDataSection(section2)
+      .addDataSection(section3)
+      .build({ name: "Other laptop" });
 
     const model = {
       id: "someId",
