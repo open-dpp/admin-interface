@@ -103,10 +103,10 @@ describe("<DraftView />", () => {
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
     cy.contains(`Passvorlagen Entwurf ${draft.name}`).should("be.visible");
     cy.contains(`Version ${draft.version}`).should("be.visible");
-    cy.contains("button", "Hinzufügen").click();
-    cy.contains(`Knoten hinzufügen`).should("be.visible");
+    cy.contains("button", "Abschnitt hinzufügen").click();
+    cy.contains(`Abschnitt hinzufügen`).should("be.visible");
     cy.contains(`Auswahl`).should("be.visible");
-    // Check that text field is not selectable at root level
+    // Check that no data fields are selectable
     cy.contains("li", "Textfeld").should("not.exist");
     cy.contains("li", "Repeater").click();
     cy.get('[data-cy="name"]').type(newSectionName);
@@ -123,7 +123,7 @@ describe("<DraftView />", () => {
       cy.expectDeepEqualWithDiff(request.body, expected);
     });
 
-    cy.contains(`Abschnitt`).should("not.be.visible");
+    cy.contains(newSectionName).should("be.visible");
   });
 
   it("modify and delete a section", () => {
@@ -179,7 +179,10 @@ describe("<DraftView />", () => {
     });
 
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-    cy.get(`[data-cy="edit-section-${section.id}"]`).click();
+    const actionsOfSection = cy.get(
+      `[data-cy="actions-section-${section.id}"]`,
+    );
+    actionsOfSection.within(() => cy.contains("Editieren").click());
 
     cy.get('[data-cy="name"]').clear();
     cy.get('[data-cy="name"]').type(newSectionName);
@@ -193,7 +196,7 @@ describe("<DraftView />", () => {
       cy.expectDeepEqualWithDiff(request.body, expected);
     });
 
-    cy.get(`[data-cy="edit-section-${section.id}"]`).click();
+    actionsOfSection.within(() => cy.contains("Editieren").click());
 
     cy.contains("Abschnitt löschen").click();
     cy.contains("button", "Bestätigen").click();
@@ -263,7 +266,12 @@ describe("<DraftView />", () => {
         cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
 
         // add data field
-        cy.get(`[data-cy="${section.id}-1"]`).click();
+        const actionsOfSection = cy.get(
+          `[data-cy="actions-section-${section.id}"]`,
+        );
+        actionsOfSection.within(() =>
+          cy.contains("Datenfeld hinzufügen").click(),
+        );
         cy.contains("li", textToSelect).click();
         cy.get('[data-cy="name"]').type(dataFieldToCreate.name);
         cy.get('[data-cy="select-granularity-level"]').select(
@@ -359,7 +367,18 @@ describe("<DraftView />", () => {
     cy.mountWithPinia(DraftView, { router });
 
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
-    cy.get('[data-cy="s2-0"]').click();
+    let actionsOfSection = cy.get(
+      `[data-cy="actions-section-${repeatableSection.id}"]`,
+    );
+    cy.spy(router, "push").as("pushSpy");
+
+    actionsOfSection.within(() => cy.contains("Abschnitt hinzufügen").click());
+    cy.get("@pushSpy").should(
+      "have.been.calledWith",
+      `?sectionId=${repeatableSection.id}`,
+    );
+    cy.contains("Abschnitt hinzufügen").click();
+
     cy.contains("li", "Gruppierung").click();
     cy.get('[data-cy="name"]').type(newSectionName);
     cy.get('[data-cy="select-granularity-level"]').should("not.exist");
@@ -373,8 +392,11 @@ describe("<DraftView />", () => {
       };
       cy.expectDeepEqualWithDiff(request.body, expected);
     });
-
-    cy.get('[data-cy="s2-1"]').click();
+    cy.contains("Zurück").click();
+    actionsOfSection = cy.get(
+      `[data-cy="actions-section-${repeatableSection.id}"]`,
+    );
+    actionsOfSection.within(() => cy.contains("Datenfeld hinzufügen").click());
     cy.contains("li", "Textfeld").click();
     cy.get('[data-cy="name"]').type(newDataFieldName);
     cy.get('[data-cy="select-granularity-level"]').should("not.exist");

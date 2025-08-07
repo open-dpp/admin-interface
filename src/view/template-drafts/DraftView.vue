@@ -18,20 +18,46 @@
       </div>
     </div>
     <div v-if="draftStore.draft" class="grid grid-cols-1 gap-4">
+      <div class="flex">
+        <BaseButton
+          v-if="currentSections.parentSection"
+          @click="navigateBackToParent"
+          >Zurück</BaseButton
+        >
+        <AddSection
+          :parent-granularity-level="
+            currentSections.parentSection?.granularityLevel
+          "
+          :parent-id="currentSections.parentSection?.id"
+        />
+      </div>
       <div
-        v-for="section of rootSections"
+        v-for="section of currentSections.subSections"
         :key="section.id"
         class="grid grid-cols-1 overflow-hidden bg-white shadow sm:rounded-lg w-full"
       >
         <BaseSectionHeader :section="section">
-          <template #action>
-            <BaseButton
-              variant="primary"
-              @click="onEditSectionClicked(section)"
-              :data-cy="`edit-section-${section.id}`"
-            >
-              Editieren
-            </BaseButton>
+          <template #actions>
+            <div class="flex" :data-cy="`actions-section-${section.id}`">
+              <BaseButton
+                variant="primary"
+                @click="onEditSectionClicked(section)"
+              >
+                Editieren
+              </BaseButton>
+              <BaseButton
+                variant="primary"
+                @click="onAddDataFieldClicked(section)"
+              >
+                Datenfeld hinzufügen
+              </BaseButton>
+              <BaseButton
+                variant="primary"
+                @click="onAddSubSectionClicked(section)"
+              >
+                Abschnitt hinzufügen
+              </BaseButton>
+            </div>
           </template>
         </BaseSectionHeader>
         <div class="p-4">
@@ -45,28 +71,40 @@
 
 <script lang="ts" setup>
 import { computed, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useDraftStore } from "../../stores/draft";
 import { SectionDto, VisibilityLevel } from "@open-dpp/api-client";
 import PublishDraftButton from "../../components/template-drafts/PublishDraftButton.vue";
 import { useNotificationStore } from "../../stores/notification";
 import { useIndexStore } from "../../stores";
 import DraftSidebar from "../../components/template-drafts/DraftSidebar.vue";
-import SectionDraft from "../../components/template-drafts/SectionDraft.vue";
 import BaseSectionHeader from "../../components/BaseSectionHeader.vue";
 import BaseButton from "../../components/BaseButton.vue";
 import {
   SidebarContentType,
   useDraftSidebarStore,
 } from "../../stores/draftSidebar";
+import AddSection from "../../components/template-drafts/AddSection.vue";
+import SectionDraft from "../../components/template-drafts/SectionDraft.vue";
 
 const route = useRoute();
+const router = useRouter();
 
 const draftStore = useDraftStore();
 const notificationStore = useNotificationStore();
 const indexStore = useIndexStore();
 
 const draftSidebarStore = useDraftSidebarStore();
+
+const currentSections = computed(() => {
+  const foundSection = route.query.sectionId
+    ? draftStore.findSectionById(String(route.query.sectionId))
+    : undefined;
+  const currentSubSections =
+    draftStore.draft?.sections.filter((s) => s.parentId === foundSection?.id) ??
+    [];
+  return { parentSection: foundSection, subSections: currentSubSections };
+});
 
 const onEditSectionClicked = (section: SectionDto) => {
   draftSidebarStore.open(SidebarContentType.SECTION_FORM, {
@@ -75,10 +113,20 @@ const onEditSectionClicked = (section: SectionDto) => {
   });
 };
 
-const rootSections = computed<SectionDto[]>(
-  () =>
-    draftStore.draft?.sections.filter((n) => n.parentId === undefined) ?? [],
-);
+const onAddDataFieldClicked = (section: SectionDto) => {
+  draftSidebarStore.open(SidebarContentType.DATA_FIELD_SELECTION, {
+    parentId: section.id,
+    parentGranularityLevel: section.granularityLevel,
+  });
+};
+
+const navigateBackToParent = () => {
+  router.push(`?sectionId=${currentSections.value.parentSection?.parentId}`);
+};
+
+const onAddSubSectionClicked = (section: SectionDto) => {
+  router.push(`?sectionId=${section.id}`);
+};
 
 const fetchData = async () => {
   await draftStore.fetchDraft(String(route.params.draftId));

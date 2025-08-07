@@ -1,11 +1,13 @@
 import { defineStore } from "pinia";
 import { Component, DefineComponent, markRaw, ref, shallowRef } from "vue";
-import ItemSelection from "../components/template-drafts/ItemSelection.vue";
+import SectionSelection from "../components/template-drafts/SectionSelection.vue";
 import DataFieldForm from "../components/template-drafts/DataFieldForm.vue";
 import SectionForm from "../components/template-drafts/SectionForm.vue";
+import DataFieldSelection from "../components/template-drafts/DataFieldSelection.vue";
 
 export enum SidebarContentType {
-  ITEM_SELECTION = "ITEM_SELECTION",
+  SECTION_SELECTION = "SECTION_SELECTION",
+  DATA_FIELD_SELECTION = "DATA_FIELD_SELECTION",
   SECTION_FORM = "SECTION_FORM",
   DATA_FIELD_FORM = "DATA_FIELD_FORM",
 }
@@ -21,10 +23,16 @@ export const useDraftSidebarStore = defineStore("draftSidebar", () => {
 
   const sidebarContent = [
     {
-      type: SidebarContentType.ITEM_SELECTION,
-      title: "Knoten hinzufügen",
+      type: SidebarContentType.SECTION_SELECTION,
+      title: "Abschnitt hinzufügen",
       subTitle: "Auswahl",
-      content: ItemSelection,
+      content: SectionSelection,
+    },
+    {
+      type: SidebarContentType.DATA_FIELD_SELECTION,
+      title: "Datenfeld hinzufügen",
+      subTitle: "Auswahl",
+      content: DataFieldSelection,
     },
     {
       type: SidebarContentType.SECTION_FORM,
