@@ -5,11 +5,20 @@
       v-for="(_, index) in rows"
       :key="index"
     >
-      <div v-if="rowInEditMode !== index" class="flex">
+      <div
+        :data-cy="`row-${index}`"
+        v-if="rowInEditMode !== index"
+        class="flex"
+      >
         <div>Reihe {{ index }}</div>
         <BaseButton @click="rowInEditMode = index">Editieren</BaseButton>
       </div>
-      <SectionForm v-else :section="props.section" :row="index" />
+      <SectionForm
+        :data-cy="`row-${index}`"
+        v-else
+        :section="props.section"
+        :row="index"
+      />
     </li>
   </ul>
 </template>

@@ -19,7 +19,9 @@
     >
       <div class="flex">
         {{ subSection.name }}
-        <BaseButton @click="onEditSubsection(subSection.id)"
+        <BaseButton
+          :data-cy="`edit-subsection-${subSection.id}`"
+          @click="onEditSubsection(subSection.id)"
           >Editieren</BaseButton
         >
       </div>
