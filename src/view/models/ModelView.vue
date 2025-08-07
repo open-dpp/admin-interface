@@ -6,7 +6,10 @@
           Modellpass Informationen
         </h3>
       </div>
-      <div v-if="modelFormStore.passport" class="border-t border-gray-100">
+      <div
+        v-if="modelFormStore.productPassport"
+        class="border-t border-gray-100"
+      >
         <dl class="divide-y divide-gray-100">
           <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-sm font-medium text-gray-900">ID</dt>
@@ -17,18 +20,14 @@
           <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
             <dt class="text-sm font-medium text-gray-900">Name</dt>
             <dd class="mt-1 text-sm/6 text-gray-700 sm:col-span-2 sm:mt-0">
-              {{ modelFormStore.passport.name }}
+              {{ modelFormStore.productPassport.name }}
             </dd>
           </div>
         </dl>
       </div>
     </div>
     <PassportForm
-      v-if="
-        modelFormStore.passport &&
-        modelFormStore.template &&
-        !modelFormStore.fetchInFlight
-      "
+      v-if="modelFormStore.productPassport && !modelFormStore.fetchInFlight"
     />
   </div>
 </template>

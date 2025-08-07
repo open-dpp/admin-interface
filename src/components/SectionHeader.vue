@@ -1,6 +1,6 @@
 <template>
   <BaseSectionHeader :section="props.section">
-    <template #action>
+    <template #actions>
       <BaseButton
         variant="primary"
         v-if="!disabledMessage && section.type === SectionType.REPEATABLE"
@@ -19,14 +19,14 @@
 </template>
 
 <script setup lang="ts">
-import { SectionDto, SectionType } from "@open-dpp/api-client";
+import { DataSectionDto, SectionDto, SectionType } from "@open-dpp/api-client";
 import { usePassportFormStore } from "../stores/passport.form";
 import BaseSectionHeader from "./BaseSectionHeader.vue";
 import { computed } from "vue";
 import BaseButton from "./BaseButton.vue";
 
 const props = defineProps<{
-  section: SectionDto;
+  section: DataSectionDto;
 }>();
 
 const passportFormStore = usePassportFormStore();

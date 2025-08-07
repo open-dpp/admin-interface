@@ -1,15 +1,15 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import {
+  DataSectionDto,
   DataValueDto,
   GranularityLevel,
-  ProductPassportDataDto,
+  ProductPassportDto,
   SectionDto,
-  TemplateDto,
   UniqueProductIdentifierDto,
 } from "@open-dpp/api-client";
 import apiClient from "../lib/api-client";
-import { assign, keys, maxBy, minBy, pick } from "lodash";
+import { assign, keys, pick } from "lodash";
 
 type FormKitSchemaNode =
   | string // Text content
@@ -27,36 +27,13 @@ interface FormKitSchemaObject {
   children?: FormKitSchemaNode; // Child nodes (can be a node, string, or array)
 }
 
-function dataValueId(sectionId: string, dataFieldId: string, row: number) {
-  return [sectionId, dataFieldId, row].join(".");
-}
-
-function dataValueIdFromDataValue(dataValue: DataValueDto) {
-  return dataValueId(
-    dataValue.dataSectionId,
-    dataValue.dataFieldId,
-    dataValue.row,
-  );
-}
-
-function dataValueIdToDataValue(
-  dataValueId: string,
-  value: unknown,
-): DataValueDto {
-  const [dataSectionId, dataFieldId, row] = dataValueId.split(".");
-  return {
-    value,
-    dataSectionId,
-    dataFieldId,
-    row: parseInt(row),
-  };
-}
+export type DataValues = Record<string, unknown>;
 
 export const usePassportFormStore = defineStore("passport.form", () => {
   const granularityLevel = ref<GranularityLevel>(GranularityLevel.MODEL);
+  const productPassport = ref<ProductPassportDto>();
+  const uniqueProductIdentifier = ref<UniqueProductIdentifierDto>();
   const modelId = ref<string>();
-  const passport = ref<ProductPassportDataDto & { name: string }>();
-  const template = ref<TemplateDto>();
   const fetchInFlight = ref<boolean>(false);
 
   const VALUE_FOR_OTHER_GRANULARITY_LEVEL = {
@@ -68,103 +45,53 @@ export const usePassportFormStore = defineStore("passport.form", () => {
     return VALUE_FOR_OTHER_GRANULARITY_LEVEL[granularityLevel.value];
   };
 
-  const getDataOfSection = (sectionId: string): DataValueDto[] => {
-    const section = template.value?.sections.find((s) => s.id === sectionId);
-    if (!section) {
-      return [];
-    }
-    const dataValues: DataValueDto[] = [];
-    for (const subSection of section.subSections) {
-      dataValues.push(...getDataOfSection(subSection));
-    }
-    if (passport.value) {
-      dataValues.push(
-        ...passport.value.dataValues.filter(
-          (d) => d.dataSectionId === sectionId,
-        ),
-      );
-    }
-    return dataValues;
+  const getDataOfSection = (sectionId: string): DataValues[] => {
+    return (
+      productPassport.value?.dataSections.find((s) => s.id === sectionId)
+        ?.dataValues ?? []
+    );
+  };
+
+  const findSubSections = (sectionId: string | undefined): DataSectionDto[] => {
+    return (
+      productPassport.value?.dataSections.filter(
+        (s) => s.parentId === sectionId,
+      ) ?? []
+    );
   };
 
   const getFormData = (
     sectionId: string,
-    existingFormData: Record<string, unknown>,
+    existingFormData: DataValues,
+    row: number = 0,
   ) => {
-    const dataValues = Object.fromEntries(
-      getDataOfSection(sectionId)?.map((d) => [
-        dataValueIdFromDataValue(d),
-        d.value,
-      ]) ?? [],
-    );
+    const dataValues = getDataOfSection(sectionId)[row];
     return assign({}, dataValues, pick(existingFormData, keys(dataValues)));
   };
 
   const findSectionById = (sectionId: string) => {
-    return template.value?.sections.find((s) => s.id === sectionId);
+    return productPassport.value?.dataSections.find((s) => s.id === sectionId);
   };
 
-  const getFormSchemaRepeatable = (
-    section: SectionDto,
-  ): FormKitSchemaObject[] => {
-    const dataValuesOfSectionAllRows = getDataOfSection(section.id);
-    const minRow = minBy(dataValuesOfSectionAllRows, "row")?.row ?? 0;
-    const maxRow = maxBy(dataValuesOfSectionAllRows, "row")?.row ?? 0;
-
-    const rows = [];
-    for (let rowIndex = minRow; rowIndex <= maxRow; rowIndex++) {
-      rows.push(...getFormSchema(section, rowIndex));
-      if (rowIndex < maxRow) {
-        rows.push({
-          $el: "div",
-          attrs: {
-            class: `w-full border-t border-gray-300 m-2`,
-          },
-        });
-      }
-    }
-    return rows;
-  };
-
-  const getFormSchema = (
-    section: SectionDto,
-    row: number = 0,
-  ): FormKitSchemaObject[] => {
-    const dataValuesOfSection = getDataOfSection(section.id).filter(
-      (d) => d.row === row,
-    );
-
+  const getFormSchema = (section: SectionDto): FormKitSchemaObject[] => {
     const children = [];
-
-    for (const subSectionId of section.subSections) {
-      const subSection = findSectionById(subSectionId);
-      if (subSection) {
-        children.push(...getFormSchema(subSection, row));
-      }
-    }
     for (const dataField of section.dataFields) {
       if (dataField.granularityLevel !== granularityLevel.value) {
         children.push({
           $cmp: "FakeField",
           props: {
-            dataCy: dataValueId(section.id, dataField.id, row),
+            dataCy: dataField.id,
             placeholder: getValueForOtherGranularityLevel(),
             label: dataField!.name,
             options: dataField.options,
           },
         });
-      }
-
-      const dataValue = dataValuesOfSection.find(
-        (d) => d.dataFieldId === dataField.id,
-      );
-
-      if (dataValue) {
+      } else {
         children.push({
           $cmp: dataField.type,
           props: {
-            id: dataValueIdFromDataValue(dataValue),
-            name: dataValueIdFromDataValue(dataValue),
+            id: dataField.id,
+            name: dataField.id,
             label: dataField!.name,
             validation: "required",
             options: dataField.options,
@@ -185,14 +112,15 @@ export const usePassportFormStore = defineStore("passport.form", () => {
   };
 
   const generateDataValues = (sectionId: string): DataValueDto[] => {
-    const dataValuesOfSection = getDataOfSection(sectionId);
-
-    const maxRow = maxBy(dataValuesOfSection, "row")?.row;
-    const section = template.value?.sections.find((s) => s.id === sectionId);
-    const dataValuesToCreate = [];
+    const section = productPassport.value?.dataSections.find(
+      (s) => s.id === sectionId,
+    );
     if (!section) {
       return [];
     }
+    const maxRow = section.dataValues.length - 1;
+
+    const dataValuesToCreate = [];
     for (const subSectionId of section.subSections) {
       dataValuesToCreate.push(...generateDataValues(subSectionId));
     }
@@ -208,29 +136,30 @@ export const usePassportFormStore = defineStore("passport.form", () => {
   };
 
   const addRowToSection = async (sectionId: string) => {
-    if (modelId.value && passport.value) {
+    if (modelId.value && uniqueProductIdentifier.value) {
       const dataValuesToCreate = generateDataValues(sectionId);
-      const response =
-        granularityLevel.value === GranularityLevel.MODEL
-          ? await apiClient.dpp.models.addData(
-              passport.value.id,
-              dataValuesToCreate,
-            )
-          : await apiClient.dpp.items.addData(
-              modelId.value,
-              passport.value.id,
-              dataValuesToCreate,
-            );
-      passport.value = { ...response.data, name: passport.value.name };
+      if (granularityLevel.value === GranularityLevel.MODEL)
+        await apiClient.dpp.models.addData(
+          uniqueProductIdentifier.value.referenceId,
+          dataValuesToCreate,
+        );
+      else {
+        await apiClient.dpp.items.addData(
+          modelId.value,
+          uniqueProductIdentifier.value.referenceId,
+          dataValuesToCreate,
+        );
+      }
+      await fetchProductPassport();
     }
   };
 
-  const fetchProductDataModel = async () => {
-    if (passport.value?.templateId) {
-      const response = await apiClient.dpp.templates.getById(
-        passport.value.templateId,
+  const fetchProductPassport = async () => {
+    if (uniqueProductIdentifier.value) {
+      const response = await apiClient.dpp.productPassports.getById(
+        uniqueProductIdentifier.value.uuid,
       );
-      template.value = response.data;
+      productPassport.value = response.data;
     }
   };
 
@@ -238,75 +167,69 @@ export const usePassportFormStore = defineStore("passport.form", () => {
     fetchInFlight.value = true;
     const response = await apiClient.dpp.models.getById(id);
     granularityLevel.value = GranularityLevel.MODEL;
-    passport.value = response.data;
+    uniqueProductIdentifier.value = response.data.uniqueProductIdentifiers[0];
     modelId.value = id;
-    await fetchProductDataModel();
+    await fetchProductPassport();
     fetchInFlight.value = false;
-  };
-
-  const _getUUID = (uniqueProductIdentifiers: UniqueProductIdentifierDto[]) => {
-    return uniqueProductIdentifiers.length > 0
-      ? uniqueProductIdentifiers[0].uuid
-      : "Referenz nicht gesetzt";
-  };
-
-  const getUUID = () => {
-    return _getUUID(passport.value?.uniqueProductIdentifiers ?? []);
   };
 
   const fetchItem = async (modelIdToFetch: string, id: string) => {
     fetchInFlight.value = true;
     const response = await apiClient.dpp.items.getById(modelIdToFetch, id);
     granularityLevel.value = GranularityLevel.ITEM;
-    passport.value = {
-      ...response.data,
-      name: `Artikel mit ID ${_getUUID(response.data.uniqueProductIdentifiers)}`,
-    };
-
     modelId.value = modelIdToFetch;
-    await fetchProductDataModel();
+    uniqueProductIdentifier.value = response.data.uniqueProductIdentifiers[0];
+    await fetchProductPassport();
     fetchInFlight.value = false;
   };
 
+  const getUUID = () => {
+    return uniqueProductIdentifier.value?.uuid;
+  };
+
   const updateDataValues = async (
-    dataValues: { id: string; value: unknown }[],
+    sectionId: string,
+    dataValues: DataValues,
+    row: number,
   ) => {
-    if (modelId.value && passport.value) {
-      const dataValueModifications = dataValues.map((d) =>
-        dataValueIdToDataValue(d.id, d.value),
+    if (modelId.value && uniqueProductIdentifier.value) {
+      const dataValueModifications = Object.entries(dataValues).map(
+        ([key, value]) => ({
+          dataSectionId: sectionId,
+          dataFieldId: key,
+          row,
+          value,
+        }),
       );
-      const response =
-        granularityLevel.value === GranularityLevel.MODEL
-          ? await apiClient.dpp.models.modifyData(
-              passport.value.id,
-              dataValueModifications,
-            )
-          : await apiClient.dpp.items.modifyData(
-              modelId.value,
-              passport.value.id,
-              dataValueModifications,
-            );
-      passport.value = {
-        ...response.data,
-        name: passport.value.name,
-      };
+      if (granularityLevel.value === GranularityLevel.MODEL) {
+        await apiClient.dpp.models.modifyData(
+          uniqueProductIdentifier.value.referenceId,
+          dataValueModifications,
+        );
+      } else {
+        await apiClient.dpp.items.modifyData(
+          modelId.value,
+          uniqueProductIdentifier.value.referenceId,
+          dataValueModifications,
+        );
+      }
+      await fetchProductPassport();
     }
   };
 
   return {
     getUUID,
     granularityLevel,
-    passport,
-    template,
+    productPassport,
     fetchInFlight,
     getValueForOtherGranularityLevel,
     fetchModel,
     fetchItem,
+    findSubSections,
     findSectionById,
     updateDataValues,
     addRowToSection,
     getFormData,
     getFormSchema,
-    getFormSchemaRepeatable,
   };
 });
