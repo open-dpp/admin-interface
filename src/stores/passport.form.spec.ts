@@ -259,24 +259,21 @@ describe("PassportFormStore", () => {
     const grid1Exp = {
       $el: "div",
       attrs: {
-        class:
-          "grid gap-1 items-center sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-3",
+        class: "grid gap-1 items-center",
       },
     };
 
     const grid11Exp = {
       $el: "div",
       attrs: {
-        class:
-          "grid gap-1 items-center sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-5",
+        class: "grid gap-1 items-center",
       },
     };
 
     const grid111Exp = {
       $el: "div",
       attrs: {
-        class:
-          "grid gap-1 items-center sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-8",
+        class: "grid gap-1 items-center",
       },
     };
 
@@ -287,7 +284,6 @@ describe("PassportFormStore", () => {
         name: "s1-1-1.s1-1-1-f1.0",
         label: dataFieldS111F1.name,
         validation: "required",
-        className: "sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1",
         options: {},
       },
     };
@@ -298,7 +294,6 @@ describe("PassportFormStore", () => {
         name: "s1-1-1.s1-1-1-f2.0",
         label: dataFieldS111F2.name,
         validation: "required",
-        className: "sm:col-span-1 sm:col-start-2 sm:row-span-1 sm:row-start-1",
         options: {},
       },
     };
@@ -310,7 +305,6 @@ describe("PassportFormStore", () => {
         name: "s1.s1-f1.0",
         label: dataFieldS1F1.name,
         validation: "required",
-        className: "sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1",
         options: {},
       },
     };
@@ -439,15 +433,12 @@ describe("PassportFormStore", () => {
       {
         $el: "div",
         attrs: {
-          class:
-            "grid gap-1 items-center sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-3",
+          class: "grid gap-1 items-center",
         },
         children: [
           {
             $cmp: "TextField",
             props: {
-              className:
-                "sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1",
               id: "s1.f1.0",
               label: "Amount",
               name: "s1.f1.0",
@@ -458,8 +449,6 @@ describe("PassportFormStore", () => {
           {
             $cmp: "FakeField",
             props: {
-              className:
-                "sm:col-span-1 sm:col-start-2 sm:row-span-1 sm:row-start-1",
               dataCy: "s1.f2.0",
               label: "PCF",
               options: {},
@@ -528,15 +517,12 @@ describe("PassportFormStore", () => {
       {
         $el: "div",
         attrs: {
-          class:
-            "grid gap-1 items-center sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-3",
+          class: "grid gap-1 items-center",
         },
         children: [
           {
             $cmp: "FakeField",
             props: {
-              className:
-                "sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1",
               dataCy: "s1.f1.0",
               label: "Amount",
               options: {},
@@ -546,8 +532,6 @@ describe("PassportFormStore", () => {
           {
             $cmp: "TextField",
             props: {
-              className:
-                "sm:col-span-1 sm:col-start-2 sm:row-span-1 sm:row-start-1",
               id: "s1.f2.0",
               label: "PCF",
               name: "s1.f2.0",
