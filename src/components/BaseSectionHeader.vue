@@ -25,7 +25,7 @@
         {{ props.section.name }}
       </div>
     </div>
-    <slot name="action"></slot>
+    <slot name="actions"></slot>
   </div>
 </template>
 

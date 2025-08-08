@@ -4,13 +4,12 @@ import { usePassportFormStore } from "./passport.form";
 import {
   DataFieldDto,
   DataFieldType,
+  DataSectionDto,
   DataValueDto,
   GranularityLevel,
   ItemDto,
-  ModelDto,
-  SectionDto,
+  ProductPassportDto,
   SectionType,
-  TemplateDto,
 } from "@open-dpp/api-client";
 
 const mocks = vi.hoisted(() => {
@@ -18,7 +17,7 @@ const mocks = vi.hoisted(() => {
     addData: vi.fn(),
     getModelById: vi.fn(),
     getItemById: vi.fn(),
-    getTemplateById: vi.fn(),
+    getProductPassportById: vi.fn(),
   };
 });
 
@@ -33,8 +32,8 @@ vi.mock("../lib/api-client", () => ({
       items: {
         getById: mocks.getItemById,
       },
-      templates: {
-        getById: mocks.getTemplateById,
+      productPassports: {
+        getById: mocks.getProductPassportById,
       },
     },
   },
@@ -48,54 +47,22 @@ describe("PassportFormStore", () => {
 
   it("should merge data values with form data", async () => {
     const passportFormStore = usePassportFormStore();
-    passportFormStore.passport = {
-      id: "id1",
-      name: "my model",
-      uniqueProductIdentifiers: [],
-      templateId: "pid",
-      dataValues: [
-        { value: 2, dataSectionId: "s1", dataFieldId: "field1", row: 0 },
-        {
-          value: undefined,
-          dataSectionId: "s1",
-          dataFieldId: "field2",
-          row: 0,
-        },
-        { value: 7, dataSectionId: "s1-1", dataFieldId: "field3", row: 0 },
-        { value: 9, dataSectionId: "s1-1", dataFieldId: "field4", row: 0 },
-      ],
-    };
 
-    passportFormStore.template = {
+    passportFormStore.productPassport = {
       id: "pid",
       name: "Handy",
-      version: "1.0.0",
-      ownedByOrganizationId: "oId",
-      createdByUserId: "uId",
-      sections: [
+      description: "Handy Desc",
+      dataSections: [
         {
           id: "s1",
           name: "Tech Specs",
           type: SectionType.GROUP,
-          layout: {
-            cols: { sm: 3 },
-            colStart: { sm: 1 },
-            colSpan: { sm: 1 },
-            rowStart: { sm: 1 },
-            rowSpan: { sm: 1 },
-          },
           dataFields: [
             {
               id: "field1",
               type: DataFieldType.TEXT_FIELD,
               name: "Processor",
               options: {},
-              layout: {
-                colStart: { sm: 1 },
-                colSpan: { sm: 1 },
-                rowStart: { sm: 1 },
-                rowSpan: { sm: 1 },
-              },
               granularityLevel: GranularityLevel.MODEL,
             },
             {
@@ -103,13 +70,13 @@ describe("PassportFormStore", () => {
               type: DataFieldType.TEXT_FIELD,
               name: "RAM",
               options: {},
-              layout: {
-                colStart: { sm: 2 },
-                colSpan: { sm: 1 },
-                rowStart: { sm: 1 },
-                rowSpan: { sm: 1 },
-              },
               granularityLevel: GranularityLevel.MODEL,
+            },
+          ],
+          dataValues: [
+            {
+              field1: 2,
+              field2: undefined,
             },
           ],
           subSections: ["s1-1"],
@@ -118,25 +85,12 @@ describe("PassportFormStore", () => {
           id: "s1-1",
           name: "Sub Tech Specs",
           type: SectionType.GROUP,
-          layout: {
-            cols: { sm: 5 },
-            colStart: { sm: 1 },
-            colSpan: { sm: 1 },
-            rowStart: { sm: 1 },
-            rowSpan: { sm: 1 },
-          },
           dataFields: [
             {
               id: "field3",
               type: DataFieldType.TEXT_FIELD,
               name: "Processor",
               options: {},
-              layout: {
-                colStart: { sm: 1 },
-                colSpan: { sm: 1 },
-                rowStart: { sm: 1 },
-                rowSpan: { sm: 1 },
-              },
               granularityLevel: GranularityLevel.MODEL,
             },
             {
@@ -144,13 +98,13 @@ describe("PassportFormStore", () => {
               type: DataFieldType.TEXT_FIELD,
               name: "RAM",
               options: {},
-              layout: {
-                colStart: { sm: 2 },
-                colSpan: { sm: 1 },
-                rowStart: { sm: 1 },
-                rowSpan: { sm: 1 },
-              },
               granularityLevel: GranularityLevel.MODEL,
+            },
+          ],
+          dataValues: [
+            {
+              field3: 7,
+              field4: 9,
             },
           ],
           subSections: [],
@@ -158,20 +112,16 @@ describe("PassportFormStore", () => {
       ],
     };
 
-    let result = passportFormStore.getFormData("s1", { "s1.field1.0": 8 });
+    let result = passportFormStore.getFormData("s1", { field1: 8 });
     expect(result).toEqual({
-      "s1.field1.0": 8,
-      "s1.field2.0": undefined,
-      "s1-1.field3.0": 7,
-      "s1-1.field4.0": 9,
+      field1: 8,
+      field2: undefined,
     });
 
-    result = passportFormStore.getFormData("s1", { "s1-1.field3.0": 9 });
+    result = passportFormStore.getFormData("s1-1", { field3: 9 });
     expect(result).toEqual({
-      "s1.field1.0": 2,
-      "s1.field2.0": undefined,
-      "s1-1.field3.0": 9,
-      "s1-1.field4.0": 9,
+      field3: 9,
+      field4: 9,
     });
   });
 
@@ -180,48 +130,37 @@ describe("PassportFormStore", () => {
     type: DataFieldType.TEXT_FIELD,
     name: "Processor",
     options: {},
-    layout: {
-      colStart: { sm: 1 },
-      colSpan: { sm: 1 },
-      rowStart: { sm: 1 },
-      rowSpan: { sm: 1 },
-    },
     granularityLevel: GranularityLevel.MODEL,
   };
 
   const section11Id = "s1-1";
   const section111Id = "s1-1-1";
 
-  const section1: SectionDto = {
+  const section1: DataSectionDto = {
     id: "s1",
     type: SectionType.REPEATABLE,
     parentId: undefined,
     name: "Tech Specs",
     dataFields: [dataFieldS1F1],
     subSections: [section11Id],
-    layout: {
-      cols: { sm: 3 },
-      colStart: { sm: 1 },
-      colSpan: { sm: 1 },
-      rowStart: { sm: 1 },
-      rowSpan: { sm: 1 },
-    },
+    dataValues: [
+      {
+        [dataFieldS1F1.id]: 2,
+      },
+      {
+        [dataFieldS1F1.id]: 2,
+      },
+    ],
   };
 
-  const section11: SectionDto = {
+  const section11: DataSectionDto = {
     id: section11Id,
     type: SectionType.GROUP,
     parentId: section1.id,
     name: "Dimensions",
     dataFields: [],
     subSections: ["s1-1-1"],
-    layout: {
-      cols: { sm: 5 },
-      colStart: { sm: 1 },
-      colSpan: { sm: 1 },
-      rowStart: { sm: 1 },
-      rowSpan: { sm: 1 },
-    },
+    dataValues: [],
   };
 
   const dataFieldS111F1: DataFieldDto = {
@@ -229,12 +168,6 @@ describe("PassportFormStore", () => {
     type: DataFieldType.TEXT_FIELD,
     name: "Amount",
     options: {},
-    layout: {
-      colStart: { sm: 1 },
-      colSpan: { sm: 1 },
-      rowStart: { sm: 1 },
-      rowSpan: { sm: 1 },
-    },
     granularityLevel: GranularityLevel.MODEL,
   };
 
@@ -243,220 +176,39 @@ describe("PassportFormStore", () => {
     type: DataFieldType.TEXT_FIELD,
     name: "Unit",
     options: {},
-    layout: {
-      colStart: { sm: 2 },
-      colSpan: { sm: 1 },
-      rowStart: { sm: 1 },
-      rowSpan: { sm: 1 },
-    },
     granularityLevel: GranularityLevel.MODEL,
   };
 
-  const section111: SectionDto = {
+  const section111: DataSectionDto = {
     id: section111Id,
     type: SectionType.GROUP,
     parentId: section11.id,
     name: "Single Dimension",
     dataFields: [dataFieldS111F1, dataFieldS111F2],
     subSections: [],
-    layout: {
-      cols: { sm: 8 },
-      colStart: { sm: 1 },
-      colSpan: { sm: 1 },
-      rowStart: { sm: 1 },
-      rowSpan: { sm: 1 },
-    },
-  };
-
-  const templateDto: TemplateDto = {
-    id: "pid",
-    name: "Handy",
-    version: "1.0.0",
-    ownedByOrganizationId: "oId",
-    createdByUserId: "uId",
-    sections: [section1, section11, section111],
-  };
-
-  const model: ModelDto = {
-    id: "id1",
-    description: "desc",
-    uniqueProductIdentifiers: [],
-    templateId: "pid",
-    owner: "oId",
-    name: "my model",
     dataValues: [
       {
-        value: 2,
-        dataSectionId: section1.id,
-        dataFieldId: dataFieldS1F1.id,
-        row: 0,
+        [dataFieldS111F1.id]: 7,
+        [dataFieldS111F2.id]: 9,
       },
       {
-        value: 7,
-        dataSectionId: section111.id,
-        dataFieldId: dataFieldS111F1.id,
-        row: 0,
-      },
-      {
-        value: 9,
-        dataSectionId: section111.id,
-        dataFieldId: dataFieldS111F2.id,
-        row: 0,
-      },
-      {
-        value: 2,
-        dataSectionId: section1.id,
-        dataFieldId: dataFieldS1F1.id,
-        row: 1,
-      },
-      {
-        value: 7,
-        dataSectionId: section111.id,
-        dataFieldId: dataFieldS111F1.id,
-        row: 1,
-      },
-      {
-        value: 9,
-        dataSectionId: section111.id,
-        dataFieldId: dataFieldS111F2.id,
-        row: 1,
+        [dataFieldS111F1.id]: 7,
+        [dataFieldS111F2.id]: 9,
       },
     ],
   };
 
-  it("should getFormSchemaRepeatable", async () => {
-    const passportFormStore = usePassportFormStore();
+  const productPassportDto: ProductPassportDto = {
+    id: "pid",
+    name: "Handy",
+    description: "Handy desc",
+    dataSections: [section1, section11, section111],
+  };
 
-    mocks.getTemplateById.mockResolvedValue({ data: templateDto });
-    mocks.getModelById.mockResolvedValue({ data: model });
-    await passportFormStore.fetchModel(model.id);
-
-    const actual = passportFormStore.getFormSchemaRepeatable(section1);
-
-    const grid1Exp = {
-      $el: "div",
-      attrs: {
-        class:
-          "grid gap-1 items-center sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-3",
-      },
-    };
-
-    const grid11Exp = {
-      $el: "div",
-      attrs: {
-        class:
-          "grid gap-1 items-center sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-5",
-      },
-    };
-
-    const grid111Exp = {
-      $el: "div",
-      attrs: {
-        class:
-          "grid gap-1 items-center sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-8",
-      },
-    };
-
-    const fieldS111F1Exp = {
-      $cmp: "TextField",
-      props: {
-        id: "s1-1-1.s1-1-1-f1.0",
-        name: "s1-1-1.s1-1-1-f1.0",
-        label: dataFieldS111F1.name,
-        validation: "required",
-        className: "sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1",
-        options: {},
-      },
-    };
-    const fieldS111F2Exp = {
-      $cmp: "TextField",
-      props: {
-        id: "s1-1-1.s1-1-1-f2.0",
-        name: "s1-1-1.s1-1-1-f2.0",
-        label: dataFieldS111F2.name,
-        validation: "required",
-        className: "sm:col-span-1 sm:col-start-2 sm:row-span-1 sm:row-start-1",
-        options: {},
-      },
-    };
-
-    const fieldS1F1Exp = {
-      $cmp: "TextField",
-      props: {
-        id: "s1.s1-f1.0",
-        name: "s1.s1-f1.0",
-        label: dataFieldS1F1.name,
-        validation: "required",
-        className: "sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1",
-        options: {},
-      },
-    };
-
-    const expected = [
-      {
-        ...grid1Exp,
-        children: [
-          {
-            ...grid11Exp,
-            children: [
-              {
-                ...grid111Exp,
-                children: [fieldS111F1Exp, fieldS111F2Exp],
-              },
-            ],
-          },
-          fieldS1F1Exp,
-        ],
-      },
-      {
-        $el: "div",
-        attrs: {
-          class: "w-full border-t border-gray-300 m-2",
-        },
-      },
-      {
-        ...grid1Exp,
-        children: [
-          {
-            ...grid11Exp,
-            children: [
-              {
-                ...grid111Exp,
-                children: [
-                  {
-                    ...fieldS111F1Exp,
-                    props: {
-                      ...fieldS111F1Exp.props,
-                      id: "s1-1-1.s1-1-1-f1.1",
-                      name: "s1-1-1.s1-1-1-f1.1",
-                    },
-                  },
-                  {
-                    ...fieldS111F2Exp,
-                    props: {
-                      ...fieldS111F2Exp.props,
-                      id: "s1-1-1.s1-1-1-f2.1",
-                      name: "s1-1-1.s1-1-1-f2.1",
-                    },
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            ...fieldS1F1Exp,
-            props: {
-              ...fieldS1F1Exp.props,
-              id: "s1.s1-f1.1",
-              name: "s1.s1-f1.1",
-            },
-          },
-        ],
-      },
-    ];
-    expect(actual).toEqual(expected);
-    expect(passportFormStore.passport?.name).toEqual(model.name);
-  });
+  const model = {
+    id: "id1",
+    uniqueProductIdentifiers: [{ uuid: "uuid1", referenceId: "id1" }],
+  };
 
   it("should getFormSchema", async () => {
     const dataFieldS1Model: DataFieldDto = {
@@ -464,12 +216,6 @@ describe("PassportFormStore", () => {
       type: DataFieldType.TEXT_FIELD,
       name: "Amount",
       options: {},
-      layout: {
-        colStart: { sm: 1 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
       granularityLevel: GranularityLevel.MODEL,
     };
     const dataFieldS1Item: DataFieldDto = {
@@ -477,57 +223,34 @@ describe("PassportFormStore", () => {
       type: DataFieldType.TEXT_FIELD,
       name: "PCF",
       options: {},
-      layout: {
-        colStart: { sm: 2 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
       granularityLevel: GranularityLevel.ITEM,
     };
-    const section1Group: SectionDto = {
+    const section1Group: DataSectionDto = {
       id: "s1",
       type: SectionType.GROUP,
       parentId: undefined,
       name: "Tech Specs",
       dataFields: [dataFieldS1Model, dataFieldS1Item],
       subSections: [],
-      layout: {
-        cols: { sm: 3 },
-        colStart: { sm: 1 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
+      dataValues: [],
     };
-    const templateDto: TemplateDto = {
+    const productPassportDto: ProductPassportDto = {
       id: "pid",
       name: "Handy",
-      version: "1.0.0",
-      ownedByOrganizationId: "oId",
-      createdByUserId: "uId",
-      sections: [section1Group],
+      description: "1.0.0",
+      dataSections: [section1Group],
     };
 
     const model = {
       id: "id1",
-      description: "desc",
-      uniqueProductIdentifiers: [],
-      templateId: "pid",
-      owner: "oId",
-      name: "my model",
-      dataValues: [
-        {
-          dataSectionId: section1Group.id,
-          dataFieldId: dataFieldS1Model.id,
-          row: 0,
-        },
-      ],
+      uniqueProductIdentifiers: [{ uuid: "uuid1", referenceId: "id1" }],
     };
 
     const passportFormStore = usePassportFormStore();
-    mocks.getTemplateById.mockResolvedValue({ data: templateDto });
     mocks.getModelById.mockResolvedValue({ data: model });
+    mocks.getProductPassportById.mockResolvedValue({
+      data: productPassportDto,
+    });
     await passportFormStore.fetchModel(model.id);
 
     const result = passportFormStore.getFormSchema(section1Group);
@@ -535,18 +258,15 @@ describe("PassportFormStore", () => {
       {
         $el: "div",
         attrs: {
-          class:
-            "grid gap-1 items-center sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-3",
+          class: "flex gap-4 items-center",
         },
         children: [
           {
             $cmp: "TextField",
             props: {
-              className:
-                "sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1",
-              id: "s1.f1.0",
+              id: "f1",
               label: "Amount",
-              name: "s1.f1.0",
+              name: "f1",
               options: {},
               validation: "required",
             },
@@ -554,9 +274,7 @@ describe("PassportFormStore", () => {
           {
             $cmp: "FakeField",
             props: {
-              className:
-                "sm:col-span-1 sm:col-start-2 sm:row-span-1 sm:row-start-1",
-              dataCy: "s1.f2.0",
+              dataCy: "f2",
               label: "PCF",
               options: {},
               placeholder: "Wird auf Artikelebene gesetzt",
@@ -573,12 +291,6 @@ describe("PassportFormStore", () => {
       type: DataFieldType.TEXT_FIELD,
       name: "Amount",
       options: {},
-      layout: {
-        colStart: { sm: 1 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
       granularityLevel: GranularityLevel.MODEL,
     };
     const dataFieldS1Item: DataFieldDto = {
@@ -586,36 +298,22 @@ describe("PassportFormStore", () => {
       type: DataFieldType.TEXT_FIELD,
       name: "PCF",
       options: {},
-      layout: {
-        colStart: { sm: 2 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
       granularityLevel: GranularityLevel.ITEM,
     };
-    const section1Group: SectionDto = {
+    const section1Group: DataSectionDto = {
       id: "s1",
       type: SectionType.GROUP,
       parentId: undefined,
       name: "Tech Specs",
       dataFields: [dataFieldS1Model, dataFieldS1Item],
       subSections: [],
-      layout: {
-        cols: { sm: 3 },
-        colStart: { sm: 1 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
+      dataValues: [],
     };
-    const templateDto: TemplateDto = {
+    const productPassportDto: ProductPassportDto = {
       id: "pid",
       name: "Handy",
-      version: "1.0.0",
-      ownedByOrganizationId: "oId",
-      createdByUserId: "uId",
-      sections: [section1Group],
+      description: "Handy Desc",
+      dataSections: [section1Group],
     };
 
     const modelId = "mid";
@@ -634,8 +332,10 @@ describe("PassportFormStore", () => {
     };
 
     const passportFormStore = usePassportFormStore();
-    mocks.getTemplateById.mockResolvedValue({ data: templateDto });
     mocks.getItemById.mockResolvedValue({ data: item });
+    mocks.getProductPassportById.mockResolvedValue({
+      data: productPassportDto,
+    });
     await passportFormStore.fetchItem(modelId, item.id);
 
     const result = passportFormStore.getFormSchema(section1Group);
@@ -643,16 +343,13 @@ describe("PassportFormStore", () => {
       {
         $el: "div",
         attrs: {
-          class:
-            "grid gap-1 items-center sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1 sm:grid-cols-3",
+          class: "flex gap-4 items-center",
         },
         children: [
           {
             $cmp: "FakeField",
             props: {
-              className:
-                "sm:col-span-1 sm:col-start-1 sm:row-span-1 sm:row-start-1",
-              dataCy: "s1.f1.0",
+              dataCy: "f1",
               label: "Amount",
               options: {},
               placeholder: "Wird auf Modelebene gesetzt",
@@ -661,11 +358,9 @@ describe("PassportFormStore", () => {
           {
             $cmp: "TextField",
             props: {
-              className:
-                "sm:col-span-1 sm:col-start-2 sm:row-span-1 sm:row-start-1",
-              id: "s1.f2.0",
+              id: "f2",
               label: "PCF",
-              name: "s1.f2.0",
+              name: "f2",
               options: {},
               validation: "required",
             },
@@ -677,7 +372,9 @@ describe("PassportFormStore", () => {
 
   it("should add row to section", async () => {
     const passportFormStore = usePassportFormStore();
-    mocks.getTemplateById.mockResolvedValue({ data: templateDto });
+    mocks.getProductPassportById.mockResolvedValue({
+      data: productPassportDto,
+    });
     mocks.getModelById.mockResolvedValue({ data: model });
     await passportFormStore.fetchModel(model.id);
 
@@ -701,9 +398,6 @@ describe("PassportFormStore", () => {
         row: 2,
       },
     ];
-    mocks.addData.mockResolvedValue({
-      data: { ...model, dataValues: [...model.dataValues, expected] },
-    });
     await passportFormStore.addRowToSection(section1.id);
 
     expect(mocks.addData).toHaveBeenCalledWith(model.id, expected);

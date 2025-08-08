@@ -2,11 +2,10 @@ import { createPinia, setActivePinia } from "pinia";
 import { expect, it, vi } from "vitest";
 import apiClient from "../lib/api-client";
 import { waitFor } from "@testing-library/vue";
-import { findEmptyGridSpaces, useDraftStore } from "./draft";
+import { useDraftStore } from "./draft";
 import {
   DataFieldType,
   GranularityLevel,
-  LayoutDto,
   SectionType,
   Sector,
   TemplateDraftDto,
@@ -62,23 +61,10 @@ describe("DraftStore", () => {
         name: "Processor",
         type: DataFieldType.TEXT_FIELD,
         options: {},
-        layout: {
-          colStart: { sm: 1 },
-          colSpan: { sm: 1 },
-          rowStart: { sm: 1 },
-          rowSpan: { sm: 1 },
-        },
         granularityLevel: GranularityLevel.MODEL,
       },
     ],
     subSections: [],
-    layout: {
-      cols: { sm: 1, lg: 8 },
-      colStart: { sm: 1, lg: 9 },
-      colSpan: { sm: 2, xl: 3 },
-      rowStart: { sm: 1 },
-      rowSpan: { sm: 1 },
-    },
   };
 
   const draft: TemplateDraftDto = {
@@ -129,13 +115,6 @@ describe("DraftStore", () => {
     const newSection = {
       name: "My new section",
       type: SectionType.GROUP,
-      layout: {
-        cols: { sm: 1 },
-        colStart: { sm: 2 },
-        colSpan: { sm: 7 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
     };
     await draftStore.addSection(newSection);
     await waitFor(() =>
@@ -153,13 +132,6 @@ describe("DraftStore", () => {
     draftStore.draft = draft;
     const modifySection = {
       name: "My new section name",
-      layout: {
-        cols: { sm: 1 },
-        colStart: { sm: 2 },
-        colSpan: { sm: 7 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
     };
     await draftStore.modifySection(section.id, modifySection);
     await waitFor(() =>
@@ -180,12 +152,6 @@ describe("DraftStore", () => {
     const newDataField = {
       name: "My new data field",
       type: DataFieldType.TEXT_FIELD,
-      layout: {
-        colStart: { sm: 2 },
-        colSpan: { sm: 7 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
       granularityLevel: GranularityLevel.MODEL,
     };
     await draftStore.addDataField(sectionId, newDataField);
@@ -238,12 +204,6 @@ describe("DraftStore", () => {
     const modification = {
       name: "new name",
       options: { min: 2 },
-      layout: {
-        colStart: { sm: 2 },
-        colSpan: { sm: 7 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
     };
     await draftStore.modifyDataField(dataFieldId, modification);
     await waitFor(() =>
@@ -277,88 +237,5 @@ describe("DraftStore", () => {
     draftStore.draft = draft;
     const found = draftStore.findSectionById(section.id);
     expect(found).toEqual(section);
-  });
-});
-
-describe("findEmptyGridSpaces", () => {
-  it("should find spaces", () => {
-    const items: LayoutDto[] = [
-      {
-        colStart: { sm: 1 },
-        colSpan: { sm: 2 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
-      {
-        colStart: { sm: 3 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
-      {
-        colStart: { sm: 1 },
-        colSpan: { sm: 1 },
-        rowStart: { sm: 2 },
-        rowSpan: { sm: 1 },
-      },
-    ];
-
-    const result = findEmptyGridSpaces(items, 3);
-    expect(result).toEqual([
-      {
-        colStart: { sm: 2 },
-        rowStart: { sm: 2 },
-        colSpan: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
-      {
-        colStart: { sm: 3 },
-        rowStart: { sm: 2 },
-        colSpan: { sm: 1 },
-        rowSpan: { sm: 1 },
-      },
-      {
-        colSpan: {
-          sm: 1,
-        },
-        colStart: {
-          sm: 1,
-        },
-        rowSpan: {
-          sm: 1,
-        },
-        rowStart: {
-          sm: 3,
-        },
-      },
-      {
-        colSpan: {
-          sm: 1,
-        },
-        colStart: {
-          sm: 2,
-        },
-        rowSpan: {
-          sm: 1,
-        },
-        rowStart: {
-          sm: 3,
-        },
-      },
-      {
-        colSpan: {
-          sm: 1,
-        },
-        colStart: {
-          sm: 3,
-        },
-        rowSpan: {
-          sm: 1,
-        },
-        rowStart: {
-          sm: 3,
-        },
-      },
-    ]);
   });
 });

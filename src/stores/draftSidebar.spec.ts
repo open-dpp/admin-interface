@@ -1,7 +1,7 @@
 import { createPinia, setActivePinia } from "pinia";
 import { expect, it } from "vitest";
 import { SidebarContentType, useDraftSidebarStore } from "./draftSidebar";
-import ItemSelection from "../components/template-drafts/ItemSelection.vue";
+import SectionSelection from "../components/template-drafts/SectionSelection.vue";
 import { DataFieldType, SectionType } from "@open-dpp/api-client";
 import DataFieldForm from "../components/template-drafts/DataFieldForm.vue";
 import SectionForm from "../components/template-drafts/SectionForm.vue";
@@ -15,13 +15,13 @@ describe("DraftSidebarStore", () => {
   it("should open NodeSelection and close sidebar", async () => {
     const draftSidebarStore = useDraftSidebarStore();
     expect(draftSidebarStore.isOpen).toBeFalsy();
-    draftSidebarStore.open(SidebarContentType.ITEM_SELECTION, {
+    draftSidebarStore.open(SidebarContentType.SECTION_SELECTION, {
       parentId: "p1",
     });
-    expect(draftSidebarStore.title).toEqual("Knoten hinzufügen");
+    expect(draftSidebarStore.title).toEqual("Abschnitt hinzufügen");
     expect(draftSidebarStore.subTitle).toEqual("Auswahl");
     expect(draftSidebarStore.isOpen).toBeTruthy();
-    expect(draftSidebarStore.content).toEqual(ItemSelection);
+    expect(draftSidebarStore.content).toEqual(SectionSelection);
     expect(draftSidebarStore.contentProps).toEqual({ parentId: "p1" });
     draftSidebarStore.close();
     expect(draftSidebarStore.isOpen).toBeFalsy();
