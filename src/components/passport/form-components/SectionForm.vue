@@ -1,11 +1,5 @@
 <template>
-  <FormKit
-    v-if="Object.keys(formData).length > 0"
-    v-model="formData"
-    :actions="false"
-    type="form"
-    @submit="onSubmit"
-  >
+  <FormKit v-model="formData" :actions="false" type="form" @submit="onSubmit">
     <FormKitSchema
       v-if="formSchema"
       :library="{
@@ -18,7 +12,10 @@
     />
     <FormKit label="Speichern" type="submit" />
   </FormKit>
-  <h3 class="text-base/7 font-semibold text-gray-900">
+  <h3
+    v-if="passportFormStore.findSubSections(section.id).length > 0"
+    class="text-base/7 font-semibold text-gray-900"
+  >
     Weiterführende Abschnitte
   </h3>
   <div class="flex">

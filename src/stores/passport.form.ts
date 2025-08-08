@@ -104,7 +104,7 @@ export const usePassportFormStore = defineStore("passport.form", () => {
       {
         $el: "div",
         attrs: {
-          class: `grid gap-1 items-center`,
+          class: `flex gap-4 items-center`,
         },
         children: children,
       },
