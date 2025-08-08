@@ -258,7 +258,7 @@ describe("PassportFormStore", () => {
       {
         $el: "div",
         attrs: {
-          class: "grid gap-1 items-center",
+          class: "flex gap-4 items-center",
         },
         children: [
           {
@@ -343,7 +343,7 @@ describe("PassportFormStore", () => {
       {
         $el: "div",
         attrs: {
-          class: "grid gap-1 items-center",
+          class: "flex gap-4 items-center",
         },
         children: [
           {
