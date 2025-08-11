@@ -45,7 +45,7 @@
       >
         <BaseSectionHeader :section="section">
           <template #actions>
-            <div class="flex" :data-cy="`actions-section-${section.id}`">
+            <div class="flex px-2" :data-cy="`actions-section-${section.id}`">
               <BaseButton
                 variant="primary"
                 @click="onEditSectionClicked(section)"
@@ -64,6 +64,26 @@
               >
                 Abschnitt hinzufügen
               </BaseButton>
+              <div class="flex items-center rounded-md">
+                <button
+                  type="button"
+                  :data-cy="`move-section-${section.id}-up`"
+                  @click="draftStore.moveSectionUp(section.id)"
+                  class="items-center rounded-l-md bg-white px-1 py-1 text-gray-400 inset-ring-1 inset-ring-gray-300 hover:bg-gray-50 focus:z-10"
+                >
+                  <span class="sr-only">Move section up</span>
+                  <ChevronUpIcon class="size-5" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  :data-cy="`move-section-${section.id}-down`"
+                  @click="draftStore.moveSectionDown(section.id)"
+                  class="items-center rounded-r-md bg-white px-1 py-1 text-gray-400 inset-ring-1 inset-ring-gray-300 hover:bg-gray-50 focus:z-10"
+                >
+                  <span class="sr-only">Move section down</span>
+                  <ChevronDownIcon class="size-5" aria-hidden="true" />
+                </button>
+              </div>
             </div>
           </template>
         </BaseSectionHeader>
@@ -80,6 +100,7 @@
 import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useDraftStore } from "../../stores/draft";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/vue/20/solid";
 import { SectionDto, VisibilityLevel } from "@open-dpp/api-client";
 import PublishDraftButton from "../../components/template-drafts/PublishDraftButton.vue";
 import { useNotificationStore } from "../../stores/notification";

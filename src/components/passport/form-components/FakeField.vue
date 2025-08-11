@@ -30,7 +30,7 @@
 </template>
 <script setup lang="ts">
 const props = defineProps<{
-  className: string;
+  className?: string;
   label: string;
   placeholder: string;
   dataCy: string;
