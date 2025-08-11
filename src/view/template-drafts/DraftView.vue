@@ -69,18 +69,22 @@
                   type="button"
                   :data-cy="`move-section-${section.id}-up`"
                   @click="draftStore.moveSectionUp(section.id)"
-                  class="items-center rounded-l-md bg-white px-1 py-1 text-gray-400 inset-ring-1 inset-ring-gray-300 hover:bg-gray-50 focus:z-10"
+                  :disabled="isFirst(section.id)"
+                  :aria-disabled="isFirst(section.id)"
+                  class="inline-flex items-center justify-center rounded-l-md bg-white px-1 py-1 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-50 disabled:pointer-events-none"
                 >
-                  <span class="sr-only">Move section up</span>
+                  <span class="sr-only">Abschnitt nach oben verschieben</span>
                   <ChevronUpIcon class="size-5" aria-hidden="true" />
                 </button>
                 <button
                   type="button"
                   :data-cy="`move-section-${section.id}-down`"
                   @click="draftStore.moveSectionDown(section.id)"
-                  class="items-center rounded-r-md bg-white px-1 py-1 text-gray-400 inset-ring-1 inset-ring-gray-300 hover:bg-gray-50 focus:z-10"
+                  :disabled="isLast(section.id)"
+                  :aria-disabled="isLast(section.id)"
+                  class="inline-flex items-center justify-center rounded-r-md bg-white px-1 py-1 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-50 disabled:pointer-events-none"
                 >
-                  <span class="sr-only">Move section down</span>
+                  <span class="sr-only">Abschnitt nach unten verschieben</span>
                   <ChevronDownIcon class="size-5" aria-hidden="true" />
                 </button>
               </div>
@@ -162,6 +166,14 @@ const onAddSubSectionClicked = (section: SectionDto) => {
 
 const fetchData = async () => {
   await draftStore.fetchDraft(String(route.params.draftId));
+};
+
+const isFirst = (id: string) =>
+  currentSections.value.subSections.findIndex((s) => s.id === id) === 0;
+
+const isLast = (id: string) => {
+  const idx = currentSections.value.subSections.findIndex((s) => s.id === id);
+  return idx === currentSections.value.subSections.length - 1;
 };
 
 const onPublish = async (visibility: VisibilityLevel) => {
