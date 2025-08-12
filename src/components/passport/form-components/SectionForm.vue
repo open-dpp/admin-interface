@@ -7,6 +7,7 @@
         ProductPassportLink,
         FakeField,
         NumericField,
+        FileField,
       }"
       :schema="formSchema"
     />
@@ -46,6 +47,7 @@ import {
   usePassportFormStore,
 } from "../../../stores/passport.form";
 import NumericField from "./NumericField.vue";
+import FileField from "./FileField.vue";
 import { useNotificationStore } from "../../../stores/notification";
 import { useErrorHandlingStore } from "../../../stores/error.handling";
 import BaseButton from "../../BaseButton.vue";
