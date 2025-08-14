@@ -42,7 +42,10 @@ import { ref, watch } from "vue";
 import TextField from "./TextField.vue";
 import FakeField from "./FakeField.vue";
 import ProductPassportLink from "./ProductPassportLink.vue";
-import { DataValues, usePassportFormStore } from "../../../stores/passport.form";
+import {
+  DataValues,
+  usePassportFormStore,
+} from "../../../stores/passport.form";
 import NumericField from "./NumericField.vue";
 import FileField from "./FileField.vue";
 import { useNotificationStore } from "../../../stores/notification";
