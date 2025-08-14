@@ -29,7 +29,10 @@
       />
       <DocumentIcon v-else class="w-24 h-24 text-gray-600" />
       <div class="text-gray-600 my-auto">
-        {{ selectedFile.name }} ({{ selectedFile.size }} kb)
+        {{ selectedFile.name
+        }}<span v-if="selectedFile && selectedFile.size">
+          ({{ selectedFileSizeKB }} KB)</span
+        >
       </div>
       <button
         class="bg-[#6BAD87] rounded-sm p-2 hover:cursor-pointer h-12 my-auto"
@@ -82,6 +85,7 @@ import { usePassportFormStore } from "../../../stores/passport.form";
 import { useIndexStore } from "../../../stores";
 import { useNotificationStore } from "../../../stores/notification";
 import { DocumentIcon } from "@heroicons/vue/24/outline";
+import { AxiosProgressEvent, AxiosRequestConfig } from "axios";
 
 const MEDIA_SERVICE_URL = "http://localhost:3001/"; // https://media.open-dpp.localhost:20080/
 
@@ -108,10 +112,6 @@ const computedAttrs = computed(() => ({
   ...attrs,
 }));
 
-const computedOptions = computed(
-  () => computedAttrs.value.options as Record<string, unknown>,
-);
-
 const isImage = computed(() => {
   if (!selectedFile.value) {
     return false;
@@ -124,6 +124,14 @@ const fileUrl = computed(() => {
     return null;
   }
   return URL.createObjectURL(selectedFile.value);
+});
+
+const selectedFileSizeKB = computed(() => {
+  const size = selectedFile.value?.size;
+  if (typeof size !== "number") {
+    return null;
+  }
+  return (size / 1024).toFixed(1);
 });
 
 const openFileInput = () => {
@@ -147,10 +155,10 @@ const uploadFile = async () => {
   }
   const formData = new FormData();
   formData.append("file", selectedFile.value);
-  const config = {
-    onUploadProgress: (progressEvent: any) => {
+  const config: AxiosRequestConfig<FormData> = {
+    onUploadProgress: (progressEvent: AxiosProgressEvent) => {
       uploadProgress.value = Math.round(
-        (parseInt(progressEvent.loaded) / parseInt(progressEvent.total)) * 100,
+        (progressEvent.loaded / (progressEvent.total ?? 1)) * 100,
       );
     },
   };
