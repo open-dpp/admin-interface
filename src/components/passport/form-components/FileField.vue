@@ -201,20 +201,67 @@ const uploadFile = async () => {
 };
 
 const loadFile = async () => {
-  if (uploadedMediaId.value) {
+  if (!uploadedMediaId.value) {
+    return;
+  }
+
+  try {
     const responseInfo = await axiosIns.get(
       `${MEDIA_SERVICE_URL}media/dpp/${passportFormStore.getUUID()}/${props.id}/info`,
     );
+
     const responseDownload = await axiosIns.get(
       `${MEDIA_SERVICE_URL}media/dpp/${passportFormStore.getUUID()}/${props.id}/download`,
       {
         responseType: "blob",
       },
     );
-    const blob = responseDownload.data;
-    const contentType = responseInfo.data.mimeType;
+
+    const blob = responseDownload.data as Blob;
+    const contentType = (responseInfo.data as { mimeType?: string }).mimeType;
+
+    // Revoke an old object URL to avoid memory leaks before assigning a new one
+    if (uploadedFileUrl.value) {
+      try {
+        URL.revokeObjectURL(uploadedFileUrl.value);
+      } catch (revokeErr) {
+        console.error(
+          "Fehler beim Freigeben der vorherigen Objekt-URL:",
+          revokeErr,
+        );
+      }
+    }
+
     uploadedFileUrl.value = URL.createObjectURL(blob);
     uploadedFileContentType.value = contentType;
+  } catch (error) {
+    console.error("Fehler beim Laden der Datei:", error);
+    // Reset state on failure
+    if (uploadedFileUrl.value) {
+      try {
+        URL.revokeObjectURL(uploadedFileUrl.value);
+      } catch (revokeErr) {
+        console.error(
+          "Fehler beim Freigeben der Objekt-URL nach Fehler:",
+          revokeErr,
+        );
+      }
+    }
+    uploadedFileUrl.value = undefined;
+    uploadedFileContentType.value = undefined;
+
+    // Notify user via the existing notification store if available
+    try {
+      notificationStore.addErrorNotification(
+        "Die Datei konnte nicht geladen werden. Bitte versuchen Sie es erneut.",
+      );
+    } catch {
+      // Fallback to console if the notification store is not available for any reason
+      console.error(
+        "Benachrichtigung über Ladefehler konnte nicht angezeigt werden.",
+      );
+    }
+    // We intentionally do not rethrow to keep caller logic simple unless needed.
   }
 };
 
