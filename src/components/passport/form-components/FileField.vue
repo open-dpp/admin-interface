@@ -86,8 +86,7 @@ import { useIndexStore } from "../../../stores";
 import { useNotificationStore } from "../../../stores/notification";
 import { DocumentIcon } from "@heroicons/vue/24/outline";
 import { AxiosProgressEvent, AxiosRequestConfig } from "axios";
-
-const MEDIA_SERVICE_URL = "http://localhost:3001/"; // https://media.open-dpp.localhost:20080/
+import { MEDIA_SERVICE_URL } from "../../../const";
 
 const passportFormStore = usePassportFormStore();
 const indexStore = useIndexStore();
