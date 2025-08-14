@@ -161,19 +161,42 @@ const uploadFile = async () => {
       );
     },
   };
-  const response = await axiosIns.post(
-    `${MEDIA_SERVICE_URL}media/dpp/${indexStore.selectedOrganization}/${passportFormStore.getUUID()}/${props.id}`,
-    formData,
-    config,
-  );
-  if (
-    response.status === 201 ||
-    response.status === 304 ||
-    response.status === 200
-  ) {
-    uploadedMediaId.value = (response.data as { mediaId: string }).mediaId;
-    notificationStore.addSuccessNotification("Datei erfolgreich hochgeladen.");
-    await loadFile();
+
+  try {
+    const response = await axiosIns.post(
+      `${MEDIA_SERVICE_URL}media/dpp/${indexStore.selectedOrganization}/${passportFormStore.getUUID()}/${props.id}`,
+      formData,
+      config,
+    );
+
+    if (
+      response.status === 201 ||
+      response.status === 304 ||
+      response.status === 200
+    ) {
+      uploadedMediaId.value = (response.data as { mediaId: string }).mediaId;
+      notificationStore.addSuccessNotification(
+        "Datei erfolgreich hochgeladen.",
+      );
+      await loadFile();
+    } else {
+      // Handle non-success HTTP responses
+      uploadedMediaId.value = undefined;
+      notificationStore.addErrorNotification(
+        `Fehler beim Hochladen der Datei (Status: ${response.status}). Bitte erneut versuchen.`,
+      );
+    }
+  } catch (error) {
+    // Log and show user-friendly error
+    console.error("Fehler beim Hochladen der Datei:", error);
+    notificationStore.addErrorNotification(
+      "Beim Hochladen der Datei ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+    );
+    // Reset state so the user can start over
+    selectedFile.value = null;
+  } finally {
+    // Ensure the UI isn't left stuck in the uploading state
+    uploadProgress.value = 0;
   }
 };
 
