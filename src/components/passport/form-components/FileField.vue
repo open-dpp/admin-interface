@@ -56,9 +56,9 @@
       />
       <DocumentIcon v-else class="w-24 h-24 text-gray-600" />
       <div class="text-gray-600 text-sm my-auto">
-        <a :download="uploadedFileUrl" :href="uploadedFileUrl">{{
-          uploadedMediaId
-        }}</a>
+        <a :download="uploadedMediaId" :href="uploadedFileUrl">
+          Download {{ uploadedMediaId }}</a
+        >
       </div>
       <button
         class="bg-[#6BAD87] rounded-sm p-2 hover:cursor-pointer h-12 my-auto"
