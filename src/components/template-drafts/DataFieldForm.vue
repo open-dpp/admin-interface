@@ -9,7 +9,7 @@
     >
       <FormKitSchema v-if="formSchema" :schema="formSchema" />
       <div class="flex gap-1">
-        <BaseButton variant="primary" data-cy="submit" type="submit">
+        <BaseButton data-cy="submit" type="submit" variant="primary">
           {{ dataFieldToModify ? "Ändern" : "Hinzufügen" }}
         </BaseButton>
         <BaseButton
@@ -99,6 +99,14 @@ const formSchemaFromType = (
         name: "max",
         label: "Maximum",
         "data-cy": "max",
+      });
+      break;
+    case DataFieldType.FILE_FIELD:
+      dataFieldFormkitSchema.push({
+        $formkit: "text",
+        name: "name",
+        label: "Name des Dateifeldes",
+        "data-cy": "name",
       });
       break;
     default:

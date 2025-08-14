@@ -1,15 +1,19 @@
 <template>
   <ItemSelection
     :items-to-select="itemsToSelect"
-    :parent-id="props.parentId"
     :parent-granularity-level="props.parentGranularityLevel"
+    :parent-id="props.parentId"
   />
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
 import { DataFieldType, GranularityLevel } from "@open-dpp/api-client";
-import { ArrowPathIcon, ChartBarSquareIcon } from "@heroicons/vue/24/outline";
+import {
+  ArrowPathIcon,
+  ChartBarSquareIcon,
+  PaperClipIcon,
+} from "@heroicons/vue/24/outline";
 import { SidebarContentType } from "../../stores/draftSidebar";
 import { LinkIcon } from "@heroicons/vue/16/solid";
 import ItemSelection from "./ItemSelection.vue";
@@ -43,6 +47,14 @@ const itemsToSelect = ref<SelectOption[]>([
     icon: ChartBarSquareIcon,
     background: "bg-teal-500",
     type: DataFieldType.NUMERIC_FIELD,
+    sidebarType: SidebarContentType.DATA_FIELD_FORM,
+  },
+  {
+    title: "Datei",
+    description: "Fügen Sie eine Datei hinzu",
+    icon: PaperClipIcon,
+    background: "bg-orange-500",
+    type: DataFieldType.FILE_FIELD,
     sidebarType: SidebarContentType.DATA_FIELD_FORM,
   },
 ]);

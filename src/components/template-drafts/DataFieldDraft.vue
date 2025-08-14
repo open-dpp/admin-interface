@@ -1,24 +1,26 @@
 <template>
   <div>
-    <input
-      v-if="
-        props.dataField.type === DataFieldType.TEXT_FIELD ||
-        props.dataField.type === DataFieldType.PRODUCT_PASSPORT_LINK
-      "
-      :placeholder="dataField.name"
-      class="block w-full cursor-pointer select-none rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-      readonly
-      type="text"
-      @mousedown.prevent="onClicked"
+    <DraftDataFieldText
+      v-if="props.dataField.type === DataFieldType.TEXT_FIELD"
+      :data-field="props.dataField"
+      @clicked="onClicked"
     />
-    <input
+    <DraftDataFieldProductPassportLink
+      v-else-if="props.dataField.type === DataFieldType.PRODUCT_PASSPORT_LINK"
+      :data-field="props.dataField"
+      @clicked="onClicked"
+    />
+    <DraftDataFieldNumeric
       v-else-if="props.dataField.type === DataFieldType.NUMERIC_FIELD"
-      :placeholder="dataField.name"
-      class="block w-full cursor-pointer select-none rounded-md border-0 py-1.5 text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-      readonly
-      type="text"
-      @mousedown.prevent="onClicked"
+      :data-field="props.dataField"
+      @clicked="onClicked"
     />
+    <DraftDataFieldFile
+      v-else-if="props.dataField.type === DataFieldType.FILE_FIELD"
+      :data-field="props.dataField"
+      @clicked="onClicked"
+    />
+    <DraftDataFieldUnsupported v-else :data-field="props.dataField" />
   </div>
 </template>
 
@@ -28,6 +30,11 @@ import {
   SidebarContentType,
   useDraftSidebarStore,
 } from "../../stores/draftSidebar";
+import DraftDataFieldNumeric from "./draft-data-field-types/DraftDataFieldNumeric.vue";
+import DraftDataFieldText from "./draft-data-field-types/DraftDataFieldText.vue";
+import DraftDataFieldProductPassportLink from "./draft-data-field-types/DraftDataFieldProductPassportLink.vue";
+import DraftDataFieldUnsupported from "./draft-data-field-types/DraftDataFieldUnsupported.vue";
+import DraftDataFieldFile from "./draft-data-field-types/DraftDataFieldFile.vue";
 
 const props = defineProps<{ dataField: DataFieldDto }>();
 
