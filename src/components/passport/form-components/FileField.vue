@@ -56,12 +56,17 @@
       />
       <DocumentIcon v-else class="w-24 h-24 text-gray-600" />
       <div class="text-gray-600 text-sm my-auto">
-        <a :download="uploadedMediaId" :href="uploadedFileUrl">
-          Download {{ uploadedMediaId }}</a
-        >
+        {{ uploadedMediaId }}
       </div>
+      <a
+        :download="uploadedMediaId"
+        :href="uploadedFileUrl"
+        class="bg-[#6BAD87] rounded-sm p-2 hover:cursor-pointer my-auto"
+      >
+        Herunterladen
+      </a>
       <button
-        class="bg-[#6BAD87] rounded-sm p-2 hover:cursor-pointer h-12 my-auto"
+        class="bg-[#6BAD87] rounded-sm p-2 hover:cursor-pointer my-auto"
         @click="openFileInput"
       >
         Datei ändern
@@ -164,7 +169,7 @@ const uploadFile = async () => {
 
   try {
     const response = await axiosIns.post(
-      `${MEDIA_SERVICE_URL}media/dpp/${indexStore.selectedOrganization}/${passportFormStore.getUUID()}/${props.id}`,
+      `${MEDIA_SERVICE_URL}/media/dpp/${indexStore.selectedOrganization}/${passportFormStore.getUUID()}/${props.id}`,
       formData,
       config,
     );
@@ -207,11 +212,11 @@ const loadFile = async () => {
 
   try {
     const responseInfo = await axiosIns.get(
-      `${MEDIA_SERVICE_URL}media/dpp/${passportFormStore.getUUID()}/${props.id}/info`,
+      `${MEDIA_SERVICE_URL}/media/dpp/${passportFormStore.getUUID()}/${props.id}/info`,
     );
 
     const responseDownload = await axiosIns.get(
-      `${MEDIA_SERVICE_URL}media/dpp/${passportFormStore.getUUID()}/${props.id}/download`,
+      `${MEDIA_SERVICE_URL}/media/dpp/${passportFormStore.getUUID()}/${props.id}/download`,
       {
         responseType: "blob",
       },
