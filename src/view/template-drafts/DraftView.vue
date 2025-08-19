@@ -100,7 +100,6 @@ const router = useRouter();
 const draftStore = useDraftStore();
 const notificationStore = useNotificationStore();
 const indexStore = useIndexStore();
-
 const draftSidebarStore = useDraftSidebarStore();
 
 const currentSections = computed(() => {

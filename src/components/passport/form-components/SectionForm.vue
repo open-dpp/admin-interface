@@ -7,6 +7,7 @@
         ProductPassportLink,
         FakeField,
         NumericField,
+        FileField,
       }"
       :schema="formSchema"
     />
@@ -22,11 +23,11 @@
     <BaseButton
       v-for="subSection in passportFormStore.findSubSections(section.id)"
       :key="subSection.id"
-      variant="primary"
       :data-cy="`edit-subsection-${subSection.id}`"
+      variant="primary"
       @click="onEditSubsection(subSection.id)"
       ><div class="flex items-center gap-2">
-        <FolderIcon class="size-5 shrink-0 text-white" aria-hidden="true" />
+        <FolderIcon aria-hidden="true" class="size-5 shrink-0 text-white" />
         <div class="text-sm/6 font-medium text-white">
           {{ subSection.name }}
         </div>
@@ -46,6 +47,7 @@ import {
   usePassportFormStore,
 } from "../../../stores/passport.form";
 import NumericField from "./NumericField.vue";
+import FileField from "./FileField.vue";
 import { useNotificationStore } from "../../../stores/notification";
 import { useErrorHandlingStore } from "../../../stores/error.handling";
 import BaseButton from "../../BaseButton.vue";
@@ -67,7 +69,11 @@ const formData = ref<DataValues>({});
 const formSchema = ref();
 
 watch(
-  [() => props.section, () => passportFormStore.productPassport?.id], // The store property to watch
+  [
+    () => props.section,
+    () => passportFormStore.productPassport?.id,
+    () => props.row,
+  ], // The store property to watch
   () => {
     formSchema.value = passportFormStore.getFormSchema(props.section);
     formData.value = passportFormStore.getFormData(
