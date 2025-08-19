@@ -50,7 +50,7 @@ describe("media store", () => {
         postMock.mockImplementationOnce(
           (url: string, formData: FormData, config: AxiosRequestConfig) => {
             // simulate upload progress
-            config?.onUploadProgress?.({ loaded: 50, total: 100 } as any);
+            config?.onUploadProgress?.({ loaded: 50, total: 100 } as never);
             return Promise.resolve({
               status,
               data: { mediaId: "mid-" + status },
@@ -82,7 +82,10 @@ describe("media store", () => {
       const store = useMediaStore();
       postMock.mockImplementationOnce(
         (url: string, formData: FormData, config: AxiosRequestConfig) => {
-          config?.onUploadProgress?.({ loaded: 123, total: undefined } as any);
+          config?.onUploadProgress?.({
+            loaded: 123,
+            total: undefined,
+          } as never);
           return Promise.resolve({ status: 200, data: { mediaId: "mid" } });
         },
       );
