@@ -45,7 +45,7 @@
       >
         <BaseSectionHeader :section="section">
           <template #actions>
-            <div class="flex" :data-cy="`actions-section-${section.id}`">
+            <div class="flex px-2" :data-cy="`actions-section-${section.id}`">
               <BaseButton
                 variant="primary"
                 @click="onEditSectionClicked(section)"
@@ -64,6 +64,30 @@
               >
                 Abschnitt hinzufügen
               </BaseButton>
+              <div class="flex items-center rounded-md">
+                <button
+                  type="button"
+                  :data-cy="`move-section-${section.id}-up`"
+                  @click="draftStore.moveSectionUp(section.id)"
+                  :disabled="isFirst(section.id)"
+                  :aria-disabled="isFirst(section.id)"
+                  class="inline-flex items-center justify-center rounded-l-md bg-white px-1 py-1 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-50 disabled:pointer-events-none"
+                >
+                  <span class="sr-only">Abschnitt nach oben verschieben</span>
+                  <ChevronUpIcon class="size-5" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  :data-cy="`move-section-${section.id}-down`"
+                  @click="draftStore.moveSectionDown(section.id)"
+                  :disabled="isLast(section.id)"
+                  :aria-disabled="isLast(section.id)"
+                  class="inline-flex items-center justify-center rounded-r-md bg-white px-1 py-1 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-10 disabled:opacity-50 disabled:pointer-events-none"
+                >
+                  <span class="sr-only">Abschnitt nach unten verschieben</span>
+                  <ChevronDownIcon class="size-5" aria-hidden="true" />
+                </button>
+              </div>
             </div>
           </template>
         </BaseSectionHeader>
@@ -80,6 +104,7 @@
 import { computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useDraftStore } from "../../stores/draft";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/vue/20/solid";
 import { SectionDto, VisibilityLevel } from "@open-dpp/api-client";
 import PublishDraftButton from "../../components/template-drafts/PublishDraftButton.vue";
 import { useNotificationStore } from "../../stores/notification";
@@ -140,6 +165,14 @@ const onAddSubSectionClicked = (section: SectionDto) => {
 
 const fetchData = async () => {
   await draftStore.fetchDraft(String(route.params.draftId));
+};
+
+const isFirst = (id: string) =>
+  currentSections.value.subSections.findIndex((s) => s.id === id) === 0;
+
+const isLast = (id: string) => {
+  const idx = currentSections.value.subSections.findIndex((s) => s.id === id);
+  return idx === currentSections.value.subSections.length - 1;
 };
 
 const onPublish = async (visibility: VisibilityLevel) => {

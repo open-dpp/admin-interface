@@ -15,7 +15,7 @@
 <script lang="ts" setup>
 import { computed, useAttrs } from "vue";
 
-const props = defineProps<{ id: string; className: string }>();
+const props = defineProps<{ id: string; className?: string }>();
 
 const attrs = useAttrs() as Record<string, unknown>;
 

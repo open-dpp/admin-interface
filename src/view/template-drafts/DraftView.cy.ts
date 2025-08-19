@@ -6,6 +6,8 @@ import {
   DataFieldDto,
   DataFieldType,
   GranularityLevel,
+  MoveDirection,
+  MoveType,
   SectionDto,
   SectionType,
   Sector,
@@ -124,6 +126,49 @@ describe("<DraftView />", () => {
     });
 
     cy.contains(newSectionName).should("be.visible");
+  });
+
+  it("renders draft and moves section", () => {
+    const orgaId = "orgaId";
+
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}`,
+      {
+        statusCode: 200,
+        body: draft, // Mock response
+      },
+    ).as("getDraft");
+
+    cy.intercept(
+      "POST",
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}/sections/${repeatableSection.id}/move`,
+      {
+        statusCode: 200,
+        body: {
+          ...draft,
+          sections: [repeatableSection, section],
+        },
+      },
+    ).as("moveSection");
+
+    const indexStore = useIndexStore();
+    indexStore.selectOrganization(orgaId);
+
+    cy.wrap(
+      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+    );
+    cy.mountWithPinia(DraftView, { router });
+
+    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+    cy.get(`[data-cy="move-section-${repeatableSection.id}-up"]`).click();
+    cy.wait("@moveSection").then(({ request }) => {
+      const expected = {
+        type: MoveType.POSITION,
+        direction: MoveDirection.UP,
+      };
+      cy.expectDeepEqualWithDiff(request.body, expected);
+    });
   });
 
   it("modify and delete a section", () => {

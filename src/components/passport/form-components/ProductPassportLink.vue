@@ -34,7 +34,7 @@ const inputValue = ref<string>("");
 
 const uniqueProductIdentifierStore = useUniqueProductIdentifierStore();
 
-const props = defineProps<{ id: string; className: string }>();
+const props = defineProps<{ id: string; className?: string }>();
 const errorHandlingStore = useErrorHandlingStore();
 const attrs = useAttrs() as Record<string, unknown>;
 const onLinkClick = async () => {
