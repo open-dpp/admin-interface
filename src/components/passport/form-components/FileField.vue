@@ -85,17 +85,16 @@
 </template>
 <script lang="ts" setup>
 import { computed, onMounted, ref, useAttrs } from "vue";
-import axiosIns from "../../../lib/axios";
 import { usePassportFormStore } from "../../../stores/passport.form";
 import { useIndexStore } from "../../../stores";
 import { useNotificationStore } from "../../../stores/notification";
+import { useMediaStore } from "../../../stores/media";
 import { DocumentIcon } from "@heroicons/vue/24/outline";
-import { AxiosProgressEvent, AxiosRequestConfig } from "axios";
-import { MEDIA_SERVICE_URL } from "../../../const";
 
 const passportFormStore = usePassportFormStore();
 const indexStore = useIndexStore();
 const notificationStore = useNotificationStore();
+const mediaStore = useMediaStore();
 
 const props = defineProps<{ id: string; label: string }>();
 
@@ -157,50 +156,24 @@ const uploadFile = async () => {
   if (!selectedFile.value) {
     return;
   }
-  const formData = new FormData();
-  formData.append("file", selectedFile.value);
-  const config: AxiosRequestConfig<FormData> = {
-    onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-      uploadProgress.value = Math.round(
-        (progressEvent.loaded / (progressEvent.total ?? 1)) * 100,
-      );
-    },
-  };
-
   try {
-    const response = await axiosIns.post(
-      `${MEDIA_SERVICE_URL}/media/dpp/${indexStore.selectedOrganization}/${passportFormStore.getUUID()}/${props.id}`,
-      formData,
-      config,
+    uploadedMediaId.value = await mediaStore.uploadDppMedia(
+      indexStore.selectedOrganization,
+      passportFormStore.getUUID(),
+      props.id,
+      selectedFile.value,
+      (progress) => (uploadProgress.value = progress),
     );
-
-    if (
-      response.status === 201 ||
-      response.status === 304 ||
-      response.status === 200
-    ) {
-      uploadedMediaId.value = (response.data as { mediaId: string }).mediaId;
-      notificationStore.addSuccessNotification(
-        "Datei erfolgreich hochgeladen.",
-      );
-      await loadFile();
-    } else {
-      // Handle non-success HTTP responses
-      uploadedMediaId.value = undefined;
-      notificationStore.addErrorNotification(
-        `Fehler beim Hochladen der Datei (Status: ${response.status}). Bitte erneut versuchen.`,
-      );
-    }
-  } catch (error) {
-    // Log and show user-friendly error
+    notificationStore.addSuccessNotification("Datei erfolgreich hochgeladen.");
+    await loadFile();
+  } catch (error: unknown) {
     console.error("Fehler beim Hochladen der Datei:", error);
+    uploadedMediaId.value = undefined;
     notificationStore.addErrorNotification(
       "Beim Hochladen der Datei ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es erneut.",
     );
-    // Reset state so the user can start over
     selectedFile.value = null;
   } finally {
-    // Ensure the UI isn't left stuck in the uploading state
     uploadProgress.value = 0;
   }
 };
@@ -211,19 +184,10 @@ const loadFile = async () => {
   }
 
   try {
-    const responseInfo = await axiosIns.get(
-      `${MEDIA_SERVICE_URL}/media/dpp/${passportFormStore.getUUID()}/${props.id}/info`,
+    const { blob, contentType } = await mediaStore.fetchDppMedia(
+      passportFormStore.getUUID(),
+      props.id,
     );
-
-    const responseDownload = await axiosIns.get(
-      `${MEDIA_SERVICE_URL}/media/dpp/${passportFormStore.getUUID()}/${props.id}/download`,
-      {
-        responseType: "blob",
-      },
-    );
-
-    const blob = responseDownload.data as Blob;
-    const contentType = (responseInfo.data as { mimeType?: string }).mimeType;
 
     // Revoke an old object URL to avoid memory leaks before assigning a new one
     if (uploadedFileUrl.value) {
