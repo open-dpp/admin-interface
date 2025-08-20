@@ -335,6 +335,7 @@ import {
   Squares2X2Icon,
 } from "@heroicons/vue/16/solid";
 import { useProfileStore } from "../../stores/profile";
+import { useI18n } from "vue-i18n";
 
 const route = useRoute();
 const router = useRouter();
@@ -357,6 +358,8 @@ const initials = computed(() => {
   return (first + last).toUpperCase();
 });
 
+const { t } = useI18n();
+
 const unfilteredNavigation = computed<Array<MenuItemInterface>>(() => [
   {
     name: "Produktpässe",
@@ -365,7 +368,7 @@ const unfilteredNavigation = computed<Array<MenuItemInterface>>(() => [
     show: () => indexStore.selectedOrganization !== null,
   },
   {
-    name: "Passvorlagen Entwürfe",
+    name: t("draft.passportDraft"),
     to: `/organizations/${indexStore.selectedOrganization}/data-model-drafts`,
     icon: Square3Stack3DIcon,
     show: () => indexStore.selectedOrganization !== null,

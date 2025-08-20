@@ -4,6 +4,7 @@ import SectionSelection from "../components/template-drafts/SectionSelection.vue
 import DataFieldForm from "../components/template-drafts/DataFieldForm.vue";
 import SectionForm from "../components/template-drafts/SectionForm.vue";
 import DataFieldSelection from "../components/template-drafts/DataFieldSelection.vue";
+import { useI18n } from "vue-i18n";
 
 export enum SidebarContentType {
   SECTION_SELECTION = "SECTION_SELECTION",
@@ -20,18 +21,19 @@ export const useDraftSidebarStore = defineStore("draftSidebar", () => {
 
   const content = shallowRef<Comp | null>(null);
   const contentProps = ref<CompProps>({});
+  const { t } = useI18n();
 
   const sidebarContent = [
     {
       type: SidebarContentType.SECTION_SELECTION,
       title: "Abschnitt hinzufügen",
-      subTitle: "Auswahl",
+      subTitle: t("draft.selection"),
       content: SectionSelection,
     },
     {
       type: SidebarContentType.DATA_FIELD_SELECTION,
-      title: "Datenfeld hinzufügen",
-      subTitle: "Auswahl",
+      title: t("draft.addDataField"),
+      subTitle: t("draft.selection"),
       content: DataFieldSelection,
     },
     {

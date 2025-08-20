@@ -1,8 +1,8 @@
 <template>
   <div class="">
     <ListHeader
-      title="Passvorlagen Entwürfe"
-      description="Alle Passvorlagen Entwürfe."
+      :title="t('draft.passportDraft')"
+      :description="t('draft.passportDraftDescription')"
       :creation-link="`/organizations/${indexStore.selectedOrganization}/data-model-drafts/create`"
       creation-label="Passvorlage entwerfen"
     />
@@ -21,6 +21,9 @@ import ListHeader from "../lists/ListHeader.vue";
 import { computed } from "vue";
 import SimpleTable from "../lists/SimpleTable.vue";
 import { TemplateDraftGetAllDto } from "@open-dpp/api-client";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const indexStore = useIndexStore();
 

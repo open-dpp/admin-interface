@@ -16,7 +16,7 @@ import {
 } from "@formkit/addons";
 import "@formkit/addons/css/multistep";
 import { useOrganizationsStore } from "./stores/organizations";
-
+import { i18n } from "./translations/messages";
 const pinia = createPinia();
 
 const startApp = async () => {
@@ -35,6 +35,7 @@ const startApp = async () => {
       plugins: [createMultiStepPlugin(), createAutoAnimatePlugin()],
     }),
   );
+  app.use(i18n);
   const indexStore = useIndexStore();
   if (!keycloakDisabled) {
     app.provide("$keycloak", keycloakIns);
