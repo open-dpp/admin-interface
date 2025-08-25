@@ -77,9 +77,14 @@ export const AAS_CONNECTION_CREATE: RouteRecordRaw = {
   },
 };
 
+const PRO_ALPHA_CONNECTIONS_PARENT: RouteRecordRaw = {
+  path: `connections`,
+  children: [AAS_CONNECTION_CREATE, AAS_CONNECTION],
+};
+
 const PRO_ALPHA_INTEGRATION_PARENT: RouteRecordRaw = {
-  path: `${PRO_ALPHA_INTEGRATION_ID}/connections`,
-  children: [AAS_CONNECTION_LIST, AAS_CONNECTION_CREATE, AAS_CONNECTION],
+  path: `${PRO_ALPHA_INTEGRATION_ID}`,
+  children: [AAS_CONNECTION_LIST, PRO_ALPHA_CONNECTIONS_PARENT],
 };
 
 export const ORGANIZATION_INTEGRATIONS_PARENT: RouteRecordRaw = {
