@@ -30,6 +30,17 @@ export const aasConnectionBreadcrumbs = (
   },
 ];
 
+export const aiIntegrationBreadcrumbs = (
+  to: RouteLocationNormalizedGeneric,
+) => [
+  ...integrationBreadcrumbs(to),
+  {
+    name: "KI-Integrationen",
+    route: AI_INTEGRATION,
+    params: to.params,
+  },
+];
+
 export const INTEGRATIONS: RouteRecordRaw = {
   path: "",
   name: "Integrationen",
@@ -37,6 +48,16 @@ export const INTEGRATIONS: RouteRecordRaw = {
   beforeEnter: (to: RouteLocationNormalizedGeneric) => {
     const layoutStore = useLayoutStore();
     layoutStore.breadcrumbs = integrationBreadcrumbs(to);
+  },
+};
+
+export const AI_INTEGRATION: RouteRecordRaw = {
+  path: "ai-integration",
+  name: "KI-Integration",
+  component: () => import("../../view/integrations/AiIntegrationView.vue"),
+  beforeEnter: (to: RouteLocationNormalizedGeneric) => {
+    const layoutStore = useLayoutStore();
+    layoutStore.breadcrumbs = aiIntegrationBreadcrumbs(to);
   },
 };
 
@@ -89,5 +110,5 @@ const PRO_ALPHA_INTEGRATION_PARENT: RouteRecordRaw = {
 
 export const ORGANIZATION_INTEGRATIONS_PARENT: RouteRecordRaw = {
   path: "integrations",
-  children: [INTEGRATIONS, PRO_ALPHA_INTEGRATION_PARENT],
+  children: [INTEGRATIONS, PRO_ALPHA_INTEGRATION_PARENT, AI_INTEGRATION],
 };
