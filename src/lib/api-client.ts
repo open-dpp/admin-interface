@@ -1,4 +1,4 @@
-import { API_URL, MARKETPLACE_URL } from "../const";
+import { AGENT_SERVER_URL, API_URL, MARKETPLACE_URL } from "../const";
 import { OpenDppClient } from "@open-dpp/api-client";
 
 const apiClient = new OpenDppClient({
@@ -7,6 +7,9 @@ const apiClient = new OpenDppClient({
   },
   marketplace: {
     baseURL: MARKETPLACE_URL,
+  },
+  agentServer: {
+    baseURL: AGENT_SERVER_URL,
   },
 });
 export default apiClient;

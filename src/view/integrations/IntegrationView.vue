@@ -16,6 +16,7 @@
     </div>
     <SimpleTable
       :headers="['Name', 'Status']"
+      :ignore-row-keys="['id']"
       :row-actions="actions"
       :rows="rows"
     />
@@ -25,26 +26,35 @@
 <script lang="ts" setup>
 import SimpleTable from "../../components/lists/SimpleTable.vue";
 import { useIndexStore } from "../../stores";
-import { PRO_ALPHA_INTEGRATION_ID } from "../../const";
+import { AI_INTEGRATION_ID, PRO_ALPHA_INTEGRATION_ID } from "../../const";
 import keycloakIns from "../../lib/keycloak";
 import axiosIns from "../../lib/axios";
 import { useNotificationStore } from "../../stores/notification";
+import { computed, onMounted } from "vue";
+import { useAiIntegrationStore } from "../../stores/ai.integration";
 
-const rows = [
+const indexStore = useIndexStore();
+const notificationStore = useNotificationStore();
+const aiIntegrationStore = useAiIntegrationStore();
+
+const rows = computed(() => [
   {
     name: "ProAlpha Integration",
     status: "Aktiv",
     id: PRO_ALPHA_INTEGRATION_ID,
   },
-];
-const indexStore = useIndexStore();
-const notificationStore = useNotificationStore();
+  {
+    name: "KI-Integration",
+    status: aiIntegrationStore.configuration?.isEnabled ? "Aktiv" : "Inaktiv",
+    id: AI_INTEGRATION_ID,
+  },
+]);
 
 const actions = [
   {
     name: "Editieren",
     actionLinkBuilder: (row: Record<string, string>) =>
-      `/organizations/${indexStore.selectedOrganization}/integrations/${row.id}/connections`,
+      `/organizations/${indexStore.selectedOrganization}/integrations/${row.id}`,
   },
 ];
 
@@ -66,4 +76,8 @@ const createApiKey = async () => {
     );
   }
 };
+
+onMounted(async () => {
+  await aiIntegrationStore.fetchConfiguration();
+});
 </script>
