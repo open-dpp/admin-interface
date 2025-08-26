@@ -16,7 +16,7 @@
         @submit="onSubmit"
       >
         <FormKit
-          data-cy="toogle-integration"
+          data-cy="toggle-integration"
           type="checkbox"
           label="KI-Integration aktivieren"
           name="isEnabled"
