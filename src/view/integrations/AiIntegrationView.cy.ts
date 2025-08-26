@@ -44,6 +44,7 @@ describe("<AiIntegrationView />", () => {
     cy.mountWithPinia(AiIntegrationView, {
       router,
     });
+    cy.contains("KI Konfiguration").should("be.visible");
     cy.wait("@getAiConfiguration").its("response.statusCode").should("eq", 200);
     cy.get('input[type="checkbox"]').should("be.checked");
     cy.get('input[type="checkbox"]').uncheck({ force: true });

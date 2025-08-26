@@ -23,11 +23,12 @@ describe("<IntegrationView />", () => {
       },
     ).as("getAiConfiguration");
 
-    cy.mountWithPinia(IntegrationView, { router });
     cy.wrap(router.push(`/organizations/${orgaId}/integrations`));
-    cy.wait("@getAiConfiguration").its("response.statusCode").should("eq", 404);
+    cy.mountWithPinia(IntegrationView, { router });
 
     cy.contains("Alle Ihre Integrationen").should("be.visible");
+
+    cy.wait("@getAiConfiguration").its("response.statusCode").should("eq", 404);
     cy.spy(router, "push").as("pushSpy");
 
     const aiIntegration = cy.get('[data-cy="row-1"]');
