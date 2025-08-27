@@ -9,6 +9,7 @@
       :key="dataField.id"
       :data-cy="dataField.id"
       :data-field="dataField"
+      :section="props.section"
     />
     <SectionDraft
       v-for="section of subSections"
