@@ -25,6 +25,7 @@ const mocks = vi.hoisted(() => {
     modifySection: vi.fn(),
     moveSection: vi.fn(),
     modifyDataField: vi.fn(),
+    moveDataField: vi.fn(),
     publish: vi.fn(),
   };
 });
@@ -42,6 +43,7 @@ vi.mock("../lib/api-client", () => ({
         modifySection: mocks.modifySection,
         moveSection: mocks.moveSection,
         modifyDataField: mocks.modifyDataField,
+        moveDataField: mocks.moveDataField,
         publish: mocks.publish,
         create: mocks.create,
       },
@@ -64,6 +66,13 @@ describe("DraftStore", () => {
         id: "d1",
         name: "Processor",
         type: DataFieldType.TEXT_FIELD,
+        options: {},
+        granularityLevel: GranularityLevel.MODEL,
+      },
+      {
+        id: "d2",
+        name: "Memory",
+        type: DataFieldType.NUMERIC_FIELD,
         options: {},
         granularityLevel: GranularityLevel.MODEL,
       },
@@ -166,6 +175,31 @@ describe("DraftStore", () => {
       expect(apiClient.dpp.templateDrafts.moveSection).toHaveBeenCalledWith(
         draft.id,
         section.id,
+        { type: MoveType.POSITION, direction: MoveDirection.DOWN },
+      ),
+    );
+  });
+
+  it("should move data field", async () => {
+    const draftStore = useDraftStore();
+    mocks.moveDataField.mockResolvedValue({ data: draft });
+    draftStore.draft = draft;
+    await draftStore.moveDataFieldUp("d2");
+    await waitFor(() =>
+      expect(apiClient.dpp.templateDrafts.moveDataField).toHaveBeenCalledWith(
+        draft.id,
+        section.id,
+        "d2",
+        { type: MoveType.POSITION, direction: MoveDirection.UP },
+      ),
+    );
+    expect(draftStore.draft).toEqual(draft);
+    await draftStore.moveDataFieldDown("d2");
+    await waitFor(() =>
+      expect(apiClient.dpp.templateDrafts.moveDataField).toHaveBeenCalledWith(
+        draft.id,
+        section.id,
+        "d2",
         { type: MoveType.POSITION, direction: MoveDirection.DOWN },
       ),
     );

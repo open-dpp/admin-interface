@@ -150,6 +150,33 @@ export const useDraftStore = defineStore("draft", () => {
     }
   };
 
+  const moveDataField = async (
+    dataFieldId: string,
+    direction: MoveDirection,
+  ) => {
+    const section = findSectionOfDataField(dataFieldId);
+    if (draft.value && section) {
+      const response = await apiClient.dpp.templateDrafts.moveDataField(
+        draft.value.id,
+        section.id,
+        dataFieldId,
+        {
+          type: MoveType.POSITION,
+          direction,
+        },
+      );
+      draft.value = response.data;
+    }
+  };
+
+  const moveDataFieldUp = async (dataFieldId: string) => {
+    await moveDataField(dataFieldId, MoveDirection.UP);
+  };
+
+  const moveDataFieldDown = async (dataFieldId: string) => {
+    await moveDataField(dataFieldId, MoveDirection.DOWN);
+  };
+
   const moveSectionUp = async (sectionId: string) => {
     await moveSection(sectionId, MoveDirection.UP);
   };
@@ -169,6 +196,8 @@ export const useDraftStore = defineStore("draft", () => {
     deleteSection,
     addDataField,
     modifyDataField,
+    moveDataFieldUp,
+    moveDataFieldDown,
     deleteDataField,
     findSectionById,
     findSectionOfDataField,
