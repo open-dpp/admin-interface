@@ -6,6 +6,8 @@ import { useDraftStore } from "./draft";
 import {
   DataFieldType,
   GranularityLevel,
+  MoveDirection,
+  MoveType,
   SectionType,
   Sector,
   TemplateDraftDto,
@@ -21,6 +23,7 @@ const mocks = vi.hoisted(() => {
     addDataField: vi.fn(),
     deleteDataField: vi.fn(),
     modifySection: vi.fn(),
+    moveSection: vi.fn(),
     modifyDataField: vi.fn(),
     publish: vi.fn(),
   };
@@ -37,6 +40,7 @@ vi.mock("../lib/api-client", () => ({
         deleteSection: mocks.deleteSection,
         deleteDataField: mocks.deleteDataField,
         modifySection: mocks.modifySection,
+        moveSection: mocks.moveSection,
         modifyDataField: mocks.modifyDataField,
         publish: mocks.publish,
         create: mocks.create,
@@ -142,6 +146,29 @@ describe("DraftStore", () => {
       ),
     );
     expect(draftStore.draft).toEqual(draft);
+  });
+
+  it("should move section", async () => {
+    const draftStore = useDraftStore();
+    mocks.moveSection.mockResolvedValue({ data: draft });
+    draftStore.draft = draft;
+    await draftStore.moveSectionUp(section.id);
+    await waitFor(() =>
+      expect(apiClient.dpp.templateDrafts.moveSection).toHaveBeenCalledWith(
+        draft.id,
+        section.id,
+        { type: MoveType.POSITION, direction: MoveDirection.UP },
+      ),
+    );
+    expect(draftStore.draft).toEqual(draft);
+    await draftStore.moveSectionDown(section.id);
+    await waitFor(() =>
+      expect(apiClient.dpp.templateDrafts.moveSection).toHaveBeenCalledWith(
+        draft.id,
+        section.id,
+        { type: MoveType.POSITION, direction: MoveDirection.DOWN },
+      ),
+    );
   });
 
   it("should add data field", async () => {

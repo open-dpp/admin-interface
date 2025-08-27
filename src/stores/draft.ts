@@ -4,6 +4,8 @@ import apiClient from "../lib/api-client";
 import {
   DataFieldDraftCreateDto,
   DataFieldDraftUpdateDto,
+  MoveDirection,
+  MoveType,
   SectionDraftCreateDto,
   SectionDraftUpdateDto,
   TemplateDraftCreateDto,
@@ -134,12 +136,36 @@ export const useDraftStore = defineStore("draft", () => {
     }
   };
 
+  const moveSection = async (sectionId: string, direction: MoveDirection) => {
+    if (draft.value) {
+      const response = await apiClient.dpp.templateDrafts.moveSection(
+        draft.value.id,
+        sectionId,
+        {
+          type: MoveType.POSITION,
+          direction,
+        },
+      );
+      draft.value = response.data;
+    }
+  };
+
+  const moveSectionUp = async (sectionId: string) => {
+    await moveSection(sectionId, MoveDirection.UP);
+  };
+
+  const moveSectionDown = async (sectionId: string) => {
+    await moveSection(sectionId, MoveDirection.DOWN);
+  };
+
   return {
     draft,
     createDraft,
     fetchDraft,
     addSection,
     modifySection,
+    moveSectionUp,
+    moveSectionDown,
     deleteSection,
     addDataField,
     modifyDataField,
