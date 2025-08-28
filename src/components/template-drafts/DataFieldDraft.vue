@@ -10,6 +10,7 @@
         ].includes(props.dataField.type)
       "
       :data-field="props.dataField"
+      :section="props.section"
       @clicked="onClicked"
     />
     <DraftDataFieldUnsupported v-else :data-field="props.dataField" />
@@ -17,7 +18,7 @@
 </template>
 
 <script lang="ts" setup>
-import { DataFieldDto, DataFieldType } from "@open-dpp/api-client";
+import { DataFieldDto, DataFieldType, SectionDto } from "@open-dpp/api-client";
 import {
   SidebarContentType,
   useDraftSidebarStore,
@@ -25,7 +26,7 @@ import {
 import DraftDataFieldUnsupported from "./draft-data-field-types/DraftDataFieldUnsupported.vue";
 import DraftDataFieldGeneric from "./draft-data-field-types/DraftDataFieldGeneric.vue";
 
-const props = defineProps<{ dataField: DataFieldDto }>();
+const props = defineProps<{ dataField: DataFieldDto; section: SectionDto }>();
 
 const draftSidebarStore = useDraftSidebarStore();
 

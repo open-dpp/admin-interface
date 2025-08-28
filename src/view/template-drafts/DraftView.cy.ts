@@ -35,6 +35,13 @@ describe("<DraftView />", () => {
         options: {},
         granularityLevel: GranularityLevel.MODEL,
       },
+      {
+        id: "d2",
+        name: "Memory",
+        type: DataFieldType.TEXT_FIELD,
+        options: {},
+        granularityLevel: GranularityLevel.MODEL,
+      },
     ],
     subSections: [],
   };
@@ -163,6 +170,57 @@ describe("<DraftView />", () => {
     cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
     cy.get(`[data-cy="move-section-${repeatableSection.id}-up"]`).click();
     cy.wait("@moveSection").then(({ request }) => {
+      const expected = {
+        type: MoveType.POSITION,
+        direction: MoveDirection.UP,
+      };
+      cy.expectDeepEqualWithDiff(request.body, expected);
+    });
+  });
+
+  it("renders draft and moves data field", () => {
+    const orgaId = "orgaId";
+
+    cy.intercept(
+      "GET",
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}`,
+      {
+        statusCode: 200,
+        body: draft, // Mock response
+      },
+    ).as("getDraft");
+
+    cy.intercept(
+      "POST",
+      `${API_URL}/organizations/${orgaId}/template-drafts/${draft.id}/sections/${section.id}/data-fields/${section.dataFields[1].id}/move`,
+      {
+        statusCode: 200,
+        body: {
+          ...draft,
+          sections: [
+            {
+              ...section,
+              dataFields: [section.dataFields[1], section.dataFields[0]],
+            },
+            repeatableSection,
+          ],
+        },
+      },
+    ).as("moveDataField");
+
+    const indexStore = useIndexStore();
+    indexStore.selectOrganization(orgaId);
+
+    cy.wrap(
+      router.push(`/organizations/${orgaId}/data-model-drafts/${draft.id}`),
+    );
+    cy.mountWithPinia(DraftView, { router });
+
+    cy.wait("@getDraft").its("response.statusCode").should("eq", 200);
+    cy.get(
+      `[data-cy="move-data-field-${section.dataFields[1].id}-up"]`,
+    ).click();
+    cy.wait("@moveDataField").then(({ request }) => {
       const expected = {
         type: MoveType.POSITION,
         direction: MoveDirection.UP,
