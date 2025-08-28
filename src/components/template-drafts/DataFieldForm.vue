@@ -101,14 +101,14 @@ const formSchemaFromType = (
         "data-cy": "max",
       });
       break;
-    case DataFieldType.FILE_FIELD:
+    /* case DataFieldType.FILE_FIELD:
       dataFieldFormkitSchema.push({
         $formkit: "text",
         name: "name",
         label: "Name des Dateifeldes",
         "data-cy": "name",
       });
-      break;
+      break; */
     default:
       console.warn(
         `[DataFieldForm] Unsupported node type: ${type}, using generic form. Please implement a form schema for this type.`,
