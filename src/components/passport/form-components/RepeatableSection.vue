@@ -4,9 +4,9 @@
       class="border-t border-gray-100"
       v-for="(_, index) in rows"
       :key="index"
+      :data-cy="`row-${index}`"
     >
       <div
-        :data-cy="`row-${index}`"
         v-if="rowInEditMode !== index"
         class="flex justify-between items-center"
       >
@@ -15,12 +15,7 @@
           >Editieren</BaseButton
         >
       </div>
-      <SectionForm
-        :data-cy="`row-${index}`"
-        v-else
-        :section="props.section"
-        :row="index"
-      />
+      <SectionForm v-else :section="props.section" :row="index" />
     </li>
   </ul>
 </template>
