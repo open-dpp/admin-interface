@@ -7,6 +7,7 @@ import { ref } from "vue";
 import { useErrorHandlingStore } from "./error.handling";
 import apiClient from "../lib/api-client";
 import { useNotificationStore } from "./notification";
+import { AxiosError } from "axios";
 
 export const useAiIntegrationStore = defineStore("ai-integration", () => {
   const configuration = ref<AiConfigurationDto>();
@@ -17,10 +18,14 @@ export const useAiIntegrationStore = defineStore("ai-integration", () => {
       const response = await apiClient.agentServer.aiConfigurations.get();
       configuration.value = response.data;
     } catch (error) {
-      errorHandlingStore.logErrorWithNotification(
-        "Laden der Konfiguration fehlgeschlagen:",
-        error,
-      );
+      if (error instanceof AxiosError && error.response?.status === 404) {
+        console.error("Configuration not found.");
+      } else {
+        errorHandlingStore.logErrorWithNotification(
+          "Laden der Konfiguration fehlgeschlagen:",
+          error,
+        );
+      }
     }
   };
 
