@@ -378,7 +378,7 @@ const unfilteredNavigation = computed<Array<MenuItemInterface>>(() => [
   },
   {
     name: "Auswertungen",
-    to: `/organizations/${indexStore.selectedOrganization}/statistics`,
+    to: `/organizations/${indexStore.selectedOrganization}/analytics`,
     icon: ChartBarIcon,
     show: () => indexStore.selectedOrganization !== null,
   },

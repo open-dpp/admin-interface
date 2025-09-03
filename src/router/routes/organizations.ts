@@ -3,7 +3,7 @@ import { useLayoutStore } from "../../stores/layout";
 import { ORGANIZATION_MODELS_PARENT } from "./models/models";
 import { ORGANIZATION_DRAFTS_PARENT } from "./product-data-model-drafts/drafts";
 import { ORGANIZATION_INTEGRATIONS_PARENT } from "./integrations";
-import { ORGANIZATION_STATISTICS_PARENT } from "./statistics";
+import { ORGANIZATION_ANALYTICS_PARENT } from "./analytics";
 
 const organizationListBreadCrumbs = (to: RouteLocationNormalizedGeneric) => [
   { name: "Organisationen", route: ORGANIZATION_LIST, params: to.params },
@@ -64,7 +64,7 @@ export const ORGANIZATION_PARENT: RouteRecordRaw = {
     ORGANIZATION_MODELS_PARENT,
     ORGANIZATION_DRAFTS_PARENT,
     ORGANIZATION_INTEGRATIONS_PARENT,
-    ORGANIZATION_STATISTICS_PARENT,
+    ORGANIZATION_ANALYTICS_PARENT,
   ],
 };
 
