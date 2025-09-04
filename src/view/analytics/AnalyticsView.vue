@@ -23,8 +23,7 @@ onMounted(async () => {
     endDate: new Date("2025-12-01T00:00:00Z"),
     templateId: "3a92ffdf-b0b4-494c-84c8-f92c17437f93",
     modelId: "3a92ffdf-b0b4-494c-84c8-f92c17437f93",
-    measurementKey:
-      "http://localhost:5174/6baf2750-a9cc-4c9e-8603-f17e76429f7a",
+    measurementKey: "^http://localhost:5174/.+",
     measurementType: MeasurementType.PAGE_VIEWS,
     period: TimePeriod.DAY,
   });
