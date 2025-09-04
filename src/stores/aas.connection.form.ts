@@ -11,6 +11,7 @@ import {
   TemplateDto,
 } from "@open-dpp/api-client";
 import { useErrorHandlingStore } from "./error.handling";
+import { useI18n } from "vue-i18n";
 
 function aasDropdownValue(parentIdShort: string, idShort: string) {
   return [parentIdShort, idShort].join("/");
@@ -60,6 +61,7 @@ function isFieldAssignmentRow(item: unknown): item is FieldAssignmentRow {
 export const useAasConnectionFormStore = defineStore(
   "aas-connection-form",
   () => {
+    const { t } = useI18n();
     const formData = ref<Record<string, string>>({});
     const formSchema = ref();
     const errorHandlingStore = useErrorHandlingStore();

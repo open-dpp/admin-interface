@@ -1,0 +1,252 @@
+{
+  "common": {
+    "actions": "Actions",
+    "clipboardSuccess": "Copied to clipboard.",
+    "edit": "Edit",
+    "qrCode": "QR code",
+    "add": "Add",
+    "save": "Save",
+    "create": "Create",
+    "close": "Close",
+    "select": "Select",
+    "selected": "Selected",
+    "submit": "Submit",
+    "abort": "Abort",
+    "general": "General",
+    "errorOccured": "An error occurred",
+    "toHome": "To home",
+    "home": "Home",
+    "backTo": "Back to { link }",
+    "presentationMode": "Presentation mode",
+    "form": {
+      "email": {
+        "help": "Enter an email address.",
+        "label": "Email address",
+        "error": "Please enter an email address."
+      }
+    }
+  },
+  "builder": {
+    "repeater": {
+      "label": "Repeater",
+      "description": "Add a repeater section to allow a group of fields to be added multiple times."
+    },
+    "group": {
+      "label": "Grouping",
+      "description": "Add a section that groups multiple fields"
+    },
+    "granularity": {
+      "model": "Passport draft level",
+      "item": "Model level"
+    },
+    "delete": {
+      "label": "Delete section",
+      "description": "Are you sure you want to delete this section?"
+    },
+    "textField": {
+      "name": "Text field name"
+    },
+    "passportLink": {
+      "name": "Passport link name"
+    },
+    "numeric": {
+      "name": "Numeric field name",
+      "min": "Minimum",
+      "max": "Maximum"
+    },
+    "file": {
+      "name": "File field name"
+    },
+    "name": "Section name",
+    "granularityLevel": "Granularity level"
+  },
+  "draft": {
+    "drafts": "Passport templates",
+    "edit": "Edit",
+    "publish": "Publish",
+    "visibility": {
+      "private": "Visible only to organization",
+      "public": "Visible to everyone"
+    },
+    "passTemplate": "Passport Draft",
+    "createNewPassTemplate": "Draft a new pass template.",
+    "create": "Create",
+    "createDraft": "Create Passport Draft",
+    "createPassTemplateSuccess": "Your draft has been successfully published. You can now create models based on it.",
+    "createModel": "Create model",
+    "form": {
+      "name": {
+        "label": "Name",
+        "help": "Give your pass template a name"
+      },
+      "description": {
+        "label": "Description",
+        "help": "Give your pass template a description"
+      },
+      "sectors": {
+        "label": "Sectors",
+        "help": "Select at least one sector for which your pass template can be applied.",
+        "battery": "Battery",
+        "construction": "Construction",
+        "mining": "Mining",
+        "electronics": "Electronics",
+        "trade": "Trade",
+        "healthcare": "Healthcare",
+        "agriculture": "Agriculture",
+        "education": "Education",
+        "aerospace": "Aerospace",
+        "machinery": "Machinery",
+        "medical": "Medical",
+        "textile": "Textile",
+        "other": "Other"
+      }
+    },
+    "version": "Version",
+    "selection": "Selection",
+    "section": "Section",
+    "addSection": "Add Section",
+    "configuration": "Configuration",
+    "dataField": "Data field",
+    "addDataField": "Add data field",
+    "deleteDataField": "Delete data field",
+    "deleteDataFieldDescription": "Are you sure you want to delete this data field?",
+    "errorAddingDataField": "Could not add data field.",
+    "textField": "Text field",
+    "addTextField": "Add a text field",
+    "passportLink": "Passport link",
+    "addPassportLink": "Add a link to a passport",
+    "numberField": "Numeric field",
+    "addNumberField": "Add numeric field",
+    "fileField": "File",
+    "addFileField": "Add file upload",
+    "passportDraft": "Passport draft | Passport drafts",
+    "passportDraftDescription": "All passport drafts"
+  },
+  "integrations": {
+    "integrations": "Integrations",
+    "connections": {
+      "label": "Connection | Connections",
+      "description": "All your connections",
+      "add": "Create connection",
+      "name": {
+        "label": "Name",
+        "help": "Give your connection a name"
+      },
+      "model": {
+        "help": "Select a model passport for which you want to create item passports via this connection",
+        "label": "Model passport selection"
+      },
+      "aas": {
+        "help": "Select an Asset Administration Shell",
+        "label": "Asset Administration Shell selection",
+        "truck": "Truck",
+        "semitrailer": "Semitrailer",
+        "semitrailerTruck": "Semitrailer truck"
+      }
+    },
+    "edit": "Edit",
+    "errorCreate": "Failed to create connection"
+  },
+  "statistics": {
+    "statistics": "Statistics"
+  },
+  "members": {
+    "members": "Members"
+  },
+  "organizations": {
+    "organizations": "Organizations",
+    "select": "Select organization",
+    "assignedOrganizations": "All assigned organizations",
+    "pick": "Select organization",
+    "new": "Create new organization",
+    "invite": "Invite",
+    "inviteUser": "Invite user",
+    "inviteUserSuccess": "The user has been successfully invited.",
+    "member": "Members",
+    "memberListDescription": "A list of all members in this organization.",
+    "memberName": "Name",
+    "memberRole": "Role",
+    "memberAdmin": "Admin",
+    "memberCreator": "Creator",
+    "form": {
+      "name": {
+        "help": "Give your organization a name",
+        "label": "Name"
+      }
+    }
+  },
+  "marketplace": {
+    "marketplace": "Marketplace"
+  },
+  "models": {
+    "models": "Passports",
+    "general": "General",
+    "myDrafts": "My templates",
+    "form": {
+      "id": "ID",
+      "name": {
+        "help": "Give your model passport a name",
+        "label": "Name"
+      },
+      "passportDraft": {
+        "help": "Select the appropriate passport template",
+        "label": "Passport template"
+      },
+      "file": {
+        "change": "Change file",
+        "upload": "Upload file",
+        "uploadSuccess": "File uploaded successfully.",
+        "uploadError": "An unexpected error occurred while uploading the file. Please try again.",
+        "download": "Download file",
+        "downloadError": "The file could not be loaded. Please try again.",
+        "select": "Select file",
+        "noSelection": "No file selected"
+      },
+      "link": {
+        "navigationError": "Navigation to passport failed"
+      },
+      "repeater": {
+        "series": "Data series",
+        "addSeries": "Add data series"
+      },
+      "section": {
+        "additional": "Additional sections",
+        "saveSuccess": "Data saved successfully",
+        "saveError": "Data could not be saved"
+      }
+    },
+    "list": {
+      "creation-label": "Add model passport",
+      "description": "All passports at the product model level. A product model is, for example, the Galaxy S22 Ultra.",
+      "title": "Model passports"
+    }
+  },
+  "actions": {
+    "member": {
+      "title": "Add members",
+      "description": "View organization members to add a new member there."
+    },
+    "model": {
+      "title": "Add model",
+      "description": "View organization models to add a new model there."
+    }
+  },
+  "items": {
+    "add": "Add item passport",
+    "description": "All passports at item level.",
+    "label": "Item passports"
+  },
+  "user": {
+    "profile": "Your profile",
+    "personalInformation": "Personal information",
+    "logout": "Logout",
+    "firstName": "First name",
+    "lastName": "Last name"
+  },
+  "notifications": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information"
+  }
+}

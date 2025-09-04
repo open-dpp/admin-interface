@@ -26,7 +26,7 @@ export const useDraftSidebarStore = defineStore("draftSidebar", () => {
   const sidebarContent = [
     {
       type: SidebarContentType.SECTION_SELECTION,
-      title: "Abschnitt hinzufügen",
+      title: t("draft.addSection"),
       subTitle: t("draft.selection"),
       content: SectionSelection,
     },
@@ -38,14 +38,14 @@ export const useDraftSidebarStore = defineStore("draftSidebar", () => {
     },
     {
       type: SidebarContentType.SECTION_FORM,
-      title: "Abschnitt",
-      subTitle: "Konfiguration",
+      title: t("draft.section"),
+      subTitle: t("draft.configuration"),
       content: SectionForm,
     },
     {
       type: SidebarContentType.DATA_FIELD_FORM,
-      title: "Datenfeld",
-      subTitle: "Konfiguration",
+      title: t("draft.dataField"),
+      subTitle: t("draft.configuration"),
       content: DataFieldForm,
     },
   ];

@@ -4,7 +4,7 @@
       <div class="grid grid-cols-1 gap-x-8 gap-y-10 pb-12 md:grid-cols-3">
         <div>
           <h2 class="text-base font-semibold leading-7 text-gray-900">
-            Persönliche Informationen
+            {{ t("user.personalInformation") }}
           </h2>
         </div>
 
@@ -15,7 +15,7 @@
             <label
               class="block text-sm font-medium leading-6 text-gray-900"
               for="first-name"
-              >Vorname</label
+              >{{ t("user.firstName") }}</label
             >
             <div class="mt-2">
               <input
@@ -34,7 +34,7 @@
             <label
               class="block text-sm font-medium leading-6 text-gray-900"
               for="last-name"
-              >Nachname</label
+              >{{ t("user.lastName") }}</label
             >
             <div class="mt-2">
               <input
@@ -53,7 +53,7 @@
             <label
               class="block text-sm font-medium leading-6 text-gray-900"
               for="email"
-              >Email-Adresse</label
+              >{{ t("common.form.email.label") }}</label
             >
             <div class="mt-2">
               <input
@@ -74,7 +74,9 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n";
 import { useProfileStore } from "../stores/profile";
 
+const { t } = useI18n();
 const profileStore = useProfileStore();
 </script>

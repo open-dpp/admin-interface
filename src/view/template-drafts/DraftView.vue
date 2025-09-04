@@ -9,7 +9,7 @@
             {{ t("draft.passportDraft") + " " + draftStore.draft.name }}
           </h3>
           <p class="mt-1 max-w-2xl text-sm/6 text-gray-500">
-            Version {{ draftStore.draft.version }}
+            {{ t("draft.version") + " " + draftStore.draft.version }}
           </p>
         </div>
         <div class="">
@@ -148,9 +148,9 @@ const fetchData = async () => {
 const onPublish = async (visibility: VisibilityLevel) => {
   await draftStore.publish({ visibility });
   notificationStore.addSuccessNotification(
-    "Ihr Entwurf wurde erfolgreich veröffentlicht. Sie können nun darauf basierend Modelle anlegen.",
+    t("draft.createPassTemplateSuccess"),
     {
-      label: "Modell anlegen",
+      label: t("draft.createModel"),
       to: `/organizations/${indexStore.selectedOrganization}/models/create`,
     },
   );

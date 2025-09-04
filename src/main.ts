@@ -16,7 +16,7 @@ import {
 } from "@formkit/addons";
 import "@formkit/addons/css/multistep";
 import { useOrganizationsStore } from "./stores/organizations";
-import { i18n } from "./translations/messages";
+import { i18n } from "./translations/i18n";
 const pinia = createPinia();
 
 const startApp = async () => {
@@ -31,7 +31,7 @@ const startApp = async () => {
         ...genesisIcons,
       },
       locales: { de },
-      locale: "de",
+      locale: "de-DE",
       plugins: [createMultiStepPlugin(), createAutoAnimatePlugin()],
     }),
   );

@@ -4,10 +4,10 @@
       :title="t('draft.passportDraft')"
       :description="t('draft.passportDraftDescription')"
       :creation-link="`/organizations/${indexStore.selectedOrganization}/data-model-drafts/create`"
-      creation-label="Passvorlage entwerfen"
+      :creation-label="t('draft.createDraft')"
     />
     <SimpleTable
-      :headers="['Name']"
+      :headers="[t('draft.form.name.label')]"
       :rows="rows"
       :row-actions="actions"
       :ignoreRowKeys="['id']"
@@ -37,7 +37,7 @@ const rows = computed(() => {
 
 const actions = [
   {
-    name: "Editieren",
+    name: t("draft.edit"),
     actionLinkBuilder: (row: Record<string, string>) =>
       `/organizations/${indexStore.selectedOrganization}/data-model-drafts/${row.id}`,
   },

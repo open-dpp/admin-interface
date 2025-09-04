@@ -38,13 +38,13 @@
         class="bg-[#6BAD87] rounded-sm p-2 hover:cursor-pointer h-12 my-auto"
         @click="openFileInput"
       >
-        Datei ändern
+        {{ t("models.form.file.change") }}
       </button>
       <button
         class="bg-[#6BAD87] rounded-sm p-2 hover:cursor-pointer h-12 my-auto"
         @click="uploadFile"
       >
-        Datei hochladen
+        {{ t("models.form.file.upload") }}
       </button>
     </div>
     <div v-else-if="uploadedMediaId" class="flex flex-row gap-4">
@@ -62,23 +62,24 @@
         :download="uploadedMediaId"
         :href="uploadedFileUrl"
         class="bg-[#6BAD87] rounded-sm p-2 hover:cursor-pointer my-auto"
+        >{{ t("models.form.file.download") }}</a
       >
-        Herunterladen
-      </a>
       <button
         class="bg-[#6BAD87] rounded-sm p-2 hover:cursor-pointer my-auto"
         @click="openFileInput"
       >
-        Datei ändern
+        {{ t("models.form.file.change") }}
       </button>
     </div>
     <div v-else class="flex flex-row gap-4">
-      <div class="text-gray-600 my-auto">Keine Datei ausgewählt</div>
+      <div class="text-gray-600 my-auto">
+        {{ t("models.form.file.noSelection") }}
+      </div>
       <button
         class="bg-[#6BAD87] rounded-sm p-2 hover:cursor-pointer h-12 my-auto"
         @click="openFileInput"
       >
-        Datei auswählen
+        {{ t("models.form.file.select") }}
       </button>
     </div>
   </div>
@@ -90,6 +91,9 @@ import { useIndexStore } from "../../../stores";
 import { useNotificationStore } from "../../../stores/notification";
 import { useMediaStore } from "../../../stores/media";
 import { DocumentIcon } from "@heroicons/vue/24/outline";
+import { useI18n } from "vue-i18n";
+
+const { t } = useI18n();
 
 const passportFormStore = usePassportFormStore();
 const indexStore = useIndexStore();
@@ -164,14 +168,14 @@ const uploadFile = async () => {
       selectedFile.value,
       (progress) => (uploadProgress.value = progress),
     );
-    notificationStore.addSuccessNotification("Datei erfolgreich hochgeladen.");
+    notificationStore.addSuccessNotification(
+      t("models.form.file.uploadSuccess"),
+    );
     await loadFile();
   } catch (error: unknown) {
     console.error("Fehler beim Hochladen der Datei:", error);
     uploadedMediaId.value = undefined;
-    notificationStore.addErrorNotification(
-      "Beim Hochladen der Datei ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es erneut.",
-    );
+    notificationStore.addErrorNotification(t("models.form.file.uploadError"));
     selectedFile.value = null;
   } finally {
     uploadProgress.value = 0;
@@ -222,7 +226,7 @@ const loadFile = async () => {
     // Notify user via the existing notification store if available
     try {
       notificationStore.addErrorNotification(
-        "Die Datei konnte nicht geladen werden. Bitte versuchen Sie es erneut.",
+        t("models.form.file.downloadError"),
       );
     } catch {
       // Fallback to console if the notification store is not available for any reason

@@ -18,7 +18,9 @@ import apiClient from "../../lib/api-client";
 import EmptyState from "../../components/models/EmptyState.vue";
 import { useIndexStore } from "../../stores";
 import { TemplateDraftGetAllDto } from "@open-dpp/api-client";
+import { useI18n } from "vue-i18n";
 
+const { t } = useI18n();
 const indexStore = useIndexStore();
 const fetchInFlight = ref(true);
 

@@ -10,12 +10,15 @@
           class="block rounded-md bg-indigo-600 px-3 py-1.5 text-center text-sm/6 font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           @click="createApiKey"
         >
-          API Key erstellen
+          {{ t("integrations.apiKey.create") }}
         </button>
       </div>
     </div>
     <SimpleTable
-      :headers="['Name', 'Status']"
+      :headers="[
+        t('integrations.connections.name.label'),
+        t('integrations.connections.status.label'),
+      ]"
       :row-actions="actions"
       :rows="rows"
     />
@@ -29,24 +32,28 @@ import { PRO_ALPHA_INTEGRATION_ID } from "../../const";
 import keycloakIns from "../../lib/keycloak";
 import axiosIns from "../../lib/axios";
 import { useNotificationStore } from "../../stores/notification";
+import { useI18n } from "vue-i18n";
+import { computed } from "vue";
 
-const rows = [
+const { t } = useI18n();
+
+const rows = computed(() => [
   {
-    name: "ProAlpha Integration",
-    status: "Aktiv",
+    name: t("integrations.proAlpha"),
+    status: t("integrations.connections.status.active"),
     id: PRO_ALPHA_INTEGRATION_ID,
   },
-];
+]);
 const indexStore = useIndexStore();
 const notificationStore = useNotificationStore();
 
-const actions = [
+const actions = computed(() => [
   {
-    name: "Editieren",
+    name: t("common.edit"),
     actionLinkBuilder: (row: Record<string, string>) =>
       `/organizations/${indexStore.selectedOrganization}/integrations/${row.id}/connections`,
   },
-];
+]);
 
 const createApiKey = async () => {
   try {
@@ -55,14 +62,14 @@ const createApiKey = async () => {
     );
     if (response.status === 200) {
       notificationStore.addSuccessNotification(
-        `API Key wurde erfolgreich erstellt. Bitte kopieren Sie den Schlüssel: ${response.data}`,
+        t("integrations.apiKey.createSuccess", { key: response.data }),
         undefined,
         24_000,
       );
     }
   } catch {
     notificationStore.addErrorNotification(
-      "Fehler beim Erstellen des API Keys. Bitte versuchen Sie es erneut.",
+      t("integrations.apiKey.createError"),
     );
   }
 };
